@@ -1,46 +1,44 @@
 package org.pkwmtt.pkwmttbackend;
 
-import org.junit.jupiter.api.Assertions;
+import org.apache.catalina.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.pkwmtt.MockController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 /**
  * Example Test Class
  */
-@ExtendWith(SpringExtension.class)
-//Assigns random port
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(MockController.class)
+@Import(SecurityConfig.class)
 public class MockControllerTest {
 
-    //Gets port that test works on
-    @LocalServerPort
-    private int port;
-
-    //Object used to fetch url
+    //Simulating HTTP requests
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
 
     /**
      * Example test for GET method
+     * Tests /api/v1/hello endpoint
      */
+    @WithMockUser
     @Test
-    public void getHello() {
-        //Make GET request on specified URL
-        ResponseEntity<String> response = restTemplate.getForEntity(String.format("http://localhost:%s/api/v1/hello", port), String.class);
-
-        //Check status
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        //Check body
-        Assertions.assertEquals("Hello", response.getBody());
+    public void getHello() throws Exception {
+        mockMvc.perform(get("/api/v1/hello"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Hello"));
     }
 }

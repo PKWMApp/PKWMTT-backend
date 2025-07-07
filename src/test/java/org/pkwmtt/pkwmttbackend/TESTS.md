@@ -1,28 +1,29 @@
-# 🧪 MockController Integration Test
+# MockController Test Suite
 
-This project demonstrates how to write a Spring Boot integration test using `@SpringBootTest` with a random port, `TestRestTemplate`, and JUnit 5. The `MockControllerTest` class tests the basic functionality of a REST controller.
+This repository contains a unit test for the `MockController` in a Spring Boot application using `@WebMvcTest`. It focuses on verifying the `/api/v1/hello` endpoint and includes Spring Security bypass configuration for testing purposes.
 
-## 🚀 Setup
+## 📄 Overview
 
-The test class uses several Spring testing annotations to configure the environment:
+- **Test Type**: Unit test (controller layer only)
+- **Frameworks**: Spring Boot, JUnit 5, MockMvc
+- **Security**: Bypassed using `@WithMockUser` and custom `SecurityConfig`
+- **Target Endpoint**: `GET /api/v1/hello`
 
-- `@ExtendWith(SpringExtension.class)`: Integrates Spring's testing support with JUnit 5.
-- `@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`: Boots up the full Spring application context with a random port to simulate real HTTP requests.
-- `@LocalServerPort`: Injects the generated port into the test.
-- `@Autowired TestRestTemplate`: Used to make HTTP requests to the running application.
+## 🧪 How It Works
 
-## ✅ Test Case
+The test class uses:
+- `@WebMvcTest` to load only the web layer
+- `MockMvc` to simulate HTTP requests
+- `@WithMockUser` to mock an authenticated user
+- `@Import(SecurityConfig.class)` to override security filters for testing
 
-### `getHello()`
+## ✅ Example Test Case
 
-This method tests the `/api/v1/hello` endpoint by making an HTTP GET request and checking:
-
-- The response status is `200 OK`.
-- The response body contains `"Hello"`.
-
-## 📂 Running Tests
-
-You can run the tests using your IDE or the command line:
-
-```bash
-./mvnw test
+```java
+@WithMockUser
+@Test
+public void getHello() throws Exception {
+    mockMvc.perform(get("/api/v1/hello"))
+           .andExpect(status().isOk())
+           .andExpect(content().string("Hello"));
+}
