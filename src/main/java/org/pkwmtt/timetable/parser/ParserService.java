@@ -6,7 +6,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.SubjectDTO;
-import org.pkwmtt.timetable.dto.TimeTableDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class ParserService {
      * @param html webpage content
      * @return altered html code
      */
-    public String cleanHtml(String html) {
+    private String clean(String html) {
         return html.replaceAll("<br>", " ")
             .replaceAll(Pattern.quote("</span>-(N"), "-(N</span>")
             .replaceAll(Pattern.quote("</span>-(P"), "-(P</span>")
@@ -32,7 +31,9 @@ public class ParserService {
             .replaceAll(Pattern.quote("</span>-(n"), "-(n</span>")
             .replaceAll(Pattern.quote("<span style=\"font-size:85%\">"), "")
             .replaceAll(Pattern.quote("<a"), "<span")
-            .replaceAll(Pattern.quote("</a>"), "</span>");
+            .replaceAll(Pattern.quote("</a>"), "</span>")
+            .replaceAll(Pattern.quote("&nbsp;"), "");
+
     }
 
     /**
@@ -41,9 +42,9 @@ public class ParserService {
      * @param html subpage of any general group
      * @return List of hours: <i>List of Strings</i>
      */
-    public List<String> getHours(String html) {
+    public List<String> parseHours(String html) {
         //Parse html code to Document object (allows to query elements)
-        Document document = Jsoup.parse(html);
+        Document document = Jsoup.parse(clean(html));
 
         List<String> hours = new ArrayList<>();
 
@@ -60,7 +61,7 @@ public class ParserService {
      * @param html .../list containing list of general groups
      * @return map of general groups in format [GroupName: URL]
      */
-    public Map<String, String> parseGeneralGroupsHtmlToList(String html) {
+    public Map<String, String> parseGeneralGroups(String html) {
         Document document = Jsoup.parse(html);
 
         Map<String, String> generalGroups = new HashMap<>();
@@ -70,10 +71,16 @@ public class ParserService {
         return generalGroups;
     }
 
+    /**
+     * Parse html of specific General Group webpage to lists of subjects
+     *
+     * @param html of general group webpage
+     * @return list of subjects sorted by day and odd or even type
+     */
     public List<DayOfWeekDTO> parse(String html) {
         List<DayOfWeekDTO> days = new ArrayList<>();
 
-        Document document = Jsoup.parse(cleanHtml(html.replaceAll("&nbsp;", "")));
+        Document document = Jsoup.parse(clean(html));
         Elements table = document.select("table");
         Elements rows = table.select("table tbody tr td table tbody tr");
 
@@ -111,9 +118,9 @@ public class ParserService {
                         .rowId(rowId)
                         .build();
 
-                    if (isNameOdd(name))
+                    if (isNameNotEven(name))
                         days.get(columnId).addToOdd(subject);
-                    else if (isNameEven(name))
+                    else if (isNameNotOdd(name))
                         days.get(columnId).addToEven(subject);
 
                 }
@@ -123,11 +130,25 @@ public class ParserService {
         return days;
     }
 
-    private boolean isNameOdd(String name) {
+    /**
+     * Checks if subjects name isn't even
+     *
+     * @param name of a subject
+     * @return true if subject isn't even and
+     * false if subject is even
+     */
+    private boolean isNameNotEven(String name) {
         return !name.contains("(P") && !name.contains("-(p");
     }
 
-    private boolean isNameEven(String name) {
+    /**
+     * Checks if subjects name isn't odd
+     *
+     * @param name of a subject
+     * @return true if subject isn't odd and
+     * false if subject is odd
+     */
+    private boolean isNameNotOdd(String name) {
         return !name.contains("(N") && !name.contains("-(n");
     }
 }

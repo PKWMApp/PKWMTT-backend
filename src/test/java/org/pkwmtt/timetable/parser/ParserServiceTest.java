@@ -4,14 +4,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.junit.runners.Suite;
-import org.pkwmtt.timetable.dto.TimeTableDTO;
+import org.pkwmtt.timetable.dto.TimetableDTO;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+@SpringBootTest
 @Suite.SuiteClasses(ParserService.class)
 class ParserServiceTest {
     ParserService parserService;
@@ -29,7 +31,7 @@ class ParserServiceTest {
             .get();
 
         //Create object
-        TimeTableDTO timeTable = new TimeTableDTO("12K1");
+        TimetableDTO timeTable = new TimetableDTO("12K1");
 
         //Call method
         timeTable.setData(parserService.parse(document.html()));
@@ -48,11 +50,9 @@ class ParserServiceTest {
             .connect("https://podzial.mech.pk.edu.pl/stacjonarne/html/plany/o25.html")
             .get();
 
-        //alter html to suitable form
-        String cleanedHtml = parserService.cleanHtml(document.html());
 
         //call function
-        var result = parserService.getHours(cleanedHtml);
+        var result = parserService.parseHours(document.html());
 
         //Check first, last and middle element
         assertEquals("7:30- 8:15", result.getFirst());
@@ -61,6 +61,7 @@ class ParserServiceTest {
     }
 
     @Test
+    @WithMockUser
     public void isGeneralGroupListCorrect() throws IOException {
         //fetch data
         Document document = Jsoup
@@ -68,7 +69,7 @@ class ParserServiceTest {
             .get();
 
         //call method
-        var result = parserService.parseGeneralGroupsHtmlToList(document.html());
+        var result = parserService.parseGeneralGroups(document.html());
         //Check if list contains specific elements
         assertTrue(result.containsKey("12K1"));
         assertTrue(result.containsKey("11A1"));
