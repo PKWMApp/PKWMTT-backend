@@ -15,7 +15,7 @@ http://localhost:8080/pkmwtt/api/v1/timetable/
 
 ### 1. **Get Timetable by Group Name**
 
-```http
+```
 GET /{generalGroupName}
 
 Optional Query Parameters:
