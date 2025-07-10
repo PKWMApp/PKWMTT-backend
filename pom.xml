@@ -81,7 +81,11 @@
 			<artifactId>mockito-core</artifactId>
 			<version>5.18.0</version> <!-- This is the version -->
 		</dependency>
-
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.15.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
