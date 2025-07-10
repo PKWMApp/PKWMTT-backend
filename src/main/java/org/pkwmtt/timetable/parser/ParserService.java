@@ -118,15 +118,18 @@ public class ParserService {
                         .rowId(rowId)
                         .build();
 
-                    if (isNameNotEven(name))
+                    if (isNameNotEven(name)) {
+                        subject.setName(cleanName(subject.getName()));
                         days.get(columnId).addToOdd(subject);
-                    else if (isNameNotOdd(name))
+
+                    } else if (isNameNotOdd(name)) {
+                        subject.setName(cleanName(subject.getName()));
                         days.get(columnId).addToEven(subject);
+                    }
 
                 }
             }
         }
-
         return days;
     }
 
@@ -139,6 +142,52 @@ public class ParserService {
      */
     private boolean isNameNotEven(String name) {
         return !name.contains("(P") && !name.contains("-(p");
+    }
+
+
+    /**
+     * Deletes all unnecessary characters in name
+     * @param text subject name
+     * @return cleaned name
+     */
+    private String cleanName(String text) {
+        text = text.replaceAll("-", "");
+        text = deleteEvenMark(text);
+        text = deleteOddMark(text);
+        text = text.replaceAll(Pattern.quote(")"), "");
+        text = text.replaceAll(Pattern.quote("."), "");
+        return text;
+    }
+
+    /**
+     * Deletes marks of odd day
+     * @param text
+     * @return
+     */
+    private String deleteEvenMark(String text) {
+        if (text.contains("(P"))
+            return text.replace("(P", "");
+        if (text.contains("(p"))
+            return text.replace("(p", "");
+
+
+        return text;
+    }
+
+    /**
+     * Deletes marks of even day
+     * @param text
+     * @return
+     */
+    private String deleteOddMark(String text) {
+
+        text = text.replaceAll("-", "");
+
+        if (text.contains("(N"))
+            return text.replace("(N", "");
+        if (text.contains("(n"))
+            return text.replace("(n", "");
+        return text;
     }
 
     /**

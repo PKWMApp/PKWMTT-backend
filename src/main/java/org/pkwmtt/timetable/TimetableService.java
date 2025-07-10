@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +39,7 @@ public class TimetableService {
         Document document = Jsoup
             .connect(String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", url))
             .get();
+
         List<DayOfWeekDTO> schedule = parser.parse(document.html());
 
         for (var day : schedule) {
@@ -49,6 +49,14 @@ public class TimetableService {
         }
 
         return new TimetableDTO(generalGroupName, schedule);
+    }
+
+    public List<String> getListOfHours () throws IOException {
+        Document document = Jsoup
+            .connect("https://podzial.mech.pk.edu.pl/stacjonarne/html/plany/o25.html")
+            .get();
+
+        return  parser.parseHours(document.html());
     }
 
 }

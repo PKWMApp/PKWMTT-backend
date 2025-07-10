@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -16,7 +17,7 @@ public class TimetableController {
     private final TimetableService service;
 
     @GetMapping("/{generalGroupName}")
-    public ResponseEntity<TimetableDTO> getGeneralGroupScheduleFiltered(
+    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule(
         @PathVariable String generalGroupName,
         @RequestParam(name = "k", required = false) Optional<String> k,
         @RequestParam(name = "l", required = false) Optional<String> l,
@@ -28,8 +29,8 @@ public class TimetableController {
     }
 
     @GetMapping("/hours")
-    public ResponseEntity<String> getListOfHours() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<String>> getListOfHours() throws IOException {
+        return ResponseEntity.ok(service.getListOfHours());
     }
 
 }

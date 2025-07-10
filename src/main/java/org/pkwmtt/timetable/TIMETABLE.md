@@ -61,3 +61,15 @@ Example Response:
 ```
 GET /hours
 ```
+Example Response:
+```json
+{
+  "hours": [
+    "7:30–8:15",
+    "8:15–9:00",
+    "9:15–10:00",
+    "10:00–10:45",
+    "..."
+  ]
+}
+```
