@@ -2,9 +2,6 @@ package org.pkwmtt.timetable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.std.ArraySerializerBase;
-import net.minidev.json.parser.JSONParser;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +48,6 @@ class TimetableControllerTest {
         assertFalse(result.contains("K02"));
         assertFalse(result.contains("L02"));
         assertFalse(result.contains("P02"));
-
     }
 
     @Test
@@ -82,5 +76,16 @@ class TimetableControllerTest {
         List<String> result = Arrays.asList(response.getBody());
         assertNotNull(result);
         result.forEach(System.out::println);
+    }
+
+    @Test
+    public void shouldReturnListOfSubgroupsForGeneralGroup() {
+        String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/groups/12K1", port);
+
+        ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);
+
+        System.out.println(Arrays.toString(response.getBody()));
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }
