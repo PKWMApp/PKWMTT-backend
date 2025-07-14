@@ -1,7 +1,10 @@
 package org.pkwmtt.timetable;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.ArraySerializerBase;
 import net.minidev.json.parser.JSONParser;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,11 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,7 +31,7 @@ class TimetableControllerTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void testGetGeneralGroupScheduleFiltered_withOptionalParams() throws Exception {
+    public void testGetGeneralGroupScheduleFiltered_withOptionalParams() throws JsonProcessingException {
         String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1?k=K01&l=L01&p=P01", port);
 
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);
@@ -33,8 +41,8 @@ class TimetableControllerTest {
 
         assertEquals(12, response.getBody().getData().getFirst().getOdd().size());
         assertEquals(6, response.getBody().getData().getFirst().getEven().size());
-        ObjectMapper mapper = new ObjectMapper();
 
+        ObjectMapper mapper = new ObjectMapper();
         var result = mapper.writeValueAsString(response.getBody());
         System.out.println(result);
 
@@ -49,17 +57,30 @@ class TimetableControllerTest {
     }
 
     @Test
-    public void testGetGeneralGroupScheduleFiltered_withoutParams()  {
+    public void testGetGeneralGroupScheduleFiltered_withoutParams() throws JsonProcessingException {
         String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1", port);
 
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        ObjectMapper mapper = new ObjectMapper();
+
+        var result = mapper.writeValueAsString(response.getBody());
+        System.out.println(result);
+
     }
 
     @Test
-    public void shouldReturnListOfGeneralGroups(){
+    public void shouldReturnListOfGeneralGroups() {
         String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/groups/general", port);
+
+        ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        List<String> result = Arrays.asList(response.getBody());
+        assertNotNull(result);
+        result.forEach(System.out::println);
     }
 }
