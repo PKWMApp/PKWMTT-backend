@@ -1,5 +1,7 @@
 package org.pkwmtt.timetable;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,8 +12,9 @@ import org.pkwmtt.timetable.parser.ParserService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +34,38 @@ public class TimetableService {
         return parser.parseGeneralGroups(document.html());
     }
 
-    public TimetableDTO getGeneralGroupSchedule(String generalGroupName) throws IOException {
+    public List<String> getAvailableSubGroups(String generalGroupName) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        TimetableDTO timetable = getGeneralGroupSchedule(generalGroupName);
+        String timeTableAsJson = mapper.writeValueAsString(timetable);
+
+        // Regex pattern for group codes like K01, P03, L04, etc.
+        String regex = "\\b[KPL]0[0-9a-zA-Z]\\b";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(timeTableAsJson);
+
+        Set<String> matchedGroups = new HashSet<>();
+
+        while (matcher.find())
+            matchedGroups.add(matcher.group());
+
+        List<String> result = new ArrayList<>(matchedGroups.stream().toList());
+        Collections.sort(result);
+
+        return result;
+    }
+
+    public TimetableDTO getGeneralGroupSchedule(String generalGroupName) throws WebPageContentNotAvailableException {
+        Document document;
         String url = getGeneralGroupsList().get(generalGroupName);
-        Document document = Jsoup
-            .connect(String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", url))
-            .get();
+        try {
+            document = Jsoup
+                .connect(String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", url))
+                .get();
+
+        } catch (IOException ioe) {
+            throw new WebPageContentNotAvailableException();
+        }
 
         return new TimetableDTO(generalGroupName, parser.parse(document.html()));
     }
