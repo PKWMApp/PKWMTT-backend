@@ -49,12 +49,17 @@ class TimetableControllerTest {
     }
 
     @Test
-    public void testGetGeneralGroupScheduleFiltered_withoutParams() throws Exception {
+    public void testGetGeneralGroupScheduleFiltered_withoutParams()  {
         String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1", port);
 
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+    }
+
+    @Test
+    public void shouldReturnListOfGeneralGroups(){
+        String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/groups/general", port);
     }
 }

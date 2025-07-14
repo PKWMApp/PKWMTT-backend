@@ -1,7 +1,7 @@
 package org.pkwmtt.timetable;
 
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.WebPageContentNotAvailableException;
+import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +35,20 @@ public class TimetableController {
         return ResponseEntity.ok(service.getListOfHours());
     }
 
+    @GetMapping("/groups/general")
+    public ResponseEntity<List<String>> getListOfGeneralGroups() {
+        return ResponseEntity.ok(service.getGeneralGroupsList().keySet().stream().toList());
+    }
+
+    //todo list of general groups
+
+    //todo list of LKP groups for general group
+
+    //todo remove -n/-p from classrooms
 
     @ExceptionHandler(WebPageContentNotAvailableException.class)
     public ResponseEntity<String> handleWebPageContentNotAvailableException(WebPageContentNotAvailableException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
-
-
 
 }

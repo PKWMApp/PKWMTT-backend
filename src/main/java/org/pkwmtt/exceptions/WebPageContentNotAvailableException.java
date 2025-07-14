@@ -1,4 +1,4 @@
-package org.pkwmtt;
+package org.pkwmtt.exceptions;
 
 public class WebPageContentNotAvailableException extends RuntimeException {
     public WebPageContentNotAvailableException(String message) {
