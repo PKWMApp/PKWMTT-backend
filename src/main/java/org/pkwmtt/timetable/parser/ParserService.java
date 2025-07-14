@@ -78,21 +78,13 @@ public class ParserService {
      * @return list of subjects sorted by day and odd or even type
      */
     public List<DayOfWeekDTO> parse(String html) {
-        List<DayOfWeekDTO> days = new ArrayList<>();
-
         Document document = Jsoup.parse(clean(html));
-        Elements table = document.select("table");
-        Elements rows = table.select("table tbody tr td table tbody tr");
+        Elements rows = extractRows(document);
 
-        //Get first row containing headers
-        Elements headers = rows.getFirst().select("th");
+        List<DayOfWeekDTO> days = parseHeaders(rows);
 
-        //Delete first row
+        //Delete first row containing headers
         rows.removeFirst();
-
-        //Get name of each day
-        for (int i = 2; i < headers.size(); i++)
-            days.add(new DayOfWeekDTO(headers.get(i).text()));
 
         //Go every row
         for (int rowId = 0; rowId < rows.size(); rowId++) {
@@ -134,6 +126,32 @@ public class ParserService {
     }
 
     /**
+     * Extracts rows with subjects from html
+     *
+     * @param document of general group html webpage
+     * @return rows of timetable
+     */
+    private Elements extractRows(Document document) {
+        Elements table = document.select("table");
+        return table.select("table tbody tr td table tbody tr");
+    }
+
+    /**
+     * Extracts headers from timetable
+     *
+     * @param rows of timetable
+     * @return headers with days of week names
+     */
+    private List<DayOfWeekDTO> parseHeaders(Elements rows) {
+        List<DayOfWeekDTO> days = new ArrayList<>();
+        Elements headers = rows.getFirst().select("th");
+        for (int i = 2; i < headers.size(); i++) {
+            days.add(new DayOfWeekDTO(headers.get(i).text()));
+        }
+        return days;
+    }
+
+    /**
      * Checks if subjects name isn't even
      *
      * @param name of a subject
@@ -147,6 +165,7 @@ public class ParserService {
 
     /**
      * Deletes all unnecessary characters in name
+     *
      * @param text subject name
      * @return cleaned name
      */
@@ -161,6 +180,7 @@ public class ParserService {
 
     /**
      * Deletes marks of odd day
+     *
      * @param text
      * @return
      */
@@ -176,6 +196,7 @@ public class ParserService {
 
     /**
      * Deletes marks of even day
+     *
      * @param text
      * @return
      */

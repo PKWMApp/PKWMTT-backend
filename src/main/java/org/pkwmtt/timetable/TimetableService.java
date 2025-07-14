@@ -3,6 +3,7 @@ package org.pkwmtt.timetable;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.pkwmtt.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.pkwmtt.timetable.parser.ParserService;
@@ -17,10 +18,15 @@ import java.util.Map;
 public class TimetableService {
     private final ParserService parser;
 
-    public Map<String, String> getGeneralGroupsList() throws IOException {
-        Document document = Jsoup
-            .connect("http://podzial.mech.pk.edu.pl/stacjonarne/html/lista.html")
-            .get();
+    public Map<String, String> getGeneralGroupsList() throws WebPageContentNotAvailableException {
+        Document document;
+        try {
+            document = Jsoup
+                .connect("http://podzial.mech.pk.edu.pl/stacjonarne/html/lista.html")
+                .get();
+        } catch (IOException ioe) {
+            throw new WebPageContentNotAvailableException();
+        }
 
         return parser.parseGeneralGroups(document.html());
     }
@@ -34,11 +40,17 @@ public class TimetableService {
         return new TimetableDTO(generalGroupName, parser.parse(document.html()));
     }
 
-    public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, String k, String l, String p) throws IOException {
-        String url = getGeneralGroupsList().get(generalGroupName);
-        Document document = Jsoup
-            .connect(String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", url))
-            .get();
+    public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, String k, String l, String p) throws WebPageContentNotAvailableException {
+        Document document;
+        try {
+            String url = getGeneralGroupsList().get(generalGroupName);
+
+            document = Jsoup
+                .connect(String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", url))
+                .get();
+        } catch (IOException ioe) {
+            throw new WebPageContentNotAvailableException();
+        }
 
         List<DayOfWeekDTO> schedule = parser.parse(document.html());
 
@@ -51,12 +63,16 @@ public class TimetableService {
         return new TimetableDTO(generalGroupName, schedule);
     }
 
-    public List<String> getListOfHours () throws IOException {
-        Document document = Jsoup
-            .connect("https://podzial.mech.pk.edu.pl/stacjonarne/html/plany/o25.html")
-            .get();
+    public List<String> getListOfHours() throws WebPageContentNotAvailableException {
+        try {
+            Document document = Jsoup
+                .connect("https://podzial.mech.pk.edu.pl/stacjonarne/html/plany/o25.html")
+                .get();
 
-        return  parser.parseHours(document.html());
+            return parser.parseHours(document.html());
+        } catch (IOException ioe) {
+            throw new WebPageContentNotAvailableException();
+        }
     }
 
 }
