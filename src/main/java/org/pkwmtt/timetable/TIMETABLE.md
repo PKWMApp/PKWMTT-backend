@@ -7,7 +7,7 @@ A Spring Boot REST API that provides academic timetable data by general group na
 ## 🚀 Base URL
 
 ```
-http://localhost:8080/pkmwtt/api/v1/timetable/
+http://localhost:8080/pkmwtt/api/v1/timetables/
 ```
 ---
 
@@ -26,7 +26,7 @@ p	P01
 ```
 Example Request:
 ```
-GET .../pkmwtt/api/v1/timetable/12K1?k=K01&l=L01&p=P01
+GET .../pkmwtt/api/v1/timetables/12K1?k=K01&l=L01&p=P01
 ```
 Example Response:
 
