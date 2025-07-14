@@ -1,5 +1,6 @@
 package org.pkwmtt.timetable;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.TimetableDTO;
@@ -7,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class TimetableController {
         @RequestParam(name = "k", required = false) Optional<String> k,
         @RequestParam(name = "l", required = false) Optional<String> l,
         @RequestParam(name = "p", required = false) Optional<String> p
-    ) throws IOException {
+    ) throws WebPageContentNotAvailableException {
         if (k.isPresent() && l.isPresent() && p.isPresent())
             return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName, k.get(), l.get(), p.get()));
         return ResponseEntity.ok(service.getGeneralGroupSchedule(generalGroupName));
@@ -37,18 +38,24 @@ public class TimetableController {
 
     @GetMapping("/groups/general")
     public ResponseEntity<List<String>> getListOfGeneralGroups() {
-        return ResponseEntity.ok(service.getGeneralGroupsList().keySet().stream().toList());
+        var result = new java.util.ArrayList<>(service.getGeneralGroupsList().keySet().stream().toList());
+        Collections.sort(result);
+        return ResponseEntity.ok(result);
     }
 
-    //todo list of general groups
-
-    //todo list of LKP groups for general group
-
-    //todo remove -n/-p from classrooms
+    @GetMapping("/groups/{generalGroupName}")
+    public ResponseEntity<List<String>> getListOfAvailableGroups(@PathVariable String generalGroupName) throws JsonProcessingException {
+        return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName));
+    }
 
     @ExceptionHandler(WebPageContentNotAvailableException.class)
     public ResponseEntity<String> handleWebPageContentNotAvailableException(WebPageContentNotAvailableException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<Void> handleJsonProcessingException() {
+        return ResponseEntity.internalServerError().build();
     }
 
 }
