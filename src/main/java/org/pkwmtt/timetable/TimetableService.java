@@ -40,7 +40,7 @@ public class TimetableService {
         String timeTableAsJson = mapper.writeValueAsString(timetable);
 
         // Regex pattern for group codes like K01, P03, L04, etc.
-        String regex = "\\b[KPL]0[0-9a-zA-Z]\\b";
+        String regex = "\\b[KPL]0[0-9]\\b";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(timeTableAsJson);
 
