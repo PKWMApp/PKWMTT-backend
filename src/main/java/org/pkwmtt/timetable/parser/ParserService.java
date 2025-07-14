@@ -68,6 +68,7 @@ public class ParserService {
 
         for (Element item : document.select("#oddzialy .el a"))
             generalGroups.put(item.text(), item.attr("href"));
+
         return generalGroups;
     }
 
@@ -83,7 +84,7 @@ public class ParserService {
 
         List<DayOfWeekDTO> days = parseHeaders(rows);
 
-        //Delete first row containing headers
+        //Remove header row
         rows.removeFirst();
 
         //Go every row
@@ -93,36 +94,66 @@ public class ParserService {
 
             //Go every cell in a row
             for (int columnId = 0; columnId < cell.size(); columnId++) {
-                Elements items = cell.get(columnId).select("span");
-
-                //Delete professor initials and '#' code name
-                items.removeIf(ec -> ec.text().contains("#") || ec.text().length() == 2);
+                Elements items = getValidItems(cell.get(columnId));
 
                 //Go every item in column
-                for (int i = 0; i < items.size() - 1; i += 2) {
-                    String name = items.get(i).text();
-                    String classroom = items.get(i + 1).text();
+                for (int itemId = 0; itemId < items.size() - 1; itemId += 2) {
+                    boolean notOdd;
+                    String name = items.get(itemId).text();
+                    String classroom = items.get(itemId + 1).text();
 
-                    SubjectDTO subject = SubjectDTO
-                        .builder()
-                        .name(name)
-                        .classroom(classroom)
-                        .rowId(rowId)
-                        .build();
+                    notOdd = isNameNotOdd(name);
 
-                    if (isNameNotEven(name)) {
-                        subject.setName(cleanName(subject.getName()));
-                        days.get(columnId).addToOdd(subject);
+                    SubjectDTO subject = buildSubject(name, classroom, rowId);
 
-                    } else if (isNameNotOdd(name)) {
-                        subject.setName(cleanName(subject.getName()));
-                        days.get(columnId).addToEven(subject);
-                    }
-
+                    days.get(columnId).add(subject, notOdd);
                 }
             }
         }
         return days;
+    }
+
+    /**
+     * Cleans names from unnecessary and unwanted characters
+     * @param rawName subject name before cleaning process
+     * @param rawClassroom classroom name before cleaning process
+     * @param rowId timetable row id
+     * @return subject with cleaned data
+     */
+    private SubjectDTO buildSubject(String rawName, String rawClassroom, int rowId) {
+        String name = cleanSubjectName(rawName);
+        String classroom = cleanClassroomName(rawClassroom);
+        String type = extractSubjectTypeFromName(name);
+
+        name = name.replace(type, "").trim();
+
+        return SubjectDTO.builder()
+            .name(name)
+            .classroom(classroom)
+            .rowId(rowId)
+            .type(type)
+            .build();
+    }
+
+    /**
+     * Finds items containing data in cell
+     * @param cell from timetable
+     * @return items from cell
+     */
+    private Elements getValidItems(Element cell) {
+        Elements items = cell.select("span");
+        items.removeIf(item -> item.text().contains("#") || item.text().length() == 2);
+        return items;
+    }
+
+    /**
+     * Extracts subject type from its name
+     * @param name subject name
+     * @return subject type or empty string if there isn't any specified
+     */
+    private String extractSubjectTypeFromName(String name) {
+        if (name.indexOf(' ') == -1) return "";
+        return name.substring(name.indexOf(' ')).trim();
     }
 
     /**
@@ -162,14 +193,21 @@ public class ParserService {
         return !name.contains("(P") && !name.contains("-(p");
     }
 
+    private String cleanClassroomName(String text) {
+        if (text.contains("-p"))
+            return text.replace("-p", "");
+        if (text.contains("-n"))
+            return text.replace("-n", "");
+        return text;
+    }
 
     /**
-     * Deletes all unnecessary characters in name
+     * Deletes all unnecessary characters in subject name
      *
      * @param text subject name
      * @return cleaned name
      */
-    private String cleanName(String text) {
+    private String cleanSubjectName(String text) {
         text = text.replaceAll("-", "");
         text = deleteEvenMark(text);
         text = deleteOddMark(text);
@@ -189,7 +227,6 @@ public class ParserService {
             return text.replace("(P", "");
         if (text.contains("(p"))
             return text.replace("(p", "");
-
 
         return text;
     }

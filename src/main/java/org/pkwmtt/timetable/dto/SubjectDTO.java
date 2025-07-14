@@ -10,4 +10,5 @@ public class SubjectDTO {
     private String name;
     private String classroom;
     private int rowId;
+    private String type;
 }
