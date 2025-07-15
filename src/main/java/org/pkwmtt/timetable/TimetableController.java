@@ -18,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimetableController {
     private final TimetableService service;
+    private final CacheableTimetableService cacheableService;
 
     @GetMapping("/{generalGroupName}")
     public ResponseEntity<TimetableDTO> getGeneralGroupSchedule(
@@ -28,23 +29,25 @@ public class TimetableController {
     ) throws WebPageContentNotAvailableException {
         if (k.isPresent() && l.isPresent() && p.isPresent())
             return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName, k.get(), l.get(), p.get()));
-        return ResponseEntity.ok(service.getGeneralGroupSchedule(generalGroupName));
+        return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
     }
 
     @GetMapping("/hours")
     public ResponseEntity<List<String>> getListOfHours() throws WebPageContentNotAvailableException {
-        return ResponseEntity.ok(service.getListOfHours());
+        return ResponseEntity.ok(cacheableService.getListOfHours());
     }
 
     @GetMapping("/groups/general")
     public ResponseEntity<List<String>> getListOfGeneralGroups() {
-        var result = new java.util.ArrayList<>(service.getGeneralGroupsList().keySet().stream().toList());
+        var result = new java.util.ArrayList<>(cacheableService.getGeneralGroupsList().keySet().stream().toList());
         Collections.sort(result);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/groups/{generalGroupName}")
     public ResponseEntity<List<String>> getListOfAvailableGroups(@PathVariable String generalGroupName) throws JsonProcessingException {
+
+
         return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName));
     }
 
