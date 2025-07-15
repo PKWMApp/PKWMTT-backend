@@ -6,7 +6,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.SubjectDTO;
-import org.pkwmtt.timetable.dto.TimeTableDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class ParserService {
      * @param html webpage content
      * @return altered html code
      */
-    public String cleanHtml(String html) {
+    private String clean(String html) {
         return html.replaceAll("<br>", " ")
             .replaceAll(Pattern.quote("</span>-(N"), "-(N</span>")
             .replaceAll(Pattern.quote("</span>-(P"), "-(P</span>")
@@ -32,7 +31,9 @@ public class ParserService {
             .replaceAll(Pattern.quote("</span>-(n"), "-(n</span>")
             .replaceAll(Pattern.quote("<span style=\"font-size:85%\">"), "")
             .replaceAll(Pattern.quote("<a"), "<span")
-            .replaceAll(Pattern.quote("</a>"), "</span>");
+            .replaceAll(Pattern.quote("</a>"), "</span>")
+            .replaceAll(Pattern.quote("&nbsp;"), "");
+
     }
 
     /**
@@ -41,9 +42,9 @@ public class ParserService {
      * @param html subpage of any general group
      * @return List of hours: <i>List of Strings</i>
      */
-    public List<String> getHours(String html) {
+    public List<String> parseHours(String html) {
         //Parse html code to Document object (allows to query elements)
-        Document document = Jsoup.parse(html);
+        Document document = Jsoup.parse(clean(html));
 
         List<String> hours = new ArrayList<>();
 
@@ -60,32 +61,31 @@ public class ParserService {
      * @param html .../list containing list of general groups
      * @return map of general groups in format [GroupName: URL]
      */
-    public Map<String, String> parseGeneralGroupsHtmlToList(String html) {
+    public Map<String, String> parseGeneralGroups(String html) {
         Document document = Jsoup.parse(html);
 
         Map<String, String> generalGroups = new HashMap<>();
 
         for (Element item : document.select("#oddzialy .el a"))
             generalGroups.put(item.text(), item.attr("href"));
+
         return generalGroups;
     }
 
+    /**
+     * Parse html of specific General Group webpage to lists of subjects
+     *
+     * @param html of general group webpage
+     * @return list of subjects sorted by day and odd or even type
+     */
     public List<DayOfWeekDTO> parse(String html) {
-        List<DayOfWeekDTO> days = new ArrayList<>();
+        Document document = Jsoup.parse(clean(html));
+        Elements rows = extractRows(document);
 
-        Document document = Jsoup.parse(cleanHtml(html.replaceAll("&nbsp;", "")));
-        Elements table = document.select("table");
-        Elements rows = table.select("table tbody tr td table tbody tr");
+        List<DayOfWeekDTO> days = parseHeaders(rows);
 
-        //Get first row containing headers
-        Elements headers = rows.getFirst().select("th");
-
-        //Delete first row
+        //Remove header row
         rows.removeFirst();
-
-        //Get name of each day
-        for (int i = 2; i < headers.size(); i++)
-            days.add(new DayOfWeekDTO(headers.get(i).text()));
 
         //Go every row
         for (int rowId = 0; rowId < rows.size(); rowId++) {
@@ -94,40 +94,168 @@ public class ParserService {
 
             //Go every cell in a row
             for (int columnId = 0; columnId < cell.size(); columnId++) {
-                Elements items = cell.get(columnId).select("span");
-
-                //Delete professor initials and '#' code name
-                items.removeIf(ec -> ec.text().contains("#") || ec.text().length() == 2);
+                Elements items = getValidItems(cell.get(columnId));
 
                 //Go every item in column
-                for (int i = 0; i < items.size() - 1; i += 2) {
-                    String name = items.get(i).text();
-                    String classroom = items.get(i + 1).text();
+                for (int itemId = 0; itemId < items.size() - 1; itemId += 2) {
+                    boolean notOdd;
+                    String name = items.get(itemId).text();
+                    String classroom = items.get(itemId + 1).text();
 
-                    SubjectDTO subject = SubjectDTO
-                        .builder()
-                        .name(name)
-                        .classroom(classroom)
-                        .rowId(rowId)
-                        .build();
+                    notOdd = isNameNotOdd(name);
 
-                    if (isNameOdd(name))
-                        days.get(columnId).addToOdd(subject);
-                    else if (isNameEven(name))
-                        days.get(columnId).addToEven(subject);
+                    SubjectDTO subject = buildSubject(name, classroom, rowId);
 
+                    days.get(columnId).add(subject, notOdd);
                 }
             }
         }
-
         return days;
     }
 
-    private boolean isNameOdd(String name) {
+    /**
+     * Cleans names from unnecessary and unwanted characters
+     * @param rawName subject name before cleaning process
+     * @param rawClassroom classroom name before cleaning process
+     * @param rowId timetable row id
+     * @return subject with cleaned data
+     */
+    private SubjectDTO buildSubject(String rawName, String rawClassroom, int rowId) {
+        String name = cleanSubjectName(rawName);
+        String classroom = cleanClassroomName(rawClassroom);
+        String type = extractSubjectTypeFromName(name);
+
+        name = name.replace(type, "").trim();
+
+        return SubjectDTO.builder()
+            .name(name)
+            .classroom(classroom)
+            .rowId(rowId)
+            .type(type)
+            .build();
+    }
+
+    /**
+     * Finds items containing data in cell
+     * @param cell from timetable
+     * @return items from cell
+     */
+    private Elements getValidItems(Element cell) {
+        Elements items = cell.select("span");
+        items.removeIf(item -> item.text().contains("#") || item.text().length() == 2);
+        return items;
+    }
+
+    /**
+     * Extracts subject type from its name
+     * @param name subject name
+     * @return subject type or empty string if there isn't any specified
+     */
+    private String extractSubjectTypeFromName(String name) {
+        if (name.indexOf(' ') == -1) return "";
+        return name.substring(name.indexOf(' ')).trim();
+    }
+
+    /**
+     * Extracts rows with subjects from html
+     *
+     * @param document of general group html webpage
+     * @return rows of timetable
+     */
+    private Elements extractRows(Document document) {
+        Elements table = document.select("table");
+        return table.select("table tbody tr td table tbody tr");
+    }
+
+    /**
+     * Extracts headers from timetable
+     *
+     * @param rows of timetable
+     * @return headers with days of week names
+     */
+    private List<DayOfWeekDTO> parseHeaders(Elements rows) {
+        List<DayOfWeekDTO> days = new ArrayList<>();
+        Elements headers = rows.getFirst().select("th");
+        for (int i = 2; i < headers.size(); i++) {
+            days.add(new DayOfWeekDTO(headers.get(i).text()));
+        }
+        return days;
+    }
+
+    /**
+     * Checks if subjects name isn't even
+     *
+     * @param name of a subject
+     * @return true if subject isn't even and
+     * false if subject is even
+     */
+    private boolean isNameNotEven(String name) {
         return !name.contains("(P") && !name.contains("-(p");
     }
 
-    private boolean isNameEven(String name) {
+    private String cleanClassroomName(String text) {
+        if (text.contains("-p"))
+            return text.replace("-p", "");
+        if (text.contains("-n"))
+            return text.replace("-n", "");
+        return text;
+    }
+
+    /**
+     * Deletes all unnecessary characters in subject name
+     *
+     * @param text subject name
+     * @return cleaned name
+     */
+    private String cleanSubjectName(String text) {
+        text = text.replaceAll("-", "");
+        text = deleteEvenMark(text);
+        text = deleteOddMark(text);
+        text = text.replaceAll(Pattern.quote(")"), "");
+        text = text.replaceAll(Pattern.quote("."), "");
+        return text;
+    }
+
+    /**
+     * Deletes marks of odd day
+     *
+     * @param text
+     * @return
+     */
+    private String deleteEvenMark(String text) {
+        if (text.contains("(P"))
+            return text.replace("(P", "");
+        if (text.contains("(p"))
+            return text.replace("(p", "");
+
+        return text;
+    }
+
+    /**
+     * Deletes marks of even day
+     *
+     * @param text
+     * @return
+     */
+    private String deleteOddMark(String text) {
+
+        text = text.replaceAll("-", "");
+
+        if (text.contains("(N"))
+            return text.replace("(N", "");
+        if (text.contains("(n"))
+            return text.replace("(n", "");
+        return text;
+    }
+
+    /**
+     * Checks if subjects name isn't odd
+     *
+     * @param name of a subject
+     * @return true if subject isn't odd and
+     * false if subject is odd
+     */
+    private boolean isNameNotOdd(String name) {
         return !name.contains("(N") && !name.contains("-(n");
     }
 }
