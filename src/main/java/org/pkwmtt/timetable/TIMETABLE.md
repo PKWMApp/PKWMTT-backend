@@ -38,17 +38,19 @@ Example Response:
       "name": "Poniedziałek",
       "odd": [
         {
-          "name": "PInterfUż W-(N)",
-          "classroom": "J207.1-n",
-          "rowId": 0
+          "name": "PInterfUż",
+          "classroom": "J207.1",
+          "rowId": 0,
+          "type": "W"
         },
         "..."
       ],
-      "even:": [
+      "even": [
         {
-          "name": "Proj3D W-(P",
-          "classroom": "J207.1-p",
-          "rowId": 0
+          "name": "Proj3D",
+          "classroom": "J207.1",
+          "rowId": 0,
+          "type": "K01"
         },
         "..."
       ]
@@ -73,3 +75,39 @@ Example Response:
   ]
 }
 ```
+
+### 3. **Get list of general groups**
+```
+GET /groups/general
+```
+Example Response:
+
+```json
+[
+  "11A1",
+  "11A2",
+  "11A3",
+  "11B1",
+  "..."
+]
+```
+
+### 4. **Get list of of available subgroups for general group**
+```
+GET /groups/{generalGroupName}
+```
+Example Response:
+
+```json
+[
+  "K01",
+  "K04",
+  "L01",
+  "L02",
+  "L04",
+  "P01",
+  "P04"
+]
+```
+
+

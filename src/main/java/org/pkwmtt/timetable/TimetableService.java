@@ -21,6 +21,11 @@ import java.util.regex.Pattern;
 public class TimetableService {
     private final ParserService parser;
 
+    /**
+     * Retrieves a mapping of general group names to their corresponding timetable URLs.
+     * @return map of group names to URLs
+     * @throws WebPageContentNotAvailableException if the source page can't be fetched
+     */
     public Map<String, String> getGeneralGroupsList() throws WebPageContentNotAvailableException {
         Document document;
         try {
@@ -34,6 +39,12 @@ public class TimetableService {
         return parser.parseGeneralGroups(document.html());
     }
 
+    /**
+     * Parses the timetable JSON to extract subgroup identifiers like K01, P03, L04 using regex.
+     * @param generalGroupName group to analyze
+     * @return sorted list of subgroup names found in the timetable
+     * @throws JsonProcessingException if timetable conversion to JSON fails
+     */
     public List<String> getAvailableSubGroups(String generalGroupName) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         TimetableDTO timetable = getGeneralGroupSchedule(generalGroupName);
@@ -55,6 +66,12 @@ public class TimetableService {
         return result;
     }
 
+    /**
+     * Fetches and parses the full timetable for a general group.
+     * @param generalGroupName group to fetch
+     * @return parsed timetable
+     * @throws WebPageContentNotAvailableException if remote content is unavailable
+     */
     public TimetableDTO getGeneralGroupSchedule(String generalGroupName) throws WebPageContentNotAvailableException {
         Document document;
         String url = getGeneralGroupsList().get(generalGroupName);
@@ -70,6 +87,15 @@ public class TimetableService {
         return new TimetableDTO(generalGroupName, parser.parse(document.html()));
     }
 
+    /**
+     * Retrieves timetable and filters entries based on subgroup parameters (k, l, p).
+     * @param generalGroupName name of the general group
+     * @param k subgroup K code
+     * @param l subgroup L code
+     * @param p subgroup P code
+     * @return filtered timetable
+     * @throws WebPageContentNotAvailableException if source data can't be retrieved
+     */
     public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, String k, String l, String p) throws WebPageContentNotAvailableException {
         Document document;
         try {
@@ -93,6 +119,11 @@ public class TimetableService {
         return new TimetableDTO(generalGroupName, schedule);
     }
 
+    /**
+     * Retrieves the standard list of hour ranges used in the timetable.
+     * @return list of hour labels (e.g., 08:00–09:30)
+     * @throws WebPageContentNotAvailableException if hour definition page can't be loaded
+     */
     public List<String> getListOfHours() throws WebPageContentNotAvailableException {
         try {
             Document document = Jsoup
