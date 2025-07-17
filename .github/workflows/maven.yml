@@ -10,11 +10,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_PROFILES_ACTIVE: dev
     steps:
     - name: Checkout source code
       uses: actions/checkout@v4
@@ -32,6 +27,12 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
+
+    - name: Load environment variables
+      run: |
+        echo "${{ secrets.MAIN_ENVIROMENT_VARIABLES }}" > .env
+        export $(grep -v '^#' .env | xargs)
+        ./mvnw test
 
     - name: Build with Maven
       run: mvn clean install -DskipTests
