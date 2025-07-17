@@ -26,4 +26,5 @@ class CacheableTimetableServiceTest {
         assertNotNull(response);
         assertFalse(response.isEmpty());
     }
+
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @Service
-public class ParserService {
+public class TimetableParserService {
 
     /**
      * Alters html code for it to fit parsing process
@@ -219,8 +219,8 @@ public class ParserService {
     /**
      * Deletes marks of odd day
      *
-     * @param text
-     * @return
+     * @param text subject name
+     * @return altered text
      */
     private String deleteEvenMark(String text) {
         if (text.contains("(P"))
@@ -234,8 +234,8 @@ public class ParserService {
     /**
      * Deletes marks of even day
      *
-     * @param text
-     * @return
+     * @param text subject name
+     * @return altered text
      */
     private String deleteOddMark(String text) {
 
