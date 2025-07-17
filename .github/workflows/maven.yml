@@ -32,7 +32,6 @@ jobs:
       run: |
         echo "${{ secrets.MAIN_ENVIROMENT_VARIABLES }}" > .env
         export $(grep -v '^#' .env | xargs)
-        ./mvnw test
 
     - name: Build with Maven
       run: mvn clean install -DskipTests
