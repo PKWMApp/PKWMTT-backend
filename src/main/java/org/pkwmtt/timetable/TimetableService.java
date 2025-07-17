@@ -3,6 +3,7 @@ package org.pkwmtt.timetable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
@@ -25,7 +26,8 @@ public class TimetableService {
      * @return sorted list of subgroup names found in the timetable
      * @throws JsonProcessingException if timetable conversion to JSON fails
      */
-    public List<String> getAvailableSubGroups(String generalGroupName) throws JsonProcessingException {
+    public List<String> getAvailableSubGroups(String generalGroupName)
+        throws JsonProcessingException, SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException {
         ObjectMapper mapper = new ObjectMapper();
         TimetableDTO timetable = cacheableTimetableService.getGeneralGroupSchedule(generalGroupName);
         String timeTableAsJson = mapper.writeValueAsString(timetable);
@@ -47,7 +49,6 @@ public class TimetableService {
     }
 
 
-
     /**
      * Retrieves timetable and filters entries based on subgroup parameters (k, l, p).
      *
@@ -58,7 +59,7 @@ public class TimetableService {
      * @return filtered timetable
      * @throws WebPageContentNotAvailableException if source data can't be retrieved
      */
-    public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, String k, String l, String p) throws WebPageContentNotAvailableException {
+    public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, String k, String l, String p) throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
         List<DayOfWeekDTO> schedule = cacheableTimetableService.getGeneralGroupSchedule(generalGroupName).getData();
 
         for (var day : schedule) {
@@ -69,7 +70,6 @@ public class TimetableService {
 
         return new TimetableDTO(generalGroupName, schedule);
     }
-
 
 
 }

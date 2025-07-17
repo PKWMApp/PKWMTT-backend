@@ -3,6 +3,7 @@ package org.pkwmtt.timetable;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.pkwmtt.timetable.parser.TimetableParserService;
@@ -28,14 +29,19 @@ public class CacheableTimetableService {
      * @throws WebPageContentNotAvailableException if remote content is unavailable
      */
     @Cacheable(key = "#generalGroupName")
-    public TimetableDTO getGeneralGroupSchedule(String generalGroupName) throws WebPageContentNotAvailableException {
+    public TimetableDTO getGeneralGroupSchedule(String generalGroupName) throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
+        var generalGroupList = getGeneralGroupsList();
+
+        if (!generalGroupList.containsKey(generalGroupName)){
+            throw new SpecifiedGeneralGroupDoesntExistsException();
+        }
+
         Document document;
-        String url = getGeneralGroupsList().get(generalGroupName);
+        String url = generalGroupList.get(generalGroupName);
         try {
             document = Jsoup
                 .connect(String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", url))
                 .get();
-
         } catch (IOException ioe) {
             throw new WebPageContentNotAvailableException();
         }
