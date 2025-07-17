@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
-    private final TimetableParserService parser;
     private final CacheableTimetableService cacheableTimetableService;
 
     /**

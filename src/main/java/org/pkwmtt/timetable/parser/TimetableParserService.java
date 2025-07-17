@@ -219,8 +219,8 @@ public class TimetableParserService {
     /**
      * Deletes marks of odd day
      *
-     * @param text
-     * @return
+     * @param text subject name
+     * @return altered text
      */
     private String deleteEvenMark(String text) {
         if (text.contains("(P"))
@@ -234,8 +234,8 @@ public class TimetableParserService {
     /**
      * Deletes marks of even day
      *
-     * @param text
-     * @return
+     * @param text subject name
+     * @return altered text
      */
     private String deleteOddMark(String text) {
 
