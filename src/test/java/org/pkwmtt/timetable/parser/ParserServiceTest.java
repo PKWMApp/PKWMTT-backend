@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@Suite.SuiteClasses(ParserService.class)
+@Suite.SuiteClasses(TimetableParserService.class)
 class ParserServiceTest {
-    ParserService parserService;
+    TimetableParserService parserService;
 
     {
-        parserService = new ParserService();
+        parserService = new TimetableParserService();
     }
 
 

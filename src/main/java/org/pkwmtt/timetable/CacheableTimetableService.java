@@ -5,7 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.TimetableDTO;
-import org.pkwmtt.timetable.parser.ParserService;
+import org.pkwmtt.timetable.parser.TimetableParserService;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "timetables")
 public class CacheableTimetableService {
-    private final ParserService parser;
+    private final TimetableParserService parser;
 
     /**
      * Fetches and parses the full timetable for a general group.

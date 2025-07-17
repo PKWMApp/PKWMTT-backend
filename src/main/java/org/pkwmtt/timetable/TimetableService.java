@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
-import org.pkwmtt.timetable.parser.ParserService;
+import org.pkwmtt.timetable.parser.TimetableParserService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
-    private final ParserService parser;
+    private final TimetableParserService parser;
     private final CacheableTimetableService cacheableTimetableService;
 
     /**

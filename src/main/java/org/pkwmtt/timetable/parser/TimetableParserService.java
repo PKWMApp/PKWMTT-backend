@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @Service
-public class ParserService {
+public class TimetableParserService {
 
     /**
      * Alters html code for it to fit parsing process
