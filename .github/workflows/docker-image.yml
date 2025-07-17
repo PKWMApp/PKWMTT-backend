@@ -76,7 +76,13 @@ jobs:
         with:
           name: app-jar
           path: ./build
-          
+
+      - name: Set up Docker Buildx (container driver)
+        uses: docker/setup-buildx-action@v2
+        with:
+            driver: docker-container
+            install: true
+            
       - name: Build & push Docker image (with cache)
         uses: docker/build-push-action@v3
         with:
