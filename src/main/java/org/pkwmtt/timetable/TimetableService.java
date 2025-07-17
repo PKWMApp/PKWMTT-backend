@@ -7,7 +7,6 @@ import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
-import org.pkwmtt.timetable.parser.TimetableParserService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

@@ -8,10 +8,11 @@ import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -24,7 +25,7 @@ public class TimetableController {
     /**
      * Provide schedule of specified group and filters if all provided
      *
-     * @param generalGroupName
+     * @param generalGroupName name of general group
      * @param k                K group (f.e K02)
      * @param l                L group (f.e L02)
      * @param p                P group (f.e P02)
