@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker CI with Maven
 
 on:
   push:
@@ -7,12 +7,45 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
+    env:
+      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_PROFILES_ACTIVE: dev
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker
+      run: |
+        docker --version
+
+    - name: Build Docker image
+      run: |
+        docker build \
+          --build-arg SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+          --build-arg SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+          --build-arg SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+          --build-arg SPRING_PROFILES_ACTIVE=dev \
+          -t my-app .
+
+    - name: Run tests inside Docker container
+      run: |
+        docker run --rm my-app mvn test
+
+    - name: Copy test report from container
+      run: |
+        docker create --name extract-container my-app
+        docker cp extract-container:/app/target/surefire-reports ./surefire-reports
+        docker rm extract-container
+
+    - name: Upload test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: junit-report
+        path: surefire-reports/
