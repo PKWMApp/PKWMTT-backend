@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * global CORS configuration
- * Works only with DISABLED security, after enabling security should be moved to securityFilterChain
+ * Works only with DISABLED security, after enabling security should be removed
  * Remember to change localhost to real address
  */
 @Configuration
@@ -22,7 +22,7 @@ public class GlobalCorsConfig{
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/pkmwtt/api/v1/**")
+                registry.addMapping("/pkmwtt/api/**")
 //                        TODO: change host
                         .allowedOrigins("http://localhost:5173")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
