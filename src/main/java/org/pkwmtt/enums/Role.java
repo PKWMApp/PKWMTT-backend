@@ -4,4 +4,3 @@ public enum Role {
     ADMIN,
     REPRESENTATIVE
 }
-
