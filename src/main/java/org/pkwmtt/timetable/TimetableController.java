@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/pkmwtt/api/v1/timetables")
 @RequiredArgsConstructor
 public class TimetableController {
