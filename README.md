@@ -1,6 +1,6 @@
 ### 1. Accessing Swagger UI
 
-Open your browser and navigate to: http://localhost:8080/swagger-ui/index.html
+Start server and navigate to: http://localhost:8080/swagger-ui/index.html
 
 Here you can:
 
