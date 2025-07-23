@@ -208,17 +208,6 @@ public class TimetableParserService {
         return days;
     }
 
-    /**
-     * Checks if subjects name isn't even
-     *
-     * @param name of a subject
-     * @return true if subject isn't even and
-     * false if subject is even
-     */
-    private boolean isNameNotEven(String name) {
-        return !name.contains("(P") && !name.contains("-(p");
-    }
-
     private String cleanClassroomName(String text) {
         if (text.contains("-p"))
             return text.replace("-p", "");

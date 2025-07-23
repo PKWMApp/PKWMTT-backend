@@ -1,9 +1,7 @@
 package org.pkwmtt.timetable.dto;
 
-import com.github.benmanes.caffeine.cache.Policy;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer;
 
 import java.util.ArrayList;
 import java.util.List;

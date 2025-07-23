@@ -49,12 +49,10 @@ public class TimetableService {
 
 
     /**
-     * Retrieves timetable and filters entries based on subgroup parameters (k, l, p).
+     * Retrieves timetable and filters entries based on subgroups parameters
      *
      * @param generalGroupName name of the general group
-     * @param k                subgroup K code
-     * @param l                subgroup L code
-     * @param p                subgroup P code
+     * @param sub                subgroups list
      * @return filtered timetable
      * @throws WebPageContentNotAvailableException if source data can't be retrieved
      */
