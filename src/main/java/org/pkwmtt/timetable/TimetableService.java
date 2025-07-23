@@ -58,14 +58,12 @@ public class TimetableService {
      * @return filtered timetable
      * @throws WebPageContentNotAvailableException if source data can't be retrieved
      */
-    public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, String k, String l, String p) throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
+    public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, List<String> sub) throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
         List<DayOfWeekDTO> schedule = cacheableTimetableService.getGeneralGroupSchedule(generalGroupName).getData();
 
-        for (var day : schedule) {
-            day.filterByGroup(k);
-            day.filterByGroup(l);
-            day.filterByGroup(p);
-        }
+        for (var day : schedule)
+            sub.forEach(day::filterByGroup);
+
 
         return new TimetableDTO(generalGroupName, schedule);
     }

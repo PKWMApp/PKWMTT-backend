@@ -1,6 +1,7 @@
 package org.pkwmtt.timetable.dto;
 
 import lombok.*;
+import org.pkwmtt.timetable.enums.SubjectType;
 
 @Builder
 @Getter
@@ -10,5 +11,11 @@ public class SubjectDTO {
     private String name;
     private String classroom;
     private int rowId;
-    private String type;
+    private SubjectType type;
+
+
+    public void deleteTypeFromName() {
+        if (name.contains(" "))
+            this.name = name.substring(name.indexOf(' '));
+    }
 }

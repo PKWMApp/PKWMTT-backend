@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/pkmwtt/api/v1/timetables")
@@ -25,29 +25,24 @@ public class TimetableController {
      * Provide schedule of specified group and filters if all provided
      *
      * @param generalGroupName name of general group
-     * @param k                K group (f.e K02)
-     * @param l                L group (f.e L02)
-     * @param p                P group (f.e P02)
+     * @param sub              list of subgroups
      * @return schedule of specified group with provided filters
-     * @throws WebPageContentNotAvailableException
+     * @throws WebPageContentNotAvailableException .
      */
     @GetMapping("/{generalGroupName}")
-    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule(
-        @PathVariable String generalGroupName,
-        @RequestParam(name = "k", required = false) Optional<String> k,
-        @RequestParam(name = "l", required = false) Optional<String> l,
-        @RequestParam(name = "p", required = false) Optional<String> p
-    ) throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
-        if (k.isPresent() && l.isPresent() && p.isPresent())
-            return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName, k.get(), l.get(), p.get()));
-        return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
+    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule(@PathVariable String generalGroupName, @RequestParam(required = false) List<String> sub)
+        throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
+        if (sub == null || sub.isEmpty())
+            return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
+
+        return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName, sub));
     }
 
     /**
      * Provides list of schedule hours
      *
      * @return list of houts
-     * @throws WebPageContentNotAvailableException
+     * @throws WebPageContentNotAvailableException .
      */
     @GetMapping("/hours")
     public ResponseEntity<List<String>> getListOfHours() throws WebPageContentNotAvailableException {
@@ -71,7 +66,7 @@ public class TimetableController {
      *
      * @param generalGroupName name of general group
      * @return list of available subgroups
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException .
      */
     @GetMapping("/groups/{generalGroupName}")
     public ResponseEntity<List<String>> getListOfAvailableGroups(@PathVariable String generalGroupName)
@@ -89,7 +84,6 @@ public class TimetableController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponseDTO> handleJsonProcessingException() {
         return new ResponseEntity<>(new ErrorResponseDTO(""), HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     @ExceptionHandler(SpecifiedGeneralGroupDoesntExistsException.class)
