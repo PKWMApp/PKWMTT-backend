@@ -32,8 +32,8 @@ class TimetableControllerTest {
 
     @Test
     public void testGetGeneralGroupScheduleFiltered_withOptionalParams() throws JsonProcessingException {
-        String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1?k=K01&l=L01&p=P01", port);
-
+        String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01", port);
+//http://localhost:8080/pkmwtt/api/v1/timetables/12K1?sub=K01&sub=P01&sub=L01
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

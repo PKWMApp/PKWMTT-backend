@@ -1,19 +1,23 @@
 package org.pkwmtt.timetable.parser;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.SubjectDTO;
+import org.pkwmtt.timetable.enums.SubjectType;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 public class TimetableParserService {
 
@@ -32,6 +36,8 @@ public class TimetableParserService {
             .replaceAll(Pattern.quote("<span style=\"font-size:85%\">"), "")
             .replaceAll(Pattern.quote("<a"), "<span")
             .replaceAll(Pattern.quote("</a>"), "</span>")
+            .replaceAll(Pattern.quote("J ang"), "J_ang")
+            .replaceAll(Pattern.quote("WF hala ("), "WF_hala_(")
             .replaceAll(Pattern.quote("&nbsp;"), "");
 
     }
@@ -115,17 +121,16 @@ public class TimetableParserService {
 
     /**
      * Cleans names from unnecessary and unwanted characters
-     * @param rawName subject name before cleaning process
+     *
+     * @param rawName      subject name before cleaning process
      * @param rawClassroom classroom name before cleaning process
-     * @param rowId timetable row id
+     * @param rowId        timetable row id
      * @return subject with cleaned data
      */
     private SubjectDTO buildSubject(String rawName, String rawClassroom, int rowId) {
         String name = cleanSubjectName(rawName);
         String classroom = cleanClassroomName(rawClassroom);
-        String type = extractSubjectTypeFromName(name);
-
-        name = name.replace(type, "").trim();
+        SubjectType type = extractSubjectTypeFromName(name);
 
         return SubjectDTO.builder()
             .name(name)
@@ -137,6 +142,7 @@ public class TimetableParserService {
 
     /**
      * Finds items containing data in cell
+     *
      * @param cell from timetable
      * @return items from cell
      */
@@ -148,12 +154,32 @@ public class TimetableParserService {
 
     /**
      * Extracts subject type from its name
+     *
      * @param name subject name
      * @return subject type or empty string if there isn't any specified
      */
-    private String extractSubjectTypeFromName(String name) {
-        if (name.indexOf(' ') == -1) return "";
-        return name.substring(name.indexOf(' ')).trim();
+    private SubjectType extractSubjectTypeFromName(String name) {
+        name = name.trim();
+        if (name.endsWith("W")) return SubjectType.LECTURE;
+        if (name.endsWith("S")) return SubjectType.SEMINAR;
+        if (name.endsWith("Ć")) return SubjectType.EXERCISES;
+
+        Pattern laboratoryPattern = Pattern.compile("(?<!#)L0[1-9]");
+        Matcher labMatcher = laboratoryPattern.matcher(name);
+        if (labMatcher.find())
+            return SubjectType.LABORATORY;
+
+        Pattern computerLabPattern = Pattern.compile("(?<!#)K0[1-9]");
+        Matcher compLabMatcher = computerLabPattern.matcher(name);
+        if (compLabMatcher.find())
+            return SubjectType.COMPUTER_LABORATORY;
+
+        Pattern projectPattern = Pattern.compile("(?<!#)P0[1-9]");
+        Matcher projectMatcher = projectPattern.matcher(name);
+        if (projectMatcher.find())
+            return SubjectType.PROJECT;
+
+        return SubjectType.OTHER;
     }
 
     /**
@@ -180,17 +206,6 @@ public class TimetableParserService {
             days.add(new DayOfWeekDTO(headers.get(i).text()));
         }
         return days;
-    }
-
-    /**
-     * Checks if subjects name isn't even
-     *
-     * @param name of a subject
-     * @return true if subject isn't even and
-     * false if subject is even
-     */
-    private boolean isNameNotEven(String name) {
-        return !name.contains("(P") && !name.contains("-(p");
     }
 
     private String cleanClassroomName(String text) {

@@ -38,6 +38,10 @@ public class DayOfWeekDTO {
      *              and the last character is the subgroup number
      */
     public void filterByGroup(String group) {
+        // Delete first character if group starts 'G'
+        if (group.charAt(0) == 'G' && group.length() > 3)
+            group = group.substring(1);
+
         // Extract the group letter (e.g., "K" from "K03")
         String groupName = Character.toString(group.charAt(0));
 
@@ -59,21 +63,24 @@ public class DayOfWeekDTO {
      * @return a filtered list of SubjectDTO
      */
     private List<SubjectDTO> filter(List<SubjectDTO> list, String groupName, String targetNumber) {
-        return list.stream()
+        list = list.stream()
             // Keep only items that have no other subgroup codes
             .filter(
                 item ->
                     hasOnlyTargetGroup(
-                        item.getType(),
+                        item.getName(),
                         groupName,
                         targetNumber
                     )
-            )
-            .toList();
+            ).toList();
+
+        list.forEach(SubjectDTO::deleteTypeFromName);
+        return list;
     }
 
     /**
      * Checks if the given element string contains no other codes for the same group.*
+     *
      * @param element      the subject type string (e.g., "Mechatronika K03")
      * @param groupName    the group letter (e.g., "K")
      * @param targetNumber the digit we want to allow (e.g., "3")
@@ -81,7 +88,7 @@ public class DayOfWeekDTO {
      */
     private boolean hasOnlyTargetGroup(String element, String groupName, String targetNumber) {
         // Pattern: e.g. "K0(?!3)[1-7]" matches K01, K02, K04…K07 but not K03
-        String pattern = String.format("%s0(?!%s)[1-7]", groupName, targetNumber);
+        String pattern = String.format("g?%s0(?!%s)[1-7]", groupName, targetNumber);
         return !Pattern.compile(pattern).matcher(element).find();
     }
 
