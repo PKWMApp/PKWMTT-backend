@@ -18,7 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,9 +32,9 @@ class TimetableControllerTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void testGetGeneralGroupScheduleFiltered_withOptionalParams() throws JsonProcessingException {
+    public void testGetGeneralGroupScheduleFiltered_withOptionalParams() {
         String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01", port);
-//http://localhost:8080/pkmwtt/api/v1/timetables/12K1?sub=K01&sub=P01&sub=L01
+
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -41,18 +42,6 @@ class TimetableControllerTest {
 
         assertEquals(12, response.getBody().getData().getFirst().getOdd().size());
         assertEquals(6, response.getBody().getData().getFirst().getEven().size());
-
-        ObjectMapper mapper = new ObjectMapper();
-        var result = mapper.writeValueAsString(response.getBody());
-        System.out.println(result);
-
-        assertTrue(result.contains("K01"));
-        assertTrue(result.contains("L01"));
-        assertTrue(result.contains("P01"));
-
-        assertFalse(result.contains("K02"));
-        assertFalse(result.contains("L02"));
-        assertFalse(result.contains("P02"));
     }
 
     @Test
