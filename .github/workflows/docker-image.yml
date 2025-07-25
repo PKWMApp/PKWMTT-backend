@@ -54,7 +54,11 @@ jobs:
 
       - name: Run tests and package
         run: mvn clean verify
-
+        env:
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
