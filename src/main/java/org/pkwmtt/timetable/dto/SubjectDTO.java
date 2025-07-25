@@ -16,6 +16,6 @@ public class SubjectDTO {
 
     public void deleteTypeFromName() {
         if (name.contains(" "))
-            this.name = name.substring(name.indexOf(' '));
+            this.name = name.substring(0,name.indexOf(' '));
     }
 }
