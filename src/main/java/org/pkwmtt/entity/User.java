@@ -13,7 +13,7 @@ import org.pkwmtt.enums.Role;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long userId;
+    private Integer userId;
 
     @ManyToOne
     @JoinColumn(name = "general_group_id")

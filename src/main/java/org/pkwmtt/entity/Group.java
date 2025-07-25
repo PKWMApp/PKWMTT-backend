@@ -9,11 +9,11 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-@Table(name = "groups")
+@Table(name = "`groups`")
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long groupId;
+    private Integer groupId;
 
     private String name;
 

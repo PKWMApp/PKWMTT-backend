@@ -15,7 +15,7 @@ import lombok.Getter;
 public class ExamType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long examTypeId;
+    private Integer examTypeId;
 
     private String name;
 

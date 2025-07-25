@@ -14,7 +14,7 @@ import java.util.Set;
 public class GeneralGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long generalGroupId;
+    private Integer generalGroupId;
 
     private String name;
 

@@ -14,7 +14,7 @@ import java.util.Date;
 public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long examId;
+    private Integer examId;
 
     private String title;
 

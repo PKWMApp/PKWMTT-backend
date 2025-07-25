@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class OTPCode {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long otpCodeId;
+    private Integer otpCodeId;
 
     private String code;
 
