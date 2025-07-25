@@ -3,6 +3,7 @@ package org.pkwmtt.timetable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
@@ -52,7 +54,7 @@ public class TimetableService {
      * Retrieves timetable and filters entries based on subgroups parameters
      *
      * @param generalGroupName name of the general group
-     * @param sub                subgroups list
+     * @param sub              subgroups list
      * @return filtered timetable
      * @throws WebPageContentNotAvailableException if source data can't be retrieved
      */
@@ -62,6 +64,7 @@ public class TimetableService {
         for (var day : schedule)
             sub.forEach(day::filterByGroup);
 
+        schedule.forEach(DayOfWeekDTO::deleteSubjectTypesFromNames);
 
         return new TimetableDTO(generalGroupName, schedule);
     }
