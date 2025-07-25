@@ -22,7 +22,8 @@ public class Exam {
 
     private Date date;
 
-    private String group;
+    @Column(name = "`groups`")
+    private String exam_group;
 
     @ManyToOne
     @JoinColumn(name = "exam_type_id")
