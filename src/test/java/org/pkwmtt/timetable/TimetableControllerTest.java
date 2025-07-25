@@ -39,7 +39,7 @@ class TimetableControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-
+        assertEquals(5, response.getBody().getData().size());
         assertEquals(12, response.getBody().getData().getFirst().getOdd().size());
         assertEquals(6, response.getBody().getData().getFirst().getEven().size());
     }

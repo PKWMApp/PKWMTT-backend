@@ -60,9 +60,9 @@ public class TimetableService {
      */
     public TimetableDTO getFilteredGeneralGroupSchedule(String generalGroupName, List<String> sub) throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
         List<DayOfWeekDTO> schedule = cacheableTimetableService.getGeneralGroupSchedule(generalGroupName).getData();
-        var day = schedule.getFirst();
 
-        sub.forEach(day::filterByGroup);
+        for (var day : schedule)
+            sub.forEach(day::filterByGroup);
 
         schedule.forEach(DayOfWeekDTO::deleteSubjectTypesFromNames);
 
