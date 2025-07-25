@@ -5,8 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-    
-# 1) Allow pushing to GHCR
+
 permissions:
   contents: read
   packages: write
@@ -15,7 +14,6 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     container:
       image: maven:3.9.4-eclipse-temurin-21
       options: --user root
@@ -24,31 +22,37 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ env.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+          MYSQL_ROOT_PASSWORD: rootpass
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -u${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }}"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u testuser -ptestpass"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=10
+          --health-retries=5
 
     env:
-      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-      MYSQL_USER: ${{ secrets.MYSQL_USER }}
-      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
+      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testdb
+      SPRING_DATASOURCE_USERNAME: testuser
+      SPRING_DATASOURCE_PASSWORD: testpass
+      SPRING_PROFILES_ACTIVE: test
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install MySQL client
+        run: apt-get update && apt-get install -y default-mysql-client
+
+      - name: Wait for MySQL to be healthy
+        run: |
+          echo "⏳ Waiting for MySQL to accept connections…"
+          until mysqladmin ping -h 127.0.0.1 -u testuser -ptestpass --silent; do
+            sleep 2
+          done
 
       - name: Cache Maven repository
         uses: actions/cache@v4
@@ -74,4 +78,41 @@ jobs:
           name: app-jar
           path: target/*.jar
 
+  docker-build:
+    needs: test
+    runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log into GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver: docker-container
+          install: true
+
+      - name: Lowercase repository slug
+        run: |
+          echo "IMAGE_REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Build & push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_REPO }}:latest
+            ghcr.io/${{ env.IMAGE_REPO }}:${{ github.run_number }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
