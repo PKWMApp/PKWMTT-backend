@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Setter
@@ -20,12 +21,19 @@ public class DayOfWeekDTO {
         even = new ArrayList<>();
     }
 
+
     public void add(SubjectDTO subjectDTO, boolean isNotOdd) {
         if (isNotOdd) {
             even.add(subjectDTO);
         } else {
             odd.add(subjectDTO);
         }
+    }
+
+
+    public void deleteSubjectTypesFromNames() {
+        even.forEach(SubjectDTO::deleteTypeFromName);
+        odd.forEach(SubjectDTO::deleteTypeFromName);
     }
 
     /**
@@ -51,6 +59,7 @@ public class DayOfWeekDTO {
         // Apply the filter to both odd- and even-week lists
         odd = filter(odd, groupName, targetNumber);
         even = filter(even, groupName, targetNumber);
+
     }
 
     /**
@@ -63,6 +72,7 @@ public class DayOfWeekDTO {
      * @return a filtered list of SubjectDTO
      */
     private List<SubjectDTO> filter(List<SubjectDTO> list, String groupName, String targetNumber) {
+
         list = list.stream()
             // Keep only items that have no other subgroup codes
             .filter(
@@ -74,7 +84,6 @@ public class DayOfWeekDTO {
                     )
             ).toList();
 
-        list.forEach(SubjectDTO::deleteTypeFromName);
         return list;
     }
 
@@ -87,9 +96,14 @@ public class DayOfWeekDTO {
      * @return true if no non-target subgroup codes are present
      */
     private boolean hasOnlyTargetGroup(String element, String groupName, String targetNumber) {
-        // Pattern: e.g. "K0(?!3)[1-7]" matches K01, K02, K04…K07 but not K03
-        String pattern = String.format("g?%s0(?!%s)[1-7]", groupName, targetNumber);
-        return !Pattern.compile(pattern).matcher(element).find();
+        Pattern pattern = Pattern.compile(String.format("\\b[%s]0[1-9]\\b", groupName));
+        Matcher matcher = pattern.matcher(element);
+        if (!matcher.find())
+            return true;
+
+        pattern = Pattern.compile(String.format("%s0%s", groupName, targetNumber));
+        matcher = pattern.matcher(element);
+        return matcher.find();
     }
 
 }
