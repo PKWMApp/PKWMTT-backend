@@ -53,7 +53,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2-
 
       - name: Install dependent libraries
-        run: sudo apt-get install mysql-server
+        run: apt-get install mysql-server
 
       - name: Run tests and package
         run: mvn clean verify
