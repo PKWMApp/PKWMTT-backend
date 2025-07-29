@@ -34,7 +34,9 @@ public class TimetableController {
         if (sub == null || sub.isEmpty())
             return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
 
-        return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName, sub));
+        sub = sub.stream().map(String::toUpperCase).toList();
+
+        return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName.toUpperCase(), sub));
     }
 
     /**
@@ -70,7 +72,7 @@ public class TimetableController {
     @GetMapping("/groups/{generalGroupName}")
     public ResponseEntity<List<String>> getListOfAvailableGroups(@PathVariable String generalGroupName)
         throws JsonProcessingException, SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException {
-        return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName));
+        return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName.toUpperCase()));
     }
 
     @ExceptionHandler(WebPageContentNotAvailableException.class)
