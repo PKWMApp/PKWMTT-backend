@@ -21,7 +21,7 @@ public class TimetableService {
     private final CacheableTimetableService cacheableTimetableService;
 
     /**
-     * Parses the timetable JSON to extract subgroup identifiers like K01, P03, L04 using regex.
+     * Parses the timetable JSON to extract subgroup identifiers like K01, P03, GL04 using regex.
      *
      * @param generalGroupName group to analyze
      * @return sorted list of subgroup names found in the timetable
@@ -33,15 +33,22 @@ public class TimetableService {
         TimetableDTO timetable = cacheableTimetableService.getGeneralGroupSchedule(generalGroupName);
         String timeTableAsJson = mapper.writeValueAsString(timetable);
 
-        // Regex pattern for group codes like K01, P03, L04, etc.
-        String regex = "\\b[KPL]0[0-9]\\b";
+        // Regex pattern for group codes like K01, GP03, L04, etc.
+        String regex = "\\bG?[KPL]0[0-9]\\b";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(timeTableAsJson);
 
         Set<String> matchedGroups = new HashSet<>();
 
-        while (matcher.find())
-            matchedGroups.add(matcher.group());
+        //Check if text starts with 'G' and delete it
+        // to match frontend requirements
+        String text;
+        while (matcher.find()) {
+            text = matcher.group();
+            if (text.startsWith("G"))
+                text = text.substring(1);
+            matchedGroups.add(text);
+        }
 
         List<String> result = new ArrayList<>(matchedGroups.stream().toList());
         Collections.sort(result);
