@@ -5,7 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
+    
+# 1) Allow pushing to GHCR
 permissions:
   contents: read
   packages: write
@@ -22,37 +23,27 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_DATABASE: testdb
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpass
-          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: ${secrets.MYSQL_DATABASE}
+          MYSQL_USER: ${secrets.MYSQL_USER}
+          MYSQL_PASSWORD: ${secrets.MYSQL_PASSWORD}
+          MYSQL_ROOT_PASSWORD: ${secrets.MYSQL_ROOT_PASSWORD}
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -u testuser -ptestpass"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u "+ ${secrets.MYSQL_USER} + " -ppass"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
 
     env:
-      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testdb
-      SPRING_DATASOURCE_USERNAME: testuser
-      SPRING_DATASOURCE_PASSWORD: testpass
-      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Install MySQL client
-        run: apt-get update && apt-get install -y default-mysql-client
-
-      - name: Wait for MySQL to be healthy
-        run: |
-          echo "⏳ Waiting for MySQL to accept connections…"
-          until mysqladmin ping -h 127.0.0.1 -u testuser -ptestpass --silent; do
-            sleep 2
-          done
 
       - name: Cache Maven repository
         uses: actions/cache@v4
@@ -61,9 +52,16 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-
 
+      - name: Install dependent libraries
+        run: sudo apt-get install mysql-server
+
       - name: Run tests and package
         run: mvn clean verify
-
+        env:
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,31 +79,32 @@ jobs:
   docker-build:
     needs: test
     runs-on: ubuntu-latest
-
+  
     permissions:
       contents: read
       packages: write
-
+  
     steps:
       - uses: actions/checkout@v4
-
+  
       - name: Log into GHCR
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
+  
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
           driver: docker-container
           install: true
-
+  
       - name: Lowercase repository slug
         run: |
-          echo "IMAGE_REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
+          echo "IMAGE_REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" \
+            >> $GITHUB_ENV
+  
       - name: Build & push Docker image
         uses: docker/build-push-action@v3
         with:
