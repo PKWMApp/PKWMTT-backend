@@ -11,7 +11,4 @@ public class PkwmttBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(PkwmttBackendApplication.class, args);
     }
-
-
-
 }
