@@ -96,7 +96,7 @@ public class DayOfWeekDTO {
      * @return true if no non-target subgroup codes are present
      */
     private boolean hasOnlyTargetGroup(String element, String groupName, String targetNumber) {
-        Pattern pattern = Pattern.compile(String.format("\\b[%s]0[1-9]\\b", groupName));
+        Pattern pattern = Pattern.compile(String.format("\\bG?[%s]0[1-9]\\b", groupName));
         Matcher matcher = pattern.matcher(element);
         if (!matcher.find())
             return true;
