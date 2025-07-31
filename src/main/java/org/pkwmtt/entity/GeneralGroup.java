@@ -11,14 +11,15 @@ import java.util.Set;
 @Getter
 @Builder
 @AllArgsConstructor
+@Table(name = "`general_group`")
 public class GeneralGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer generalGroupId;
+    private Integer general_group_id;
 
     private String name;
 
-    @OneToMany(mappedBy = "generalGroup")
+    @OneToMany(mappedBy = "general_group")
     private Set<Group> groups;
 
     public GeneralGroup() {
