@@ -10,23 +10,24 @@ import org.pkwmtt.enums.Role;
 @Getter
 @Builder
 @AllArgsConstructor
+@Table(name = "`users`")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer userId;
+    private Integer user_id;
 
     @ManyToOne
     @JoinColumn(name = "general_group_id")
-    private GeneralGroup generalGroup;
+    private GeneralGroup general_group;
 
     private String email;
 
-    private boolean isActive;
+    private boolean is_active;
 
     private Role role;
 
     @OneToOne(mappedBy = "user")
-    private OTPCode otpCode;
+    private OTPCode otp_code;
 
     public User() {
 

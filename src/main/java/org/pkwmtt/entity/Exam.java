@@ -9,12 +9,12 @@ import java.util.Date;
 @Getter
 @Builder
 @RequiredArgsConstructor
-@Table(name = "exams")
+@Table(name = "`exams`")
 @AllArgsConstructor
 public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer examId;
+    private Integer exam_id;
 
     private String title;
 
@@ -27,5 +27,5 @@ public class Exam {
 
     @ManyToOne
     @JoinColumn(name = "exam_type_id")
-    private ExamType examType;
+    private ExamType exam_type;
 }
