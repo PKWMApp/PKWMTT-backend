@@ -1,6 +1,6 @@
-package org.pkwmtt.repository;
+package org.pkwmtt.examCalendar.repository;
 
-import org.pkwmtt.entity.Exam;
+import org.pkwmtt.examCalendar.entity.Exam;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
