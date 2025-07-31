@@ -1,9 +1,6 @@
 package org.pkwmtt.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,10 +9,11 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
+@Table(name = "`exam_type`")
 public class ExamType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer examTypeId;
+    private Integer exam_type_id;
 
     private String name;
 

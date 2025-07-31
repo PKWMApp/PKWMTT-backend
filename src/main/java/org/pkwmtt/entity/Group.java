@@ -13,15 +13,15 @@ import lombok.Getter;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer groupId;
+    private Integer group_id;
 
     private String name;
 
-    private int groupCount;
+    private int group_count;
 
     @ManyToOne
     @JoinColumn(name = "general_group_id")
-    private GeneralGroup generalGroup;
+    private GeneralGroup general_group;
 
     public Group() {
 
