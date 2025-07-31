@@ -5,15 +5,43 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-    
-# 1) Allow pushing to GHCR
+
 permissions:
   contents: read
   packages: write
   issues: write
 
 jobs:
+  start-mysql:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Wait for MySQL to be healthy
+        run: |
+          for i in {1..30}; do
+            nc -z 127.0.0.1 3306 && echo "MySQL is up!" && exit 0
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+          echo "MySQL did not start in time" && exit 1
+
   test:
+    needs: start-mysql
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.4-eclipse-temurin-21
@@ -23,14 +51,14 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_DATABASE: ${secrets.MYSQL_DATABASE}
-          MYSQL_USER: ${secrets.MYSQL_USER}
-          MYSQL_PASSWORD: ${secrets.MYSQL_PASSWORD}
-          MYSQL_ROOT_PASSWORD: ${secrets.MYSQL_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -ppass"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -52,12 +80,9 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-
 
-      # - name: Install dependent libraries
-        # run: apt-get install mysql-server
-
       - name: Run tests and package
-        run: mvn clean verify -DskipDocker
-          
+        run: mvn clean verify
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -75,32 +100,31 @@ jobs:
   docker-build:
     needs: test
     runs-on: ubuntu-latest
-  
+
     permissions:
       contents: read
       packages: write
-  
+
     steps:
       - uses: actions/checkout@v4
-  
+
       - name: Log into GHCR
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-  
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
           driver: docker-container
           install: true
-  
+
       - name: Lowercase repository slug
         run: |
-          echo "IMAGE_REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" \
-            >> $GITHUB_ENV
-  
+          echo "IMAGE_REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Build & push Docker image
         uses: docker/build-push-action@v3
         with:
