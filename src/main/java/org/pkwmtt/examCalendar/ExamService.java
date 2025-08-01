@@ -13,8 +13,13 @@ import org.springframework.stereotype.Service;
 public class ExamService {
 
     private final ExamRepository examRepository;
+    private final ExamDtoToExamMapper examMapper;
 
+    /**
+     * @param examDto details of exam
+     * @return id of exam added to database
+     */
     public int addExam(ExamDto examDto) {
-        return examRepository.save(ExamDtoToExamMapper.mapToExam(examDto)).getExam_id();
+        return examRepository.save(examMapper.mapToExam(examDto)).getExamId();
     }
 }

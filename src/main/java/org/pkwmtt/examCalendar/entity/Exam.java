@@ -10,12 +10,12 @@ import java.util.Date;
 @Getter
 @Builder
 @RequiredArgsConstructor
-@Table(name = "`exams`")
+@Table(name = "exams")
 @AllArgsConstructor
 public class Exam {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer exam_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer examId;
 
     private String title;
 
@@ -24,11 +24,11 @@ public class Exam {
     private LocalDateTime date;
 
     @Column(name = "`groups`")
-    private String exam_group;
+    private String examGroups;
 
     @ManyToOne
     @JoinColumn(name = "exam_type_id")
-    private ExamType exam_type;
+    private ExamType examType;
 
 //    TODO: add exam builder
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Lip 31, 2025 at 06:56 PM
+-- Generation Time: Aug 01, 2025 at 01:55 PM
 -- Wersja serwera: 9.3.0
 -- Wersja PHP: 8.2.27
 
@@ -40,11 +40,6 @@ CREATE TABLE `exams` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Tabela Truncate przed wstawieniem `exams`
---
-
-TRUNCATE TABLE `exams`;
---
 -- Zrzut danych tabeli `exams`
 --
 
@@ -66,11 +61,6 @@ CREATE TABLE `exam_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Tabela Truncate przed wstawieniem `exam_type`
---
-
-TRUNCATE TABLE `exam_type`;
---
 -- Zrzut danych tabeli `exam_type`
 --
 
@@ -91,11 +81,6 @@ CREATE TABLE `general_group` (
   `name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Tabela Truncate przed wstawieniem `general_group`
---
-
-TRUNCATE TABLE `general_group`;
 --
 -- Zrzut danych tabeli `general_group`
 --
@@ -121,11 +106,6 @@ CREATE TABLE `groups` (
   `name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Tabela Truncate przed wstawieniem `groups`
---
-
-TRUNCATE TABLE `groups`;
 --
 -- Zrzut danych tabeli `groups`
 --
@@ -156,11 +136,6 @@ CREATE TABLE `otp_codes` (
   `timestamp` datetime(6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Tabela Truncate przed wstawieniem `otp_codes`
---
-
-TRUNCATE TABLE `otp_codes`;
 -- --------------------------------------------------------
 
 --
@@ -176,11 +151,6 @@ CREATE TABLE `users` (
   `role` enum('ADMIN','REPRESENTATIVE') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Tabela Truncate przed wstawieniem `users`
---
-
-TRUNCATE TABLE `users`;
 --
 -- Zrzut danych tabeli `users`
 --
@@ -240,6 +210,12 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT dla zrzuconych tabel
 --
+
+--
+-- AUTO_INCREMENT dla tabeli `exams`
+--
+ALTER TABLE `exams`
+  MODIFY `exam_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT dla tabeli `exam_type`
