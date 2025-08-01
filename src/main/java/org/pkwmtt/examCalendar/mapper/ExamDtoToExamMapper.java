@@ -6,6 +6,9 @@ import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.springframework.stereotype.Component;
 
+/**
+ * maps ExamDto to Exam entity. Couldn't be utility class, because needs ExamTypeRepository to validate exam types
+ */
 @Component
 @RequiredArgsConstructor
 public class ExamDtoToExamMapper {
@@ -13,10 +16,28 @@ public class ExamDtoToExamMapper {
 
     /**
      * @param examDto examDto object received from request
-     * @return Exam entity with examType field converted from String do ExamType
+     * @return Exam entity WITHOUT examId which should be assigned by database
+     *         Also contains examType field converted from String do ExamType
      */
-    public Exam mapToExam(ExamDto examDto) {
+    public Exam mapToNewExam(ExamDto examDto) {
         return Exam.builder()
+                .title(examDto.getTitle())
+                .description(examDto.getDescription())
+                .date(examDto.getDate())
+                .examGroups(examDto.getExamGroup())
+                .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow())
+                .build();
+    }
+
+    /**
+     * @param examDto examDto object received from request
+     * @param id of Exam that need to be modified
+     * @return Exam entity WITH examId that allow to update entity in database instead of creating new one
+     *         Also contains examType field converted from String do ExamType
+     */
+    public Exam mapToExistingExam(ExamDto examDto, int id) {
+        return Exam.builder()
+                .examId(id)
                 .title(examDto.getTitle())
                 .description(examDto.getDescription())
                 .date(examDto.getDate())

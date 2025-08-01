@@ -35,13 +35,13 @@ public class ExamController {
 
     /**
      * @param id of exam or test
-     * @param exam new details of exam or test
+     * @param examDto new details of exam or test
      * @return
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyExam(@PathVariable long id, @RequestBody Exam exam) {
-        throw new UnsupportedOperationException("Not supported yet.");
-//        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> modifyExam(@PathVariable int id, @RequestBody ExamDto examDto) {
+        examService.modifyExam(examDto, id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
