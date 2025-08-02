@@ -10,5 +10,10 @@ import java.util.Set;
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
     @Query("select e from Exam e where e.examGroups LIKE %:gs%")
     Set<Exam> findExamsByGroupSignature(@Param("gs")String groupSignature);
+
+    /**
+     * @param groupSignature symbol that identifies group
+     * @return set of Exams for specific group
+     */
     Set<Exam> findByExamGroupsContaining(String groupSignature);
 }
