@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @RequestMapping("/pkwmtt/api/v1/exams")
@@ -36,7 +36,7 @@ public class ExamController {
     /**
      * @param id of exam or test
      * @param examDto new details of exam or test
-     * @return
+     * @return 204 no content
      */
     @PutMapping("/{id}")
     public ResponseEntity<Void> modifyExam(@PathVariable int id, @RequestBody ExamDto examDto) {
@@ -46,40 +46,38 @@ public class ExamController {
 
     /**
      * @param id of exam or test
-     * @return
+     * @return 204 no content
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExam(@PathVariable long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-//        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteExam(@PathVariable int id) {
+        examService.deleteExam(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
      * @param id of exam or test
-     * @return single exam or test details
+     * @return 200 ok with single exam or test details
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Exam> getExam(@PathVariable long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-//        return ResponseEntity.ok();
+    public ResponseEntity<Exam> getExam(@PathVariable int id) {
+        return ResponseEntity.ok(examService.getExamById(id));
     }
 
     /**
      * @param generalGroup symbol that identify exercise group of specific field of study (for example 12K2)
-     * @param k computer laboratory group
-     * @param l laboratory group
-     * @param p project group
-     * @return
+     * @param k computer laboratory group (non required)
+     * @param l laboratory group (non required)
+     * @param p project group (non required)
+     * @return 200 ok with list of exams for specific group
      */
     @GetMapping("/by-groups/{generalGroup}")
-    public ResponseEntity<List<Exam>> getExams(
+    public ResponseEntity<Set<Exam>> getExams(
             @PathVariable String generalGroup,
             @RequestParam(name = "k", required = false) String k,
             @RequestParam(name = "l", required = false) String l,
             @RequestParam(name = "p", required = false) String p
-            ) {
-        throw new UnsupportedOperationException("Not supported yet.");
-//        return ResponseEntity.ok();
+            ){
+        return ResponseEntity.ok(examService.getExamByGroup(generalGroup, k, l, p));
     }
 
 }
