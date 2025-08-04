@@ -1,4 +1,4 @@
-package org.pkwmtt.timetable.enums;
+package org.pkwmtt.enums;
 
 public enum SubjectType {
     LECTURE,

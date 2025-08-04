@@ -32,8 +32,8 @@ public class DayOfWeekDTO {
 
 
     public void deleteSubjectTypesFromNames() {
-        even.forEach(SubjectDTO::deleteTypeFromName);
-        odd.forEach(SubjectDTO::deleteTypeFromName);
+        even.forEach(SubjectDTO::deleteTypeAndUnnecessaryCharactersFromName);
+        odd.forEach(SubjectDTO::deleteTypeAndUnnecessaryCharactersFromName);
     }
 
     /**
