@@ -18,7 +18,7 @@
 ### 1. Clone the repository
 
 ```shell
-docker pull ghcr.io/pkttteam/pkwmtt-backend:[PACKAGE_NUMBER]
+docker pull ghcr.io/pkttteam/pkwmtt-backend:latest
 ```
 
 ### 2. Create a `.env` file
