@@ -7,10 +7,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Entity
 @Getter
-@Builder
+@Builder(builderClassName = "Builder", buildMethodName = "build")
 @RequiredArgsConstructor
 @Table(name = "exams")
 @AllArgsConstructor
@@ -32,5 +33,23 @@ public class Exam {
     @JoinColumn(name = "exam_type_id")
     private ExamType examType;
 
-//    TODO: add exam builder
+    public static class Builder {
+        public Exam build() {
+            if (title == null || title.isEmpty() || title.length() > 255)          //TODO: change exception types
+                throw new RuntimeException("Invalid title");
+            if(description.length() > 255)
+                throw new RuntimeException("Invalid description");
+            if(date == null || date.isBefore(LocalDateTime.now()))
+                throw new RuntimeException("Invalid date");
+            if(examGroups == null || examGroups.length() > 255)
+                throw new RuntimeException("Invalid exam groups String");
+            Arrays.stream(examGroups.split(", ")).forEach(group -> {
+                if(group.length() > 8)
+                    throw new RuntimeException("Invalid exam group: " + group);
+            });
+            if(examType == null || examType.getName() == null || examType.getName().length() > 255)
+                throw new RuntimeException("Invalid exam type");
+            return new Exam(examId, title, description, date, examGroups, examType);
+        }
+    }
 }

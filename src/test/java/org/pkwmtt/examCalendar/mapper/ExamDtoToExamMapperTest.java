@@ -41,6 +41,7 @@ class ExamDtoToExamMapperTest {
         );
     }
 
+//    TODO: test data validation
     @Test
     void mapToNewExam() {
 //        given
