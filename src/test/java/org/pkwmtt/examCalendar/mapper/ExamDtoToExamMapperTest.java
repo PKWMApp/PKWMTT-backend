@@ -1,6 +1,5 @@
 package org.pkwmtt.examCalendar.mapper;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,6 +9,7 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
+import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -29,22 +29,24 @@ class ExamDtoToExamMapperTest {
     private ExamDto examDto;
     private String examTypeName;
 
-    @BeforeEach
-    void setup() {
-        examTypeName = "exam";
-        examDto = new ExamDto(
+//    @BeforeEach
+//    void setup() {
+//
+//    }
+
+    /**********************************************************************************/
+//    mapToNewExam
+    @Test
+    void isFieldsMappedProperlyToNewExam() {
+//        given
+        String examTypeName = "exam";
+        ExamDto examDto = new ExamDto(
                 "Math exam",
                 "Linear algebra",
                 LocalDateTime.now().plusDays(1),
                 "12K2, 13S1",
                 examTypeName
         );
-    }
-
-//    TODO: test data validation
-    @Test
-    void mapToNewExam() {
-//        given
         when(examTypeRepository.findByName(examTypeName)).thenReturn(
                 Optional.of(ExamType.builder()
                         .name(examTypeName)
@@ -63,11 +65,45 @@ class ExamDtoToExamMapperTest {
         assertNull(exam.getExamId());
     }
 
-
     @Test
-    void mapToExistingExam() {
+    void ShouldThrowExceptionWhenGroupIdentifierIsLongerThanSixCharactersForNewExam() {
+        //        given
+        String examTypeName = "exam";
+        ExamDto examDto = new ExamDto(
+                "Math exam",
+                "Linear algebra",
+                LocalDateTime.now().plusDays(1),
+                "12K2, 13S1, Not_Valid_Identifier, 41K1",
+                examTypeName
+        );
+        when(examTypeRepository.findByName(examTypeName)).thenReturn(
+                Optional.of(ExamType.builder()
+                        .name(examTypeName)
+                        .build())
+        );
+//        then
+        RuntimeException exception = assertThrows(
+                InvalidGroupIdentifierException.class,
+                () -> examDtoToExamMapper.mapToNewExam(examDto)
+        );
+        assertEquals("Invalid group identifier: Not_Valid_Identifier", exception.getMessage());
+    }
+
+
+    /**********************************************************************************/
+//    mapToExistingExam
+    @Test
+    void isFieldsMappedProperlyToExistingExam() {
         //        given
         int examId = 1;
+        examTypeName = "exam";
+        examDto = new ExamDto(
+                "Math exam",
+                "Linear algebra",
+                LocalDateTime.now().plusDays(1),
+                "12K2, 13S1",
+                examTypeName
+        );
         when(examTypeRepository.findByName(examTypeName)).thenReturn(
                 Optional.of(ExamType.builder()
                         .name(examTypeName)
@@ -85,5 +121,30 @@ class ExamDtoToExamMapperTest {
         assertEquals(examTypeName, exam.getExamType().getName());
 //        test not null id
         assertNotNull(exam.getExamId());
+    }
+
+    @Test
+    void ShouldThrowExceptionWhenGroupIdentifierIsLongerThanSixCharactersForExistingExam() {
+        //        given
+        int examId = 1;
+        String examTypeName = "exam";
+        ExamDto examDto = new ExamDto(
+                "Math exam",
+                "Linear algebra",
+                LocalDateTime.now().plusDays(1),
+                "12K2, 13S1, Not_Valid_Identifier, 41K1",
+                examTypeName
+        );
+        when(examTypeRepository.findByName(examTypeName)).thenReturn(
+                Optional.of(ExamType.builder()
+                        .name(examTypeName)
+                        .build())
+        );
+//        then
+        RuntimeException exception = assertThrows(
+                InvalidGroupIdentifierException.class,
+                () -> examDtoToExamMapper.mapToExistingExam(examDto, examId)
+        );
+        assertEquals("Invalid group identifier: Not_Valid_Identifier", exception.getMessage());
     }
 }

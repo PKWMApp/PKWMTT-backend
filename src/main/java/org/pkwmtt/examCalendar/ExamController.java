@@ -1,5 +1,6 @@
 package org.pkwmtt.examCalendar;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
@@ -22,7 +23,7 @@ public class ExamController {
      * @return 201 created with URI to GET method which returns created resource
      */
     @PostMapping("")
-    public ResponseEntity<Void> addExam(@RequestBody ExamDto examDto) {
+    public ResponseEntity<Void> addExam(@RequestBody @Valid ExamDto examDto) {
         int id = examService.addExam(examDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -30,7 +31,7 @@ public class ExamController {
                 .buildAndExpand(id)
                 .toUri();
         return ResponseEntity.created(uri).build();
-//        TODO: add data verification
+//        TODO: test data validation in controller
     }
 
     /**
@@ -39,7 +40,7 @@ public class ExamController {
      * @return 204 no content
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyExam(@PathVariable int id, @RequestBody ExamDto examDto) {
+    public ResponseEntity<Void> modifyExam(@PathVariable int id,@RequestBody @Valid ExamDto examDto) {
         examService.modifyExam(examDto, id);
         return ResponseEntity.noContent().build();
     }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -35,20 +36,11 @@ public class Exam {
 
     public static class Builder {
         public Exam build() {
-            if (title == null || title.isEmpty() || title.length() > 255)          //TODO: change exception types
-                throw new RuntimeException("Invalid title");
-            if(description.length() > 255)
-                throw new RuntimeException("Invalid description");
-            if(date == null || date.isBefore(LocalDateTime.now()))
-                throw new RuntimeException("Invalid date");
-            if(examGroups == null || examGroups.length() > 255)
-                throw new RuntimeException("Invalid exam groups String");
+            //    max length of group identifier is 6
             Arrays.stream(examGroups.split(", ")).forEach(group -> {
-                if(group.length() > 8)
-                    throw new RuntimeException("Invalid exam group: " + group);
+                if(group.length() > 6)
+                    throw new InvalidGroupIdentifierException(group);
             });
-            if(examType == null || examType.getName() == null || examType.getName().length() > 255)
-                throw new RuntimeException("Invalid exam type");
             return new Exam(examId, title, description, date, examGroups, examType);
         }
     }
