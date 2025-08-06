@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
+import org.pkwmtt.exceptions.ExamTypeNotExistsException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,7 +43,7 @@ public class ExamDtoToExamMapper {
                 .description(examDto.getDescription())
                 .date(examDto.getDate())
                 .examGroups(examDto.getExamGroups())
-                .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow())
+                .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType())))
                 .build();
     }
 }
