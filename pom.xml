@@ -60,6 +60,7 @@
 		</dependency>
 
 		<!--H2 DATABASE-->
+<!--		FIXME: remove?-->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -93,6 +94,12 @@
 			<artifactId>mockito-core</artifactId>
 			<version>5.18.0</version>
 		</dependency>
+<!--&lt;!&ndash;		h2 in test scope for repository tests&ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>com.h2database</groupId>-->
+<!--			<artifactId>h2</artifactId>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 
 		<!--JSOUP - for fetching REST API-->
 		<dependency>
