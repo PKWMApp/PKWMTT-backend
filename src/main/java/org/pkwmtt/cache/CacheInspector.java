@@ -28,13 +28,21 @@ public class CacheInspector {
         return nativeCache.asMap();
     }
 
-    public void printAllEntries(String cacheName) {
+    public String printAllEntries(String cacheName) {
         service.getListOfHours();
         service.getGeneralGroupSchedule("12K1");
         service.getGeneralGroupsList();
-
+        var s = new StringBuilder();
         getAllEntries(cacheName).forEach((key, value) ->
-            System.out.println("Cache[" + cacheName + "] " + key + " -> " + value)
+            s
+                .append("Cache[")
+                .append(cacheName)
+                .append("] ")
+                .append(key)
+                .append(" -> ")
+                .append(value)
+                .append("\n")
         );
+        return s.toString();
     }
 }

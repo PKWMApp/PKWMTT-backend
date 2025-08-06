@@ -28,6 +28,7 @@ public class TimetableService {
      * @throws JsonProcessingException if timetable conversion to JSON fails
      */
     public List<String> getAvailableSubGroups(String generalGroupName)
+    //TODO group name to upper case
         throws JsonProcessingException, SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException {
         ObjectMapper mapper = new ObjectMapper();
         TimetableDTO timetable = cacheableTimetableService.getGeneralGroupSchedule(generalGroupName);

@@ -32,6 +32,7 @@ public class TimetableController {
         if (sub == null || sub.isEmpty())
             return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
 
+        //todo delete
         sub = sub.stream().map(String::toUpperCase).toList();
 
         return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName.toUpperCase(), sub));
