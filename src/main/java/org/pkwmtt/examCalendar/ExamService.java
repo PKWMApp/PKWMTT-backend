@@ -53,6 +53,7 @@ public class ExamService {
     }
 
     /**
+     * limited number of arguments but more efficient query to database
      * @param generalGroup symbol that identify exercise group of specific field of study (for example 12K2)
      * @param kGroup computer laboratory group (non required)
      * @param lGroup laboratory group (non required)
@@ -61,11 +62,29 @@ public class ExamService {
      */
     public Set<Exam> getExamByGroup(String generalGroup, String kGroup, String lGroup, String pGroup) {
 //        TODO: change to 1 query instead of 4
+//        TODO: change arguments to list
 //        TODO: N + 1
         Set<Exam> exams = examRepository.findByExamGroupsContaining(generalGroup);
         if (kGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(kGroup));
         if (lGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(lGroup));
         if (pGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(pGroup));
         return exams;
+    }
+
+    /**
+     * flexible number of arguments but inefficient query to database
+     * @param generalGroup symbol that identify exercise group of specific field of study (for example 12K2)
+     * @param groups set od groups
+     * @return set of exams for specific groups
+     */
+    public Set<Exam> getExamByGroupsSet(String generalGroup, Set<String> groups) {
+//        TODO: change arguments to list
+//        TODO: N + 1
+        throw new UnsupportedOperationException("Not supported yet.");
+//        Set<Exam> exams = examRepository.findByExamGroupsContaining(generalGroup);
+//        if (kGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(kGroup));
+//        if (lGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(lGroup));
+//        if (pGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(pGroup));
+//        return exams;
     }
 }
