@@ -65,20 +65,12 @@ public class ExamController {
     }
 
     /**
-     * @param generalGroup symbol that identify exercise group of specific field of study (for example 12K2)
-     * @param k computer laboratory group (non required)
-     * @param l laboratory group (non required)
-     * @param p project group (non required)
+     * @param groups set of groups
      * @return 200 ok with list of exams for specific group
      */
-    @GetMapping("/by-groups/{generalGroup}")
-    public ResponseEntity<Set<Exam>> getExams(
-            @PathVariable String generalGroup,
-            @RequestParam(name = "k", required = false) String k,
-            @RequestParam(name = "l", required = false) String l,
-            @RequestParam(name = "p", required = false) String p
-            ){
-        return ResponseEntity.ok(examService.getExamByGroup(generalGroup, k, l, p));
+    @GetMapping("/by-groups")
+    public ResponseEntity<Set<Exam>> getExams(@RequestParam Set<String> groups){
+        return ResponseEntity.ok(examService.getExamByGroup(groups));
     }
 
 }

@@ -8,8 +8,7 @@ import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class ExamService {
 
     /**
      * @param examDto new details of exam that overwrite old ones
-     * @param id of exam that need to be modified
+     * @param id      of exam that need to be modified
      */
     public void modifyExam(ExamDto examDto, int id) {
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Exam not found"));        //TODO: change exception type
@@ -53,38 +52,25 @@ public class ExamService {
     }
 
     /**
-     * limited number of arguments but more efficient query to database
-     * @param generalGroup symbol that identify exercise group of specific field of study (for example 12K2)
-     * @param kGroup computer laboratory group (non required)
-     * @param lGroup laboratory group (non required)
-     * @param pGroup project group (non required)
-     * @return Set of exams for specific groups
-     */
-    public Set<Exam> getExamByGroup(String generalGroup, String kGroup, String lGroup, String pGroup) {
-//        TODO: change to 1 query instead of 4
-//        TODO: change arguments to list
-//        TODO: N + 1
-        Set<Exam> exams = examRepository.findByExamGroupsContaining(generalGroup);
-        if (kGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(kGroup));
-        if (lGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(lGroup));
-        if (pGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(pGroup));
-        return exams;
-    }
-
-    /**
-     * flexible number of arguments but inefficient query to database
-     * @param generalGroup symbol that identify exercise group of specific field of study (for example 12K2)
-     * @param groups set od groups
+     * @param groups set od groups (max 4)
      * @return set of exams for specific groups
      */
-    public Set<Exam> getExamByGroupsSet(String generalGroup, Set<String> groups) {
-//        TODO: change arguments to list
+    public Set<Exam> getExamByGroup(Set<String> groups) {
 //        TODO: N + 1
-        throw new UnsupportedOperationException("Not supported yet.");
-//        Set<Exam> exams = examRepository.findByExamGroupsContaining(generalGroup);
-//        if (kGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(kGroup));
-//        if (lGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(lGroup));
-//        if (pGroup != null) exams.addAll(examRepository.findByExamGroupsContaining(pGroup));
-//        return exams;
+        if(groups.size() > 4)
+            throw new UnsupportedOperationException("Number of groups exceeds 4");
+        List<String> groupList = new ArrayList<>(groups);
+        Set<Exam> exams = switch (groupList.size()) {
+            case 4 -> examRepository.findExamsByGroupsIdentifier(
+                    groupList.get(0), groupList.get(1), groupList.get(2), groupList.get(3));
+            case 3 -> examRepository.findExamsByGroupsIdentifier(
+                    groupList.get(0), groupList.get(1), groupList.get(2));
+            case 2 -> examRepository.findExamsByGroupsIdentifier(
+                    groupList.get(0), groupList.get(1));
+            case 1 -> examRepository.findExamsByGroupsIdentifier(
+                    groupList.get(0));
+            default -> Set.of();
+        };
+        return exams;
     }
 }
