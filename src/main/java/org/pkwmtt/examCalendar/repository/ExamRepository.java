@@ -9,6 +9,14 @@ import java.util.Set;
 
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
 
+    /**
+     * fetch all data  using one query
+     * @param group1 group identifier
+     * @param group2 group identifier
+     * @param group3 group identifier
+     * @param group4 group identifier
+     * @return set of Exams for specific groups
+     */
     @Query("SELECT e FROM Exam e JOIN FETCH e.examType WHERE " +
             "e.examGroups LIKE CONCAT('%', :g1, '%') OR " +
             "e.examGroups LIKE CONCAT('%', :g2, '%') OR " +
@@ -21,6 +29,13 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
             @Param("g4") String group4
     );
 
+    /**
+     * fetch all data using one query
+     * @param group1 group identifier
+     * @param group2 group identifier
+     * @param group3 group identifier
+     * @return set of Exams for specific groups
+     */
     @Query("SELECT e FROM Exam e JOIN FETCH e.examType WHERE " +
             "e.examGroups LIKE CONCAT('%', :g1, '%') OR " +
             "e.examGroups LIKE CONCAT('%', :g2, '%') OR " +
@@ -31,6 +46,12 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
             @Param("g3") String group3
     );
 
+    /**
+     * fetch all data using one query
+     * @param group1 group identifier
+     * @param group2 group identifier
+     * @return set of Exams for specific groups
+     */
     @Query("SELECT e FROM Exam e JOIN FETCH e.examType WHERE " +
             "e.examGroups LIKE CONCAT('%', :g1, '%') OR " +
             "e.examGroups LIKE CONCAT('%', :g2, '%')" )
@@ -39,6 +60,11 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
             @Param("g2") String group2
     );
 
+    /**
+     * fetch all data using one query
+     * @param group group identifier
+     * @return set of Exams for specific group
+     */
     @Query("SELECT e FROM Exam e JOIN FETCH e.examType WHERE " +
             "e.examGroups LIKE CONCAT('%', :gg, '%')")
     Set<Exam> findExamsByGroupsIdentifier(
