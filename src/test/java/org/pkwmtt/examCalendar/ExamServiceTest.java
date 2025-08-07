@@ -325,6 +325,7 @@ class ExamServiceTest {
 
         assertEquals(groups, passedGroups);
         assertEquals(exams, result);
+        assertEquals(4, passedGroups.size());
     }
 
 }

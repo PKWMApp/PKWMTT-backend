@@ -6,6 +6,7 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
+import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
 import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class ExamService {
      * @param id      of exam that need to be modified
      */
     public void modifyExam(ExamDto examDto, int id) {
-        examRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Exam not found"));        //TODO: change exception type
+        examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
         examRepository.save(examMapper.mapToExistingExam(examDto, id));
     }
 
@@ -40,7 +41,7 @@ public class ExamService {
      * @param id of exam
      */
     public void deleteExam(int id) {
-        examRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Exam not found"));        //TODO: change exception type
+        examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
         examRepository.deleteById(id);
     }
 
@@ -49,7 +50,7 @@ public class ExamService {
      * @return exam
      */
     public Exam getExamById(int id) {
-        return examRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Exam not found"));        //TODO: change exception typ
+        return examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
     }
 
     /**
