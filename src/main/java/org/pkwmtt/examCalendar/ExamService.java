@@ -6,6 +6,7 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
+import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -56,8 +57,8 @@ public class ExamService {
      * @return set of exams for specific groups
      */
     public Set<Exam> getExamByGroup(Set<String> groups) {
-        if(groups.size() > 4)
-            throw new UnsupportedOperationException("Number of groups exceeds 4");
+        if (groups.size() > 4 || groups.isEmpty())
+            throw new UnsupportedCountOfArgumentsException(1, 5, groups.size());
         List<String> groupList = new ArrayList<>(groups);
         return switch (groupList.size()) {
             case 4 -> examRepository.findExamsByGroupsIdentifier(

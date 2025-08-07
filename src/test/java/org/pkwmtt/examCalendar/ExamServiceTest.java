@@ -2,6 +2,7 @@ package org.pkwmtt.examCalendar;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,11 +11,12 @@ import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
+import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -67,7 +69,7 @@ class ExamServiceTest {
         verify(examDtoToExamMapper).mapToNewExam(examDto);
     }
 
-/************************************************************************************/
+    /************************************************************************************/
 //modify exam
     @Test
     void shouldModifyExamWhenIdExists() {
@@ -101,6 +103,7 @@ class ExamServiceTest {
         verify(examRepository, never()).save(any());
         assertEquals("Exam not found", exception.getMessage());
     }
+
     /************************************************************************************/
 //delete exam
     @Test
@@ -130,8 +133,7 @@ class ExamServiceTest {
     }
 
     /************************************************************************************/
-//    get exam by id
-
+//    getExamById
     @Test
     void getExamById() {
 //        given
@@ -158,8 +160,171 @@ class ExamServiceTest {
         assertEquals("Exam not found", exception.getMessage());
     }
 
+    //    getExamByGroup
     @Test
-    void getExamByGroup() {
-
+    void shouldThrowWithMoreThan4Arguments() {
+//        given
+        Set<String> groups = new HashSet<>();
+        groups.add("12K2");
+        groups.add("13L1");
+        groups.add("13A2");
+        groups.add("41S2");
+        groups.add("11S3");
+//        when
+        RuntimeException exception = assertThrows(
+                UnsupportedCountOfArgumentsException.class,
+                () -> examService.getExamByGroup(groups)
+        );
+//        then
+        assertEquals(
+                "Invalid count of arguments provided: 5 expected more than: 1 less than: 5",
+                exception.getMessage()
+        );
     }
+
+
+    @Test
+    void shouldCallRepositoryWith4Arguments() {
+//        given
+        Set<String> groups = new HashSet<>();
+        groups.add("12K2");
+        groups.add("13L1");
+        groups.add("13A2");
+        groups.add("41S2");
+        Exam mockExam = mock(Exam.class);
+        Set<Exam> exams = new HashSet<>();
+        exams.add(mockExam);
+        when(examRepository.findExamsByGroupsIdentifier(any(), any(), any(), any())).thenReturn(exams);
+//        when
+        Set<Exam> result = examService.getExamByGroup(groups);
+//        then
+        List<ArgumentCaptor<String>> cap = new ArrayList<>();
+        for (int i = 0; i < 4; ++i)
+            cap.add(ArgumentCaptor.forClass(String.class));
+
+        verify(examRepository).findExamsByGroupsIdentifier(
+                cap.get(0).capture(),
+                cap.get(1).capture(),
+                cap.get(2).capture(),
+                cap.get(3).capture()
+        );
+        Set<String> passedGroups = cap.stream().map(ArgumentCaptor::getValue).collect(Collectors.toSet());
+
+        assertEquals(groups, passedGroups);
+        assertEquals(exams, result);
+    }
+
+
+    @Test
+    void shouldCallRepositoryWith3Arguments() {
+//        given
+        Set<String> groups = new HashSet<>();
+        groups.add("12K2");
+        groups.add("13L1");
+        groups.add("13A2");
+        Exam mockExam = mock(Exam.class);
+        Set<Exam> exams = new HashSet<>();
+        exams.add(mockExam);
+        when(examRepository.findExamsByGroupsIdentifier(any(), any(), any())).thenReturn(exams);
+//        when
+        Set<Exam> result = examService.getExamByGroup(groups);
+//        then
+        List<ArgumentCaptor<String>> cap = new ArrayList<>();
+        for (int i = 0; i < 3; ++i)
+            cap.add(ArgumentCaptor.forClass(String.class));
+
+        verify(examRepository).findExamsByGroupsIdentifier(
+                cap.get(0).capture(),
+                cap.get(1).capture(),
+                cap.get(2).capture()
+        );
+        Set<String> passedGroups = cap.stream().map(ArgumentCaptor::getValue).collect(Collectors.toSet());
+
+        assertEquals(groups, passedGroups);
+        assertEquals(exams, result);
+    }
+
+    @Test
+    void shouldCallRepositoryWith2Arguments() {
+//        given
+        Set<String> groups = new HashSet<>();
+        groups.add("12K2");
+        groups.add("13L1");
+        Exam mockExam = mock(Exam.class);
+        Set<Exam> exams = new HashSet<>();
+        exams.add(mockExam);
+        when(examRepository.findExamsByGroupsIdentifier(any(), any())).thenReturn(exams);
+//        when
+        Set<Exam> result = examService.getExamByGroup(groups);
+//        then
+        List<ArgumentCaptor<String>> cap = new ArrayList<>();
+        for (int i = 0; i < 2; ++i)
+            cap.add(ArgumentCaptor.forClass(String.class));
+
+        verify(examRepository).findExamsByGroupsIdentifier(
+                cap.get(0).capture(),
+                cap.get(1).capture()
+        );
+        Set<String> passedGroups = cap.stream().map(ArgumentCaptor::getValue).collect(Collectors.toSet());
+
+        assertEquals(groups, passedGroups);
+        assertEquals(exams, result);
+    }
+
+    @Test
+    void shouldCallRepositoryWithSingleArguments() {
+//        given
+        Set<String> groups = new HashSet<>();
+        groups.add("12K2");
+        Exam mockExam = mock(Exam.class);
+        Set<Exam> exams = new HashSet<>();
+        exams.add(mockExam);
+        when(examRepository.findExamsByGroupsIdentifier(any())).thenReturn(exams);
+//        when
+        Set<Exam> result = examService.getExamByGroup(groups);
+//        then
+        ArgumentCaptor<String> cap = ArgumentCaptor.forClass(String.class);
+
+        verify(examRepository).findExamsByGroupsIdentifier(cap.capture());
+        Set<String> passedGroups = new HashSet<>();
+        passedGroups.add(cap.getValue());
+
+        assertEquals(groups, passedGroups);
+        assertEquals(exams, result);
+    }
+
+
+    @Test
+    void shouldCallRepositoryWithDuplicatesOf4UniqueArguments() {
+//        given
+        Set<String> groups = new HashSet<>();
+        groups.add("12K2");
+        groups.add("13L1");
+        groups.add("13A2");
+        groups.add("41S2");
+        groups.add("41S2");
+        groups.add("13L1");
+        Exam mockExam = mock(Exam.class);
+        Set<Exam> exams = new HashSet<>();
+        exams.add(mockExam);
+        when(examRepository.findExamsByGroupsIdentifier(any(), any(), any(), any())).thenReturn(exams);
+//        when
+        Set<Exam> result = examService.getExamByGroup(groups);
+//        then
+        List<ArgumentCaptor<String>> cap = new ArrayList<>();
+        for (int i = 0; i < 4; ++i)
+            cap.add(ArgumentCaptor.forClass(String.class));
+
+        verify(examRepository).findExamsByGroupsIdentifier(
+                cap.get(0).capture(),
+                cap.get(1).capture(),
+                cap.get(2).capture(),
+                cap.get(3).capture()
+        );
+        Set<String> passedGroups = cap.stream().map(ArgumentCaptor::getValue).collect(Collectors.toSet());
+
+        assertEquals(groups, passedGroups);
+        assertEquals(exams, result);
+    }
+
 }
