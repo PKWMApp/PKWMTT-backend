@@ -4,11 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
+import org.pkwmtt.examCalendar.entity.ExamType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -71,6 +73,15 @@ public class ExamController {
     @GetMapping("/by-groups")
     public ResponseEntity<Set<Exam>> getExams(@RequestParam Set<String> groups){
         return ResponseEntity.ok(examService.getExamByGroup(groups));
+    }
+
+    /**
+     * @return 200 ok with list of available exam types
+     */
+//    should be moved to new controller?
+    @GetMapping("/groups")
+    public ResponseEntity<List<ExamType>> getExamTypes(){
+        return ResponseEntity.ok(examService.getExamTypes());
     }
 
 }

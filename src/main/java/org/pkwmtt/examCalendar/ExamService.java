@@ -4,8 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
+import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
+import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
 import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class ExamService {
 
     private final ExamRepository examRepository;
     private final ExamDtoToExamMapper examMapper;
+    private final ExamTypeRepository examTypeRepository;
 
     /**
      * @param examDto details of exam
@@ -72,5 +75,12 @@ public class ExamService {
                     groupList.get(0));
             default -> Set.of();
         };
+    }
+
+    /**
+     * @return list of examTypes
+     */
+    public List<ExamType> getExamTypes() {
+        return examTypeRepository.findAll();
     }
 }
