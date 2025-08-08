@@ -12,17 +12,19 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableCaching
 public class CacheConfig {
+
     @Bean
     public Caffeine<Object, Object> caffeineConfig() {
         return Caffeine.newBuilder()
-            .expireAfterWrite(24, TimeUnit.HOURS)
+            .expireAfterWrite(12, TimeUnit.HOURS)
             .recordStats();
     }
 
     @Bean
     public CacheManager cacheManager(Caffeine<Object, Object> caffeine) {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("timetables");
         cacheManager.setCaffeine(caffeine);
         return cacheManager;
     }
+
 }

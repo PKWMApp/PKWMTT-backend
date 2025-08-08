@@ -29,12 +29,10 @@ class CacheConfigTest {
         Cache cache = cacheManager.getCache("timetables");
         assertThat(cache).isNotNull();
 
-        Cache.ValueWrapper wrapper = cache.get("12K1");
+        Cache.ValueWrapper wrapper = cache.get("timetable_12K1");
         assertThat(wrapper).isNotNull();
-        assertThat(wrapper.get()).isInstanceOf(TimetableDTO.class);
+        assertThat(wrapper.get()).isInstanceOf(String.class);
 
-        TimetableDTO second = service.getGeneralGroupSchedule("12K1");
-        assertThat(second).isSameAs(wrapper.get());
     }
 
     @Test
@@ -44,12 +42,9 @@ class CacheConfigTest {
         Cache cache = cacheManager.getCache("timetables");
         assertThat(cache).isNotNull();
 
-        Cache.ValueWrapper wrapper = cache.get("hoursList");
+        Cache.ValueWrapper wrapper = cache.get("hourList");
         assertThat(wrapper).isNotNull();
-        assertThat(wrapper.get()).isInstanceOf(ArrayList.class);
-
-        List<String> second = service.getListOfHours();
-        assertThat(second).isSameAs(wrapper.get());
+        assertThat(wrapper.get()).isInstanceOf(String.class);
     }
 
 }

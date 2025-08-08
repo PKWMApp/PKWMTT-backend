@@ -72,7 +72,6 @@ public class TimetableService {
         for (var day : schedule)
             sub.forEach(day::filterByGroup);
 
-        System.out.println();
         schedule.forEach(DayOfWeekDTO::deleteSubjectTypesFromNames);
 
         return new TimetableDTO(generalGroupName, schedule);
