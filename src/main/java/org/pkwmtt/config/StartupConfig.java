@@ -23,7 +23,6 @@ public class StartupConfig {
 
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent() {
-        log.error("TEST");
         try {
             if (port.isEmpty() || address.isEmpty())
                 throw new Exception();

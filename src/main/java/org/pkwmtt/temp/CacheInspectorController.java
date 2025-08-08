@@ -3,7 +3,7 @@ package org.pkwmtt.temp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.cache.CacheInspector;
-import org.pkwmtt.timetable.CacheableTimetableService;
+import org.pkwmtt.timetable.TimetableCacheService;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CacheInspectorController {
     private final TimetableService service;
-    private final CacheableTimetableService cacheableTimetableService;
+    private final TimetableCacheService cacheableTimetableService;
     private final CacheInspector cacheInspector;
 
     @GetMapping

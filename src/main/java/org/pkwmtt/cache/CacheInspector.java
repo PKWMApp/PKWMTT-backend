@@ -2,7 +2,7 @@ package org.pkwmtt.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.timetable.CacheableTimetableService;
+import org.pkwmtt.timetable.TimetableCacheService;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class CacheInspector {
 
     private final CacheManager cacheManager;
-    private final CacheableTimetableService service;
+    private final TimetableCacheService service;
 
 
     public Map<Object, Object> getAllEntries(String cacheName) {

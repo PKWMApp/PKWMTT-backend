@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@SuppressWarnings({"LoggingSimilarMessage", "StringConcatenationArgumentToLogCall"})
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -33,5 +34,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDTO> handleSpecifiedGeneralGroupDoesntExistsException(SpecifiedGeneralGroupDoesntExistsException e) {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalAccessException(IllegalAccessException e) {
+        log.error("INTERNAL_SERVER_ERROR # " + e.getMessage() + " # " + e.getCause());
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
