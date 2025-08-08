@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
-    private final CacheableTimetableService cacheableTimetableService;
+    private final TimetableCacheService cacheableTimetableService;
 
     /**
      * Parses the timetable JSON to extract subgroup identifiers like K01, P03, GL04 using regex.

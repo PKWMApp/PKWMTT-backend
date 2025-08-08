@@ -18,7 +18,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "timetables")
-public class CacheableTimetableService {
+public class TimetableCacheService {
     private final TimetableParserService parser;
 
     /**

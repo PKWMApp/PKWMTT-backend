@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 class CacheableTimetableServiceTest {
     @Autowired
-    CacheableTimetableService service;
+    TimetableCacheService service;
 
     @Test
     public void checkIfHoursListBodyIsNotNull() {

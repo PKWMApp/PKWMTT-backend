@@ -1,7 +1,7 @@
 package org.pkwmtt.cache;
 
 import org.junit.jupiter.api.Test;
-import org.pkwmtt.timetable.CacheableTimetableService;
+import org.pkwmtt.timetable.TimetableCacheService;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class CacheConfigTest {
     @Autowired
-    private CacheableTimetableService service;
+    private TimetableCacheService service;
 
     @Autowired
     private CacheManager cacheManager;

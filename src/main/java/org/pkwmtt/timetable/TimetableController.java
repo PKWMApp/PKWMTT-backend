@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TimetableController {
     private final TimetableService service;
-    private final CacheableTimetableService cacheableService;
+    private final TimetableCacheService cacheableService;
 
     /**
      * Provide schedule of specified group and filters if all provided
