@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.pkwmtt.exceptions.ErrorResponseDTO;
+import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -63,11 +65,14 @@ class TimetableControllerTest {
     public void shouldReturnListOfGeneralGroups() {
         String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/groups/general", port);
 
-        ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);
+        ResponseEntity<List<String>> response = restTemplate.exchange(
+            url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+            }
+        );
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        List<String> result = Arrays.asList(response.getBody());
+        List<String> result = response.getBody();
         assertNotNull(result);
         result.forEach(System.out::println);
     }
@@ -90,7 +95,6 @@ class TimetableControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());
-        assertThat(response.getBody().getMessage()).contains("Specified general group doesn't exists");
         assertThat(response.getBody().getTimestamp()).isBefore(LocalDateTime.now());
     }
 

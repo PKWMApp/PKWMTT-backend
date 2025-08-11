@@ -3,6 +3,7 @@ package org.pkwmtt.timetable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
+import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.http.ResponseEntity;
@@ -10,36 +11,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static java.util.Objects.isNull;
-
 @RestController
 @RequestMapping("/pkmwtt/api/v1/timetables")
 @RequiredArgsConstructor
 public class TimetableController {
     private final TimetableService service;
     private final TimetableCacheService cacheableService;
-
+    
     /**
      * Provide schedule of specified group and filters if all provided
      *
      * @param generalGroupName name of general group
-     * @param sub              list of subgroups
+     * @param subgroups        list of subgroups
      * @return schedule of specified group with provided filters
      * @throws WebPageContentNotAvailableException .
      */
     @GetMapping("/{generalGroupName}")
-    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule(@PathVariable String generalGroupName, @RequestParam(required = false) List<String> sub)
-        throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
-        if (isNull(sub) || sub.isEmpty()) {
+    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule (@PathVariable String generalGroupName, @RequestParam(required = false, name = "sub") List<String> subgroups)
+      throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException,
+             SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
+        
+        if (subgroups == null || subgroups.isEmpty()) {
             return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
         }
-
-        //todo delete
-        sub = sub.stream().map(String::toUpperCase).toList();
-
-        return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName.toUpperCase(), sub));
+        return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
+          generalGroupName.toUpperCase(),
+          subgroups
+        ));
     }
-
+    
     /**
      * Provides list of schedule hours
      *
@@ -47,20 +47,22 @@ public class TimetableController {
      * @throws WebPageContentNotAvailableException .
      */
     @GetMapping("/hours")
-    public ResponseEntity<List<String>> getListOfHours() throws WebPageContentNotAvailableException {
+    public ResponseEntity<List<String>> getListOfHours ()
+      throws WebPageContentNotAvailableException {
         return ResponseEntity.ok(cacheableService.getListOfHours());
     }
-
+    
     /**
      * Provides list of general groups
      *
      * @return list of general groups
      */
     @GetMapping("/groups/general")
-    public ResponseEntity<List<String>> getListOfGeneralGroups() {
-        return ResponseEntity.ok(cacheableService.getGeneralGroupsList());
+    public ResponseEntity<List<String>> getListOfGeneralGroups ()
+      throws WebPageContentNotAvailableException {
+        return ResponseEntity.ok(service.getGeneralGroupList());
     }
-
+    
     /**
      * Provides list of available subgroups for specified general group
      *
@@ -69,11 +71,11 @@ public class TimetableController {
      * @throws JsonProcessingException .
      */
     @GetMapping("/groups/{generalGroupName}")
-    public ResponseEntity<List<String>> getListOfAvailableGroups(@PathVariable String generalGroupName)
-        throws JsonProcessingException, SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException {
-        return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName.toUpperCase()));
+    public ResponseEntity<List<String>> getListOfAvailableGroups (@PathVariable String generalGroupName)
+      throws JsonProcessingException, SpecifiedGeneralGroupDoesntExistsException,
+             WebPageContentNotAvailableException {
+        return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName));
     }
-
-
-
+    
+    
 }
