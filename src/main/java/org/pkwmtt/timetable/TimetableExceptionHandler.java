@@ -1,4 +1,4 @@
-package org.pkwmtt.controllerAdvice;
+package org.pkwmtt.timetable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,20 +13,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @SuppressWarnings({"LoggingSimilarMessage", "StringConcatenationArgumentToLogCall"})
 @Slf4j
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
+@RestControllerAdvice(assignableTypes = {TimetableController.class})
+public class TimetableExceptionHandler {
     @ExceptionHandler(WebPageContentNotAvailableException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ResponseEntity<ErrorResponseDTO> handleWebPageContentNotAvailableException(WebPageContentNotAvailableException e) {
-        log.error("SERVICE_UNAVAILABLE # " + e.getMessage() + " # " + e.getCause());
+        log.error("SERVICE_UNAVAILABLE # " + e.getMessage());
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(JsonProcessingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponseDTO> handleJsonProcessingException(JsonProcessingException e) {
-        log.error("INTERNAL_SERVER_ERROR # " + e.getMessage() + " # " + e.getCause());
+        log.error("INTERNAL_SERVER_ERROR # " + e.getMessage());
         return new ResponseEntity<>(new ErrorResponseDTO("Json Processing Failed"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalAccessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponseDTO> handleIllegalAccessException(IllegalAccessException e) {
-        log.error("INTERNAL_SERVER_ERROR # " + e.getMessage() + " # " + e.getCause());
+        log.error("INTERNAL_SERVER_ERROR # " + e.getMessage());
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
