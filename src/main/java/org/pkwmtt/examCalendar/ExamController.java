@@ -1,11 +1,13 @@
 package org.pkwmtt.examCalendar;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -13,6 +15,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/pkwmtt/api/v1/exams")
 @RestController
@@ -42,7 +45,7 @@ public class ExamController {
      * @return 204 no content
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyExam(@PathVariable int id,@RequestBody @Valid ExamDto examDto) {
+    public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid ExamDto examDto) {
         examService.modifyExam(examDto, id);
         return ResponseEntity.noContent().build();
     }

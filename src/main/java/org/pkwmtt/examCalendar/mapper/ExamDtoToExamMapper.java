@@ -26,7 +26,7 @@ public class ExamDtoToExamMapper {
                 .description(examDto.getDescription())
                 .date(examDto.getDate())
                 .examGroups(examDto.getExamGroups())
-                .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow())
+                .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType())))
                 .build();
     }
 
