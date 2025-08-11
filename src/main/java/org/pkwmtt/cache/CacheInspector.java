@@ -31,7 +31,7 @@ public class CacheInspector {
     public String printAllEntries(String cacheName) {
         service.getListOfHours();
         service.getGeneralGroupSchedule("12K1");
-        service.getGeneralGroupsList();
+        service.getGeneralGroupsMap();
         var s = new StringBuilder();
         getAllEntries(cacheName).forEach((key, value) ->
             s

@@ -1,21 +1,18 @@
 package org.pkwmtt.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Builder
-@AllArgsConstructor
+@Data
 @Table(name = "otp_codes")
 public class OTPCode {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer otp_code_id;
+    @Column(name = "otp_code_id")
+    private Integer otpCodeId;
 
     private String code;
 
@@ -26,8 +23,4 @@ public class OTPCode {
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)
     private User user;
-
-    public OTPCode() {
-
-    }
 }
