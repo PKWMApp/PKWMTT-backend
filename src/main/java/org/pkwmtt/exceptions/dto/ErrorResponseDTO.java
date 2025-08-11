@@ -1,4 +1,4 @@
-package org.pkwmtt.exceptions;
+package org.pkwmtt.exceptions.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
