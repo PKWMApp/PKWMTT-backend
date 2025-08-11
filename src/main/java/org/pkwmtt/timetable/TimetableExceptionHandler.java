@@ -2,6 +2,7 @@ package org.pkwmtt.timetable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
+import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
@@ -17,28 +18,37 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class TimetableExceptionHandler {
     @ExceptionHandler(WebPageContentNotAvailableException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-    public ResponseEntity<ErrorResponseDTO> handleWebPageContentNotAvailableException(WebPageContentNotAvailableException e) {
+    public ResponseEntity<ErrorResponseDTO> handleWebPageContentNotAvailableException (WebPageContentNotAvailableException e) {
         log.error("SERVICE_UNAVAILABLE # " + e.getMessage());
-        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
+        return new ResponseEntity<>(
+          new ErrorResponseDTO(e.getMessage()),
+          HttpStatus.SERVICE_UNAVAILABLE
+        );
     }
-
+    
     @ExceptionHandler(JsonProcessingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponseDTO> handleJsonProcessingException(JsonProcessingException e) {
+    public ResponseEntity<ErrorResponseDTO> handleJsonProcessingException (JsonProcessingException e) {
         log.error("INTERNAL_SERVER_ERROR # " + e.getMessage());
-        return new ResponseEntity<>(new ErrorResponseDTO("Json Processing Failed"), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(
+          new ErrorResponseDTO("Json Processing Failed"),
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
-
-    @ExceptionHandler(SpecifiedGeneralGroupDoesntExistsException.class)
+    
+    @ExceptionHandler({SpecifiedGeneralGroupDoesntExistsException.class, SpecifiedSubGroupDoesntExistsException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponseDTO> handleSpecifiedGeneralGroupDoesntExistsException(SpecifiedGeneralGroupDoesntExistsException e) {
+    public ResponseEntity<ErrorResponseDTO> handleSpecifiedGeneralGroupDoesntExistsException (Exception e) {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
-
+    
     @ExceptionHandler(IllegalAccessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponseDTO> handleIllegalAccessException(IllegalAccessException e) {
+    public ResponseEntity<ErrorResponseDTO> handleIllegalAccessException (IllegalAccessException e) {
         log.error("INTERNAL_SERVER_ERROR # " + e.getMessage());
-        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(
+          new ErrorResponseDTO(e.getMessage()),
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }

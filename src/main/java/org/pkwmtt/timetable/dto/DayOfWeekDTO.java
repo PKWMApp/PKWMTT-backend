@@ -1,13 +1,15 @@
 package org.pkwmtt.timetable.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-@Data
+@Setter
+@Getter
 public class DayOfWeekDTO {
     private final String name;
     private List<SubjectDTO> odd;
@@ -49,10 +51,10 @@ public class DayOfWeekDTO {
             group = group.substring(1);
 
         // Extract the group letter (e.g., "K" from "K03")
-        var groupName = String.valueOf(group.charAt(0));
+        String groupName = Character.toString(group.charAt(0));
 
         // Extract the subgroup digit (e.g., "3" from "K03")
-        var targetNumber = String.valueOf(group.charAt(group.length() - 1));
+        String targetNumber = Character.toString(group.charAt(group.length() - 1));
 
         // Apply the filter to both odd- and even-week lists
         odd = filter(odd, groupName, targetNumber);
@@ -94,8 +96,8 @@ public class DayOfWeekDTO {
      * @return true if no non-target subgroup codes are present
      */
     private boolean hasOnlyTargetGroup(String element, String groupName, String targetNumber) {
-        var pattern = Pattern.compile(String.format("\\bG?[%s]0[1-9]\\b", groupName));
-        var matcher = pattern.matcher(element);
+        Pattern pattern = Pattern.compile(String.format("\\bG?[%s]0[1-9]\\b", groupName));
+        Matcher matcher = pattern.matcher(element);
         if (!matcher.find())
             return true;
 
