@@ -22,7 +22,7 @@ class CacheableTimetableServiceTest {
 
     @Test
     public void checkIfGeneralGroupListIsNotNull() {
-        var response = service.getGeneralGroupsList();
+        var response = service.getGeneralGroupsMap();
         assertNotNull(response);
         assertFalse(response.isEmpty());
     }

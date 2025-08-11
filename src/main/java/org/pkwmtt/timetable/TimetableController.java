@@ -8,8 +8,9 @@ import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("/pkmwtt/api/v1/timetables")
@@ -29,8 +30,9 @@ public class TimetableController {
     @GetMapping("/{generalGroupName}")
     public ResponseEntity<TimetableDTO> getGeneralGroupSchedule(@PathVariable String generalGroupName, @RequestParam(required = false) List<String> sub)
         throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
-        if (sub == null || sub.isEmpty())
+        if (isNull(sub) || sub.isEmpty()) {
             return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
+        }
 
         //todo delete
         sub = sub.stream().map(String::toUpperCase).toList();
@@ -56,9 +58,7 @@ public class TimetableController {
      */
     @GetMapping("/groups/general")
     public ResponseEntity<List<String>> getListOfGeneralGroups() {
-        var result = new java.util.ArrayList<>(cacheableService.getGeneralGroupsList().keySet().stream().toList());
-        Collections.sort(result);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(cacheableService.getGeneralGroupsList());
     }
 
     /**

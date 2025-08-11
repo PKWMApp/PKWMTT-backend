@@ -21,7 +21,7 @@ public class CacheInspectorController {
 
     @GetMapping
     public String temp() {
-        List<String> generalGroups = cacheableTimetableService.getGeneralGroupsList().keySet().stream().toList();
+        List<String> generalGroups = cacheableTimetableService.getGeneralGroupsMap().keySet().stream().toList();
         StringBuilder stringBuilder = new StringBuilder();
 
         generalGroups.forEach(group -> {

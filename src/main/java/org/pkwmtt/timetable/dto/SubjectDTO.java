@@ -1,14 +1,13 @@
 package org.pkwmtt.timetable.dto;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.pkwmtt.enums.SubjectType;
 
 import java.util.regex.Pattern;
 
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
+@Accessors(chain = true)
 public class SubjectDTO {
     private String name;
     private String classroom;
