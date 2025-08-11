@@ -1,20 +1,13 @@
 package org.pkwmtt.exceptions.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@Builder
-@Getter
-@NoArgsConstructor
+@Data
 public class ErrorResponseDTO {
     private String message;
-    @Builder.Default
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp;
 
     public ErrorResponseDTO(String message) {
         this.message = message;

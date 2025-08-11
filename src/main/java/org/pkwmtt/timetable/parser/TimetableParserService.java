@@ -132,12 +132,11 @@ public class TimetableParserService {
         String classroom = cleanClassroomName(rawClassroom);
         SubjectType type = extractSubjectTypeFromName(name);
 
-        return SubjectDTO.builder()
-            .name(name)
-            .classroom(classroom)
-            .rowId(rowId)
-            .type(type)
-            .build();
+        return new SubjectDTO()
+                .setName(name)
+                .setClassroom(classroom)
+                .setRowId(rowId)
+                .setType(type);
     }
 
     /**

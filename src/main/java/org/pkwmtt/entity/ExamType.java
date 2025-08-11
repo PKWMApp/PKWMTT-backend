@@ -1,23 +1,16 @@
 package org.pkwmtt.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 @Entity
-@Getter
-@Builder
-@AllArgsConstructor
+@Data
 @Table(name = "`exam_type`")
 public class ExamType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer exam_type_id;
+    @Column(name = "exam_type_id")
+    private Integer examTypeId;
 
     private String name;
-
-    public ExamType() {
-
-    }
 }
