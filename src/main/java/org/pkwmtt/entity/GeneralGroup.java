@@ -1,28 +1,21 @@
 package org.pkwmtt.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.Set;
 
 @Entity
-@Getter
-@Builder
-@AllArgsConstructor
+@Data
 @Table(name = "`general_group`")
 public class GeneralGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer general_group_id;
+    @Column(name = "general_group_id")
+    private Integer generalGroupId;
 
     private String name;
 
-    @OneToMany(mappedBy = "general_group")
+    @OneToMany(mappedBy = "generalGroup")
     private Set<Group> groups;
-
-    public GeneralGroup() {
-
-    }
 }

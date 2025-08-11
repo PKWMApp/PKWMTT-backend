@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class TimetableCacheService {
@@ -29,7 +32,9 @@ public class TimetableCacheService {
         this.mapper = mapper;
         cache = cacheManager.getCache("timetables");
 
-        if (cache == null) throw new IllegalAccessException("Cache [timetables] not configured");
+        if (isNull(cache)) {
+            throw new IllegalAccessException("Cache [timetables] not configured");
+        }
     }
 
     /**
@@ -41,9 +46,11 @@ public class TimetableCacheService {
      */
     public TimetableDTO getGeneralGroupSchedule(String generalGroupName) throws WebPageContentNotAvailableException,
                                                                                 SpecifiedGeneralGroupDoesntExistsException {
-        var generalGroupList = getGeneralGroupsList();
+        var generalGroupList = getGeneralGroupsMap();
 
-        if (!generalGroupList.containsKey(generalGroupName)) throw new SpecifiedGeneralGroupDoesntExistsException();
+        if (!generalGroupList.containsKey(generalGroupName)) {
+            throw new SpecifiedGeneralGroupDoesntExistsException();
+        }
 
         String groupUrl = generalGroupList.get(generalGroupName);
         String url = String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", groupUrl);
@@ -65,7 +72,7 @@ public class TimetableCacheService {
      * @return map of group names to URLs
      * @throws WebPageContentNotAvailableException if the source page can't be fetched
      */
-    public Map<String, String> getGeneralGroupsList() throws WebPageContentNotAvailableException {
+    public Map<String, String> getGeneralGroupsMap() throws WebPageContentNotAvailableException {
         String url = "http://podzial.mech.pk.edu.pl/stacjonarne/html/lista.html";
         String json = cache.get(
             "generalGroupList",
@@ -76,6 +83,12 @@ public class TimetableCacheService {
             }
         );
 
+    }
+
+    public List<String> getGeneralGroupsList() {
+        return getGeneralGroupsMap().keySet().stream()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
 
