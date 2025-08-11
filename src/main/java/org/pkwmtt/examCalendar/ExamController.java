@@ -33,7 +33,7 @@ public class ExamController {
                 .buildAndExpand(id)
                 .toUri();
         return ResponseEntity.created(uri).build();
-//        TODO: test data validation in controller
+//        TODO: test not null validation in controller
     }
 
     /**
@@ -79,7 +79,7 @@ public class ExamController {
      * @return 200 ok with list of available exam types
      */
 //    should be moved to new controller?
-    @GetMapping("/groups")
+    @GetMapping("/exam-types")
     public ResponseEntity<List<ExamType>> getExamTypes(){
         return ResponseEntity.ok(examService.getExamTypes());
     }
