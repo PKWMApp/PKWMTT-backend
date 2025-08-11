@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 @RestController
 @RequestMapping("/pkmwtt/api/v1/timetables")
 @RequiredArgsConstructor
 public class TimetableController {
     private final TimetableService service;
     private final TimetableCacheService cachedService;
-    
+
     /**
      * Provide schedule of specified group and filters if all provided
      *
@@ -30,8 +32,8 @@ public class TimetableController {
     public ResponseEntity<TimetableDTO> getGeneralGroupSchedule (@PathVariable String generalGroupName, @RequestParam(required = false, name = "sub") List<String> subgroups)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException,
              SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
-        
-        if (subgroups == null || subgroups.isEmpty()) {
+
+        if (isNull(subgroups) || subgroups.isEmpty()) {
             return ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
         }
         return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
@@ -39,7 +41,7 @@ public class TimetableController {
           subgroups
         ));
     }
-    
+
     /**
      * Provides list of schedule hours
      *
@@ -51,7 +53,7 @@ public class TimetableController {
       throws WebPageContentNotAvailableException {
         return ResponseEntity.ok(cachedService.getListOfHours());
     }
-    
+
     /**
      * Provides list of general groups
      *
@@ -62,7 +64,7 @@ public class TimetableController {
       throws WebPageContentNotAvailableException {
         return ResponseEntity.ok(service.getGeneralGroupList());
     }
-    
+
     /**
      * Provides list of available subgroups for specified general group
      *
@@ -76,6 +78,6 @@ public class TimetableController {
              WebPageContentNotAvailableException {
         return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName));
     }
-    
-    
+
+
 }
