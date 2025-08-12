@@ -34,6 +34,7 @@ public class Exam {
     @JoinColumn(name = "exam_type_id")
     private ExamType examType;
 
+    @SuppressWarnings("unused")
     public static class Builder {
         public Exam build() {
             //    max length of group identifier is 6

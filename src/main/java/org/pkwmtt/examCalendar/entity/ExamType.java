@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Table(name = "`exam_type`")
+@Table(name = "exam_type")
 public class ExamType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -61,11 +61,11 @@
 
 		<!--H2 DATABASE-->
 <!--		FIXME: remove?-->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.h2database</groupId>-->
+<!--			<artifactId>h2</artifactId>-->
+<!--			<scope>runtime</scope>-->
+<!--		</dependency>-->
 
 		<!--SECURITY-->
 		<dependency>
@@ -78,12 +78,13 @@
 			<scope>test</scope>
 		</dependency>
 		<!--TESTING-->
+<!--		FIXME: old version of library-->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.13.1</version>
 		</dependency>
-		<!-- FIXME: This dependency causes conflicts with Mockito and prevents tests from running -->
+<!--		FIXME: outdated mockito library that could make conflict with mockito-core-->
 <!--		<dependency>-->
 <!--			<groupId>org.mockito</groupId>-->
 <!--			<artifactId>mockito-all</artifactId>-->
@@ -95,12 +96,12 @@
 			<version>5.18.0</version>
 		</dependency>
 
-<!--&lt;!&ndash;		h2 in test scope for repository tests&ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>com.h2database</groupId>-->
-<!--			<artifactId>h2</artifactId>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
+<!--		h2 in test scope for repository tests-->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!--JSOUP - for fetching REST API-->
 		<dependency>

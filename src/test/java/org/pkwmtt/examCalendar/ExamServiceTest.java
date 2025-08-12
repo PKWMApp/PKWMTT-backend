@@ -55,7 +55,7 @@ class ExamServiceTest {
 
 //        assign exam id in repository
         when(examRepository.save(exam)).thenAnswer(invocation -> {
-            Exam newExam = invocation.getArgument(0);
+            Exam newExam = invocation.getArgument(0, Exam.class);
             Field field = Exam.class.getDeclaredField("examId");
             field.setAccessible(true);
             field.set(newExam, examId);
