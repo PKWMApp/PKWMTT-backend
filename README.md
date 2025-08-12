@@ -21,24 +21,7 @@
 docker pull ghcr.io/pkttteam/pkwmtt-backend:latest
 ```
 
-### 2. Create a `.env` file
-
-Create `.env` file in project
-
-Update values like:
-
-```dotenv
-MYSQL_ROOT_PASSWORD=example
-MYSQL_DATABASE=example_db
-MYSQL_USER=username
-MYSQL_PASSWORD=password
-
-SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/example_db
-SPRING_DATASOURCE_USERNAME=username
-SPRING_DATASOURCE_PASSWORD=password
-```
-
-### 3. Run
+### 2. Run
 
 ```shell
 docker run -d --name [image_name] -p 8080:8080 ghcr.io/pkttteam/pkwmttt-backend:[PACKAGE_NUMBER]
