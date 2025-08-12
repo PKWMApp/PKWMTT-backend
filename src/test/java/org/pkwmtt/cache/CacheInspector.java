@@ -11,38 +11,37 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public class CacheInspector {
-
+    
     private final CacheManager cacheManager;
     private final TimetableCacheService service;
-
-
-    public Map<Object, Object> getAllEntries(String cacheName) {
+    
+    public Map<Object, Object> getAllEntries (String cacheName) {
         CaffeineCache springCache = (CaffeineCache) cacheManager.getCache(cacheName);
-
-        if (springCache == null)
+        
+        if (springCache == null) {
             throw new IllegalArgumentException("No cache with name " + cacheName);
-
+        }
+        
         Cache<Object, Object> nativeCache = springCache.getNativeCache();
-
+        
         return nativeCache.asMap();
     }
-
-    public String printAllEntries(String cacheName) {
+    
+    public String printAllEntries (String cacheName) {
         service.getListOfHours();
         service.getGeneralGroupSchedule("12K1");
         service.getGeneralGroupsMap();
         var s = new StringBuilder();
-        getAllEntries(cacheName).forEach((key, value) ->
-            s
-                .append("Cache[")
-                .append(cacheName)
-                .append("] ")
-                .append(key)
-                .append(" -> ")
-                .append(value)
-                .append("\n")
-        );
+        getAllEntries(cacheName).forEach((key, value) -> s
+          .append("Cache[")
+          .append(cacheName)
+          .append("] ")
+          .append(key)
+          .append(" -> ")
+          .append(value)
+          .append("\n"));
         return s.toString();
     }
 }

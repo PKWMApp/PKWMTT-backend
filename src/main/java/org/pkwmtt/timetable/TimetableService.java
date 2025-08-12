@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
-import org.pkwmtt.repository.GroupRepository;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
-    private final TimetableCacheService cacheableTimetableService;
+    private final TimetableCacheService cachedService;
     
     /**
      * Parses the timetable JSON to extract subgroup identifiers like K01, P03, GL04 using regex.
@@ -34,7 +33,7 @@ public class TimetableService {
              WebPageContentNotAvailableException {
         
         generalGroupName = generalGroupName.toUpperCase();
-        TimetableDTO timetable = cacheableTimetableService.getGeneralGroupSchedule(generalGroupName);
+        TimetableDTO timetable = cachedService.getGeneralGroupSchedule(generalGroupName);
         
         ObjectMapper mapper = new ObjectMapper();
         String timeTableAsJson = mapper.writeValueAsString(timetable);
@@ -86,7 +85,7 @@ public class TimetableService {
             }
         }
         
-        List<DayOfWeekDTO> schedule = cacheableTimetableService
+        List<DayOfWeekDTO> schedule = cachedService
           .getGeneralGroupSchedule(generalGroupName)
           .getData();
         
@@ -104,7 +103,7 @@ public class TimetableService {
      * @return List of general group's names
      */
     public List<String> getGeneralGroupList () throws WebPageContentNotAvailableException {
-        var result = new ArrayList<>(cacheableTimetableService
+        var result = new ArrayList<>(cachedService
                                        .getGeneralGroupsMap()
                                        .keySet()
                                        .stream()
