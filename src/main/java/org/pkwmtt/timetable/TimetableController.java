@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TimetableController {
     private final TimetableService service;
-    private final TimetableCacheService cacheableService;
+    private final TimetableCacheService cachedService;
     
     /**
      * Provide schedule of specified group and filters if all provided
@@ -32,7 +32,7 @@ public class TimetableController {
              SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
         
         if (subgroups == null || subgroups.isEmpty()) {
-            return ResponseEntity.ok(cacheableService.getGeneralGroupSchedule(generalGroupName));
+            return ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
         }
         return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
           generalGroupName.toUpperCase(),
@@ -49,7 +49,7 @@ public class TimetableController {
     @GetMapping("/hours")
     public ResponseEntity<List<String>> getListOfHours ()
       throws WebPageContentNotAvailableException {
-        return ResponseEntity.ok(cacheableService.getListOfHours());
+        return ResponseEntity.ok(cachedService.getListOfHours());
     }
     
     /**

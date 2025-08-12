@@ -75,9 +75,8 @@ public class TimetableCacheService {
     public Map<String, String> getGeneralGroupsMap () throws WebPageContentNotAvailableException {
         String url = "http://podzial.mech.pk.edu.pl/stacjonarne/html/lista.html";
         String json = cache.get(
-          "generalGroupList",
-          () -> mapper.writeValueAsString(parser.parseGeneralGroups(fetchData(
-            url)))
+          "generalGroupMap",
+          () -> mapper.writeValueAsString(parser.parseGeneralGroups(fetchData(url)))
         );
         
         return getMappedValue(
@@ -110,6 +109,15 @@ public class TimetableCacheService {
         return result;
     }
     
+    /**
+     * @param json        - json representation of java object
+     * @param key         - cache key
+     * @param cache       - cache object
+     * @param targetClass - type to map value to
+     * @param <T>         type of object
+     * @return java object type <T>
+     * @throws WebPageContentNotAvailableException if there were trouble with fetching data
+     */
     private <T> T getMappedValue (String json, String key, Cache cache, TypeReference<T> targetClass)
       throws WebPageContentNotAvailableException {
         try {
@@ -120,6 +128,11 @@ public class TimetableCacheService {
         }
     }
     
+    /**
+     * @param url - url of webpage
+     * @return html code of selected webpage
+     * @throws WebPageContentNotAvailableException if there were trouble with fetching data
+     */
     private String fetchData (String url) throws WebPageContentNotAvailableException {
         try {
             return Jsoup.connect(url).get().html();
