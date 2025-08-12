@@ -8,6 +8,7 @@ import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.pkwmtt.timetable.parser.TimetableParserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ public class TimetableCacheService {
     private final ObjectMapper mapper;
 
     private final Cache cache;
+
+    @Value("${main.url:https://podzial.mech.pk.edu.pl/stacjonarne/html/}")
+    private String mainUrl;
 
     public TimetableCacheService (TimetableParserService parser, ObjectMapper mapper, CacheManager cacheManager)
             throws IllegalAccessException {
@@ -53,14 +57,17 @@ public class TimetableCacheService {
         }
 
         String groupUrl = generalGroupList.get(generalGroupName);
-        String url = String.format("https://podzial.mech.pk.edu.pl/stacjonarne/html/%s", groupUrl);
+        String url = mainUrl + groupUrl;
         String cacheKey = "timetable_" + generalGroupName;
+        var html = fetchData(url);
         String json = cache.get(
               cacheKey,
-              () -> mapper.writeValueAsString(new TimetableDTO(
+              () -> {
+                var timetableDTO =new TimetableDTO(
                 generalGroupName,
-                parser.parse(fetchData(url))
-              ))
+                parser.parse(html));
+                return mapper.writeValueAsString(timetableDTO);
+            }
         );
 
         return getMappedValue(
@@ -75,10 +82,11 @@ public class TimetableCacheService {
      * @throws WebPageContentNotAvailableException if the source page can't be fetched
      */
     public Map<String, String> getGeneralGroupsMap () throws WebPageContentNotAvailableException {
-        String url = "http://podzial.mech.pk.edu.pl/stacjonarne/html/lista.html";
+        var url = mainUrl + "lista.html";
+        var html = fetchData(url);
         String json = cache.get(
                 "generalGroupMap",
-                () -> mapper.writeValueAsString(parser.parseGeneralGroups(fetchData(url)))
+                () -> mapper.writeValueAsString(parser.parseGeneralGroups(html))
         );
 
         return getMappedValue(
