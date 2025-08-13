@@ -7,10 +7,12 @@ import lombok.Data;
 @Data
 @Table(name = "`exam_type`")
 public class ExamType {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "exam_type_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "exam_type_id", nullable = false)
     private Integer examTypeId;
 
+    @Column(nullable = false)
     private String name;
 }
