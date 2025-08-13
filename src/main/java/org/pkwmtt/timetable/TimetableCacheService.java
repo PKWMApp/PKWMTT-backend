@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -94,11 +93,6 @@ public class TimetableCacheService {
                 }
         );
     }
-    public List<String> getGeneralGroupsList() {
-        return getGeneralGroupsMap().keySet().stream()
-                .sorted()
-                .collect(Collectors.toList());
-    }
 
     /**
      * Retrieves the standard list of hour ranges used in the timetable.
@@ -106,8 +100,8 @@ public class TimetableCacheService {
      * @return list of hour labels (e.g., 08:00–09:30)
      * @throws WebPageContentNotAvailableException if hour definition page can't be loaded
      */
-    public List<String> getListOfHours () throws WebPageContentNotAvailableException {
-        String url = "https://podzial.mech.pk.edu.pl/stacjonarne/html/plany/o25.html";
+    public List<String>  getListOfHours () throws WebPageContentNotAvailableException {
+        String url = mainUrl + "plany/o25.html";
         String json = cache.get(
                 "hourList",
                 () -> mapper.writeValueAsString(parser.parseHours(fetchData(url)))

@@ -29,7 +29,9 @@ public class TimetableController {
      * @throws WebPageContentNotAvailableException .
      */
     @GetMapping("/{generalGroupName}")
-    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule (@PathVariable String generalGroupName, @RequestParam(required = false, name = "sub") List<String> subgroups)
+    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule (
+            @PathVariable String generalGroupName,
+            @RequestParam(required = false, name = "sub") List<String> subgroups)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException,
              SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
 
@@ -37,8 +39,7 @@ public class TimetableController {
             return ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
         }
         return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
-          generalGroupName.toUpperCase(),
-          subgroups
+          generalGroupName, subgroups
         ));
     }
 
