@@ -55,21 +55,15 @@ class ExamControllerTest {
     }
 
 
-//<editor-fold desc="addExam">
+    //<editor-fold desc="addExam">
 
     /**
      * check if addExam endpoint create new exam with correct URI and correct data
      */
     @Test
     void addExamWithCorrectData() throws Exception {
-        ExamDto examDtoRequest = new ExamDto(
-                "Math exam",
-                "first exam",
-                LocalDateTime.now().plusDays(1),
-                "12K2, L04",
-                "Project"
-        );
-
+//        given
+        ExamDto examDtoRequest = createExampleExamDto("Project");
         String json = mapper.writeValueAsString(examDtoRequest);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
@@ -100,6 +94,7 @@ class ExamControllerTest {
 
     @Test
     void addExamWithBlankExamTitle() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
 //      no exam title
         requestData.put("description", "first exam");
@@ -107,23 +102,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("title : must not be blank", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("title : must not be blank", result);
     }
 
     @Test
     void addExamWithBlankExamDescription() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
 //        no exam description
@@ -131,27 +119,20 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
-
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isCreated())
-                .andReturn();
+//        when
+        MvcResult result = assertPostRequest(status().isCreated(), requestData);
 
         String location = result.getResponse().getHeader("Location");
         @SuppressWarnings("DataFlowIssue")
         int id = Integer.parseInt(location.substring(location.lastIndexOf("/") + 1));
 
         Exam examResponse = examRepository.findById(id).orElseThrow();
-
         assertNull(examResponse.getDescription());
     }
 
     @Test
     void addExamWithBlankDate() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -159,23 +140,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("date : must not be null", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("date : must not be null", result);
     }
 
     @Test
     void addExamWithBlankExamGroups() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -183,23 +157,16 @@ class ExamControllerTest {
 //        no examGroups
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("examGroups : must not be blank", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("examGroups : must not be blank", result);
     }
 
     @Test
     void addExamWithNullExamTypes() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -207,23 +174,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
 //      no examType
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("examType : must not be null", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("examType : must not be null", result);
     }
 
     @Test
     void addExamWithNotFutureDate() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -231,23 +191,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("date : Date must be in the future", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("date : Date must be in the future", result);
     }
 
     @Test
     void addExamWithEmptyStringExamTitle() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "");
         requestData.put("description", "first exam");
@@ -255,23 +208,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("title : must not be blank", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("title : must not be blank", result);
     }
 
     @Test
     void addExamWithEmptyStringExamGroups() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -279,23 +225,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("examGroups : must not be blank", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("examGroups : must not be blank", result);
     }
 
     @Test
     void addExamWithTooLongExamTitle() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         requestData.put("description", "first exam");
@@ -303,23 +242,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("title : max size of field is 255", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("title : max size of field is 255", result);
     }
 
     @Test
     void addExamWithTooLongDescription() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
@@ -327,23 +259,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("description : max size of field is 255", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("description : max size of field is 255", result);
     }
 
     @Test
     void addExamWithTooLongExamGroups() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -351,23 +276,16 @@ class ExamControllerTest {
         requestData.put("examGroups", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         requestData.put("examType", "Project");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("examGroups : max size of field is 255", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("examGroups : max size of field is 255", result);
     }
 
     @Test
     void addExamWithNonExistingExamType() throws Exception {
+//        given
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -375,19 +293,11 @@ class ExamControllerTest {
         requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "NonExistingExamType");
 
-        String jsonRequest = mapper.writeValueAsString(requestData);
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/pkwmtt/api/v1/exams")
-                        .contentType("application/json")
-                        .content(jsonRequest)
-                ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("Invalid exam type NonExistingExamType", jsonResponse.get("message").asText());
+//        then
+        assertResponseMessage("Invalid exam type NonExistingExamType", result);
     }
 
 
@@ -524,6 +434,16 @@ class ExamControllerTest {
         assertEquals(expectedMessage, jsonResponse.get("message").asText());
     }
 
+    private MvcResult assertPostRequest(ResultMatcher expectedStatus, Object content) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders
+                        .post("/pkwmtt/api/v1/exams")
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(content))
+                ).andDo(print())
+                .andExpect(expectedStatus)
+                .andReturn();
+    }
+
     private MvcResult assertPutRequest(ResultMatcher expectedStatus, Object content, int pathId) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders
                         .put("/pkwmtt/api/v1/exams/{id}", pathId)
@@ -533,5 +453,6 @@ class ExamControllerTest {
                 .andExpect(expectedStatus)
                 .andReturn();
     }
+
 
 }
