@@ -9,12 +9,12 @@ import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
-import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
@@ -56,6 +56,7 @@ class ExamControllerTest {
 
 
 //<editor-fold desc="addExam">
+
     /**
      * check if addExam endpoint create new exam with correct URI and correct data
      */
@@ -390,12 +391,53 @@ class ExamControllerTest {
     }
 
 
-
     //</editor-fold>
 
-//    <editor-fold desc="modify "exam">
+    //    <editor-fold desc="modifyExam">
     @Test
     void modifyExamWithCorrectData() throws Exception {
+//        given
+        ExamType examType = createExampleExamType("Exam");
+        Exam exam = createExampleExam(examType);
+        int id = examRepository.save(exam).getExamId();
+        ExamDto examDto = createExampleExamDto(examType.getName());
+
+//        when
+        assertPutRequest(status().isNoContent(), examDto, id);
+
+//        then
+        Exam responseExam = examRepository.findById(id).orElseThrow();
+        assertEquals("Math exam", responseExam.getTitle());
+        assertEquals("first exam", responseExam.getDescription());
+        assertEquals(
+                LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.MINUTES),
+                responseExam.getDate().truncatedTo(ChronoUnit.MINUTES)
+        );
+        assertEquals("12K2, L04", responseExam.getExamGroups());
+    }
+
+    @Test
+    void modifyExamWithIncorrectExamId() throws Exception {
+//        given
+        ExamType examType = createExampleExamType("Exam");
+        Exam exam = createExampleExam(examType);
+        int id = examRepository.save(exam).getExamId();
+        ExamDto examDto = createExampleExamDto(examType.getName());
+
+        int invalidId = Integer.MAX_VALUE - 10;
+        assertNotEquals(invalidId, id);
+//        when
+        MvcResult result = assertPutRequest(status().isNotFound(), examDto, invalidId);
+
+//        then
+        assertResponseMessage("No such element with id: " + (invalidId), result);
+
+    }
+//    </editor-fold>
+
+    //    <editor-fold desc="deleteExam">
+    @Test
+    void deleteExamWithCorrectArguments() throws Exception {
         ExamType examType = ExamType.builder().name("Exam").build();
         examTypeRepository.save(examType);
         Exam exam = Exam.builder()
@@ -436,52 +478,7 @@ class ExamControllerTest {
         assertEquals("12K2, L04", responseExam.getExamGroups());
     }
 
-
-    @Test
-    void modifyExamWithIncorrectExamId() throws Exception {
-        ExamType examType = ExamType.builder().name("Exam").build();
-        examTypeRepository.save(examType);
-        Exam exam = Exam.builder()
-                .title("Exam")
-                .description("Exam description")
-                .date(LocalDateTime.now().plusDays(1))
-                .examGroups("11K1, L01")
-                .examType(examType)
-                .build();
-
-        int id = examRepository.save(exam).getExamId();
-
-        ExamDto examDtoRequest = new ExamDto(
-                "Math exam",
-                "first exam",
-                LocalDateTime.now().plusDays(1),
-                "12K2, L04",
-                "Project"
-        );
-
-        String json = mapper.writeValueAsString(examDtoRequest);
-
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .put("/pkwmtt/api/v1/exams/{id}", Integer.MAX_VALUE - 10)
-                        .contentType("application/json")
-                        .content(json)
-                ).andDo(print())
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
-        assertTrue(jsonResponse.has("message"));
-        assertEquals("No such element with id: " + (Integer.MAX_VALUE - 10), jsonResponse.get("message").asText());
-//        to make sure that Integer.MAX_VALUE - 10 is invalid id
-        assertNotEquals(Integer.MAX_VALUE - 10, id);
-
-    }
-//    </editor-fold>
-
-    @Test
-    void deleteExam() {
-    }
-
+    //    </editor-fold>
     @Test
     void getExam() {
     }
@@ -493,4 +490,48 @@ class ExamControllerTest {
     @Test
     void getExamTypes() {
     }
+
+
+    private Exam createExampleExam(ExamType type) {
+        return Exam.builder()
+                .title("Exam")
+                .description("Exam description")
+                .date(LocalDateTime.now().plusDays(1))
+                .examGroups("11K1, L01")
+                .examType(type)
+                .build();
+    }
+
+    private ExamType createExampleExamType(String name) {
+        ExamType examType = ExamType.builder().name(name).build();
+        examTypeRepository.save(examType);
+        return examType;
+    }
+
+    private ExamDto createExampleExamDto(String examTypeName) {
+        return new ExamDto(
+                "Math exam",
+                "first exam",
+                LocalDateTime.now().plusDays(1),
+                "12K2, L04",
+                "Project"
+        );
+    }
+
+    private void assertResponseMessage(String expectedMessage, MvcResult result) throws Exception {
+        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
+        assertTrue(jsonResponse.has("message"));
+        assertEquals(expectedMessage, jsonResponse.get("message").asText());
+    }
+
+    private MvcResult assertPutRequest(ResultMatcher expectedStatus, Object content, int pathId) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders
+                        .put("/pkwmtt/api/v1/exams/{id}", pathId)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(content))
+                ).andDo(print())
+                .andExpect(expectedStatus)
+                .andReturn();
+    }
+
 }
