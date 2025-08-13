@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static java.util.Objects.isNull;
+
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
@@ -20,7 +22,7 @@ public class CacheInspector {
     public Map<Object, Object> getAllEntries (String cacheName) {
         CaffeineCache springCache = (CaffeineCache) cacheManager.getCache(cacheName);
         
-        if (springCache == null) {
+        if (isNull(springCache)) {
             throw new IllegalArgumentException("No cache with name " + cacheName);
         }
         
