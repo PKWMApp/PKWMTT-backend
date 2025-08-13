@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class ExamDto {
 
-    @NotBlank(message = "Title is required")
+    @NotBlank
     @Size(max = 255, message = "max size of field is 255")
     private final String title;
 
