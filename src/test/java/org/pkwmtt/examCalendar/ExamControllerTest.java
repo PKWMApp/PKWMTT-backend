@@ -51,9 +51,7 @@ class ExamControllerTest {
     void setupBeforeEach() {
         examRepository.deleteAll();
         examTypeRepository.deleteAll();
-        examTypeRepository.save(ExamType.builder().name("Project").build());
     }
-
 
     //<editor-fold desc="addExam">
 
@@ -63,6 +61,7 @@ class ExamControllerTest {
     @Test
     void addExamWithCorrectData() throws Exception {
 //        given
+        createExampleExamType("Project");
         ExamDto examDtoRequest = createExampleExamDto("Project");
         String json = mapper.writeValueAsString(examDtoRequest);
 
@@ -95,6 +94,7 @@ class ExamControllerTest {
     @Test
     void addExamWithBlankExamTitle() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
 //      no exam title
         requestData.put("description", "first exam");
@@ -112,6 +112,7 @@ class ExamControllerTest {
     @Test
     void addExamWithBlankExamDescription() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
 //        no exam description
@@ -133,6 +134,7 @@ class ExamControllerTest {
     @Test
     void addExamWithBlankDate() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -150,6 +152,7 @@ class ExamControllerTest {
     @Test
     void addExamWithBlankExamGroups() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -167,6 +170,7 @@ class ExamControllerTest {
     @Test
     void addExamWithNullExamTypes() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -184,6 +188,7 @@ class ExamControllerTest {
     @Test
     void addExamWithNotFutureDate() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -201,6 +206,7 @@ class ExamControllerTest {
     @Test
     void addExamWithEmptyStringExamTitle() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "");
         requestData.put("description", "first exam");
@@ -218,6 +224,7 @@ class ExamControllerTest {
     @Test
     void addExamWithEmptyStringExamGroups() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -235,6 +242,7 @@ class ExamControllerTest {
     @Test
     void addExamWithTooLongExamTitle() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         requestData.put("description", "first exam");
@@ -252,6 +260,7 @@ class ExamControllerTest {
     @Test
     void addExamWithTooLongDescription() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
@@ -269,6 +278,7 @@ class ExamControllerTest {
     @Test
     void addExamWithTooLongExamGroups() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -286,6 +296,7 @@ class ExamControllerTest {
     @Test
     void addExamWithNonExistingExamType() throws Exception {
 //        given
+        createExampleExamType("Project");
         Map<String, String> requestData = new HashMap<>();
         requestData.put("title", "Math exam");
         requestData.put("description", "first exam");
@@ -379,7 +390,7 @@ class ExamControllerTest {
 
     //    </editor-fold>
 
-//    <editor-fold desc="getExamById">
+    //    <editor-fold desc="getExamById">
 
     @Test
     void getExamByIdWithCorrectId() throws Exception {
@@ -426,10 +437,43 @@ class ExamControllerTest {
 //        TODO: test getExamsByGroups after implementing new version
     }
 
+    //    <editor-fold desc="getExamTypes">
+
     @Test
-    void getExamTypes() {
+    void getExamTypesWhenExamTypesExists() throws Exception {
+//        given
+        ExamType exam = createExampleExamType("Exam");
+        ExamType project = createExampleExamType("Project");
+
+//        when
+        MvcResult result = assertGetExamTypesRequest(status().isOk());
+        JsonNode responseArray = mapper.readTree(result.getResponse().getContentAsString());
+
+//        then
+        assertEquals(2, responseArray.size());
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("name").asText().equals(exam.getName())));
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("name").asText().equals(project.getName())));
     }
 
+    @Test
+    void getExamTypesWhenExamTypesNotExists() throws Exception {
+//        given
+//        when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/pkwmtt/api/v1/exams/exam-types")
+                        .contentType("application/json")
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode responseArray = mapper.readTree(result.getResponse().getContentAsString());
+
+//        then
+        assertEquals(0, responseArray.size());
+    }
+
+    //    </editor-fold>
+
+    //    <editor-fold desc="helper methods">
 
     private Exam createExampleExam(ExamType type) {
         return Exam.builder()
@@ -453,7 +497,7 @@ class ExamControllerTest {
                 "first exam",
                 LocalDateTime.now().plusDays(1),
                 "12K2, L04",
-                "Project"
+                examTypeName
         );
     }
 
@@ -501,5 +545,15 @@ class ExamControllerTest {
                 .andReturn();
     }
 
+    private MvcResult assertGetExamTypesRequest(ResultMatcher expectedStatus) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders
+                        .get("/pkwmtt/api/v1/exams/exam-types")
+                        .contentType("application/json")
+                ).andDo(print())
+                .andExpect(expectedStatus)
+                .andReturn();
+    }
+
+//    </editor-fold>
 
 }
