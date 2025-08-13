@@ -9,6 +9,7 @@ import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
+import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -392,9 +393,90 @@ class ExamControllerTest {
 
     //</editor-fold>
 
+//    <editor-fold desc="modify "exam">
     @Test
-    void modifyExam() {
+    void modifyExamWithCorrectData() throws Exception {
+        ExamType examType = ExamType.builder().name("Exam").build();
+        examTypeRepository.save(examType);
+        Exam exam = Exam.builder()
+                .title("Exam")
+                .description("Exam description")
+                .date(LocalDateTime.now().plusDays(1))
+                .examGroups("11K1, L01")
+                .examType(examType)
+                .build();
+        int id = examRepository.save(exam).getExamId();
+
+        LocalDateTime dateNow = LocalDateTime.now().plusDays(1);
+
+        ExamDto examDtoRequest = new ExamDto(
+                "Math exam",
+                "first exam",
+                dateNow,
+                "12K2, L04",
+                "Project"
+        );
+
+        String json = mapper.writeValueAsString(examDtoRequest);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/pkwmtt/api/v1/exams/{id}", id)
+                        .contentType("application/json")
+                        .content(json)
+                ).andDo(print())
+                .andExpect(status().isNoContent());
+
+        Exam responseExam = examRepository.findById(id).orElseThrow();
+        assertEquals("Math exam", responseExam.getTitle());
+        assertEquals("first exam", responseExam.getDescription());
+        assertEquals(
+                dateNow.truncatedTo(ChronoUnit.MINUTES),
+                responseExam.getDate().truncatedTo(ChronoUnit.MINUTES)
+        );
+        assertEquals("12K2, L04", responseExam.getExamGroups());
     }
+
+
+    @Test
+    void modifyExamWithIncorrectExamId() throws Exception {
+        ExamType examType = ExamType.builder().name("Exam").build();
+        examTypeRepository.save(examType);
+        Exam exam = Exam.builder()
+                .title("Exam")
+                .description("Exam description")
+                .date(LocalDateTime.now().plusDays(1))
+                .examGroups("11K1, L01")
+                .examType(examType)
+                .build();
+
+        int id = examRepository.save(exam).getExamId();
+
+        ExamDto examDtoRequest = new ExamDto(
+                "Math exam",
+                "first exam",
+                LocalDateTime.now().plusDays(1),
+                "12K2, L04",
+                "Project"
+        );
+
+        String json = mapper.writeValueAsString(examDtoRequest);
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .put("/pkwmtt/api/v1/exams/{id}", Integer.MAX_VALUE - 10)
+                        .contentType("application/json")
+                        .content(json)
+                ).andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        JsonNode jsonResponse = mapper.readTree(result.getResponse().getContentAsString());
+        assertTrue(jsonResponse.has("message"));
+        assertEquals("No such element with id: " + (Integer.MAX_VALUE - 10), jsonResponse.get("message").asText());
+//        to make sure that Integer.MAX_VALUE - 10 is invalid id
+        assertNotEquals(Integer.MAX_VALUE - 10, id);
+
+    }
+//    </editor-fold>
 
     @Test
     void deleteExam() {
