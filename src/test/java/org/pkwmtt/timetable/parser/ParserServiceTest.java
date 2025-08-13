@@ -4,17 +4,32 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.junit.runners.Suite;
+import org.pkwmtt.ValuesForTest;
 import org.pkwmtt.timetable.dto.TimetableDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.ConfigureWireMock;
+import org.wiremock.spring.EnableWireMock;
 
 import java.io.IOException;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Suite.SuiteClasses(TimetableParserService.class)
+@ActiveProfiles("test")
+@EnableWireMock({
+        @ConfigureWireMock(
+                name = "my-mock",
+                port = 8888)
+})
 class ParserServiceTest {
     TimetableParserService parserService;
 
@@ -22,6 +37,8 @@ class ParserServiceTest {
         parserService = new TimetableParserService();
     }
 
+    @Value("${main.url:https://podzial.mech.pk.edu.pl/stacjonarne/html/}")
+    private String mainUrl;
 
     @Test
     public void checkParserDataFor12K1_Monday_First() throws IOException {
@@ -63,17 +80,37 @@ class ParserServiceTest {
     @Test
     @WithMockUser
     public void isGeneralGroupListCorrect() throws IOException {
+        //given
+        initWireMock();
+
+        //when
         //fetch data
         Document document = Jsoup
-            .connect("http://podzial.mech.pk.edu.pl/stacjonarne/html/lista.html")
+            .connect(mainUrl + "lista.html")
             .get();
 
         //call method
         var result = parserService.parseGeneralGroups(document.html());
+
+        //then
         //Check if list contains specific elements
         assertTrue(result.containsKey("12K1"));
         assertTrue(result.containsKey("11A1"));
         assertTrue(result.containsKey("11K2"));
         assertEquals("plany/o25.html", result.get("12K1"));
+    }
+
+    private void initWireMock() {
+        stubFor(get(urlPathMatching("/plany/o25.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/*")
+                        .withBody(ValuesForTest.timetableHTML)));
+
+        stubFor(get(urlPathMatching("/lista.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/*")
+                        .withBody(ValuesForTest.listHTML)));
     }
 }
