@@ -348,44 +348,34 @@ class ExamControllerTest {
     //    <editor-fold desc="deleteExam">
     @Test
     void deleteExamWithCorrectArguments() throws Exception {
-        ExamType examType = ExamType.builder().name("Exam").build();
-        examTypeRepository.save(examType);
-        Exam exam = Exam.builder()
-                .title("Exam")
-                .description("Exam description")
-                .date(LocalDateTime.now().plusDays(1))
-                .examGroups("11K1, L01")
-                .examType(examType)
-                .build();
+//        given
+        ExamType examType = createExampleExamType("Exam");
+        Exam exam = createExampleExam(examType);
         int id = examRepository.save(exam).getExamId();
 
-        LocalDateTime dateNow = LocalDateTime.now().plusDays(1);
+//        when
+        assertDeleteRequest(status().isNoContent(), id);
 
-        ExamDto examDtoRequest = new ExamDto(
-                "Math exam",
-                "first exam",
-                dateNow,
-                "12K2, L04",
-                "Project"
-        );
+//        then
+        assertTrue(examRepository.findById(id).isEmpty());
+    }
 
-        String json = mapper.writeValueAsString(examDtoRequest);
+    @Test
+    void deleteNonExistingExam() throws Exception {
+//        given
+        ExamType examType = createExampleExamType("Exam");
+        Exam exam = createExampleExam(examType);
+        int id = examRepository.save(exam).getExamId();
+        int invalidId = Integer.MAX_VALUE - 10;
+        assertNotEquals(invalidId, id);
 
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/pkwmtt/api/v1/exams/{id}", id)
-                        .contentType("application/json")
-                        .content(json)
-                ).andDo(print())
-                .andExpect(status().isNoContent());
+//        when
+        MvcResult result = assertDeleteRequest(status().isNotFound(), invalidId);
 
-        Exam responseExam = examRepository.findById(id).orElseThrow();
-        assertEquals("Math exam", responseExam.getTitle());
-        assertEquals("first exam", responseExam.getDescription());
-        assertEquals(
-                dateNow.truncatedTo(ChronoUnit.MINUTES),
-                responseExam.getDate().truncatedTo(ChronoUnit.MINUTES)
-        );
-        assertEquals("12K2, L04", responseExam.getExamGroups());
+//        then
+        assertTrue(examRepository.findById(id).isPresent());
+        assertResponseMessage("No such element with id: " + (invalidId), result);
+
     }
 
     //    </editor-fold>
@@ -449,6 +439,15 @@ class ExamControllerTest {
                         .put("/pkwmtt/api/v1/exams/{id}", pathId)
                         .contentType("application/json")
                         .content(mapper.writeValueAsString(content))
+                ).andDo(print())
+                .andExpect(expectedStatus)
+                .andReturn();
+    }
+
+    private MvcResult assertDeleteRequest(ResultMatcher expectedStatus, int pathId) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/pkwmtt/api/v1/exams/{id}", pathId)
+                        .contentType("application/json")
                 ).andDo(print())
                 .andExpect(expectedStatus)
                 .andReturn();
