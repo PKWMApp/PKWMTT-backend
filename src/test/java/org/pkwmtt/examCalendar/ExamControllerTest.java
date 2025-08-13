@@ -375,16 +375,55 @@ class ExamControllerTest {
 //        then
         assertTrue(examRepository.findById(id).isPresent());
         assertResponseMessage("No such element with id: " + (invalidId), result);
-
     }
 
     //    </editor-fold>
+
+//    <editor-fold desc="getExamById">
+
     @Test
-    void getExam() {
+    void getExamByIdWithCorrectId() throws Exception {
+//        given
+        ExamType examType = createExampleExamType("Exam");
+        Exam exam = createExampleExam(examType);
+        int id = examRepository.save(exam).getExamId();
+
+//        when
+        MvcResult result = assertGetByIdRequest(status().isOk(), id);
+        JsonNode responseNode = mapper.readTree(result.getResponse().getContentAsString());
+
+//        then
+        assertEquals(exam.getTitle(), responseNode.get("title").asText());
+        assertEquals(exam.getDescription(), responseNode.get("description").asText());
+        assertEquals(
+                exam.getDate().truncatedTo(ChronoUnit.MINUTES),
+                LocalDateTime.parse(responseNode.get("date").textValue()).truncatedTo(ChronoUnit.MINUTES)
+        );
+        assertEquals(exam.getExamGroups(), responseNode.get("examGroups").asText());
+        assertEquals(mapper.readTree(mapper.writeValueAsString(exam.getExamType())), responseNode.get("examType"));
     }
 
     @Test
+    void getNonExistingExamById() throws Exception {
+//        given
+        ExamType examType = createExampleExamType("Exam");
+        Exam exam = createExampleExam(examType);
+        int id = examRepository.save(exam).getExamId();
+        int invalidId = Integer.MAX_VALUE - 10;
+        assertNotEquals(invalidId, id);
+
+//        when
+        MvcResult result = assertGetByIdRequest(status().isNotFound(), invalidId);
+
+//        then
+        assertResponseMessage("No such element with id: " + (invalidId), result);
+    }
+
+//  </editor-fold>
+
+    @Test
     void getExams() {
+//        TODO: test getExamsByGroups after implementing new version
     }
 
     @Test
@@ -447,6 +486,15 @@ class ExamControllerTest {
     private MvcResult assertDeleteRequest(ResultMatcher expectedStatus, int pathId) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders
                         .delete("/pkwmtt/api/v1/exams/{id}", pathId)
+                        .contentType("application/json")
+                ).andDo(print())
+                .andExpect(expectedStatus)
+                .andReturn();
+    }
+
+    private MvcResult assertGetByIdRequest(ResultMatcher expectedStatus, int pathId) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders
+                        .get("/pkwmtt/api/v1/exams/{id}", pathId)
                         .contentType("application/json")
                 ).andDo(print())
                 .andExpect(expectedStatus)
