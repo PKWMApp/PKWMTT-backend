@@ -9,21 +9,21 @@ import org.pkwmtt.enums.Role;
 @Table(name = "`users`")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Integer userId;
 
-    @ManyToOne
-    @JoinColumn(name = "general_group_id")
+    @OneToOne
+    @JoinColumn(name = "general_group_id", nullable = false)
     private GeneralGroup generalGroup;
 
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
-
-    @OneToOne(mappedBy = "user")
-    private OTPCode otpCode;
 }
