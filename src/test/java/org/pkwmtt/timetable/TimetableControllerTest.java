@@ -1,17 +1,19 @@
 package org.pkwmtt.timetable;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.pkwmtt.ValuesForTest;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import test.TestConfig;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,24 +21,39 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TimetableControllerTest {
+class TimetableControllerTest extends TestConfig {
     
     @LocalServerPort
     private int port;
     
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @BeforeEach
+    public void initWireMock() {
+        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/plany/o25.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/*")
+                        .withBody(ValuesForTest.timetableHTML)));
+
+        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/lista.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/*")
+                        .withBody(ValuesForTest.listHTML)));
+    }
     
     @Test
     public void testGetGeneralGroupScheduleFiltered_withOptionalParams () {
         //given
-        String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01",
+        var url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01",
                                    port
         );
         
@@ -44,17 +61,25 @@ class TimetableControllerTest {
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);
         
         //then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(5, response.getBody().getData().size());
-        assertEquals(12, response.getBody().getData().getFirst().getOdd().size());
-        assertEquals(6, response.getBody().getData().getFirst().getEven().size());
+        assertAll(
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+                () -> {
+                    var responseBody = response.getBody();
+                    assertNotNull(responseBody);
+                },
+                () -> {
+                    var responseData = response.getBody().getData();
+                    assertEquals(5, responseData.size());
+                    assertEquals(12, responseData.getFirst().getOdd().size());
+                    assertEquals(6, responseData.getFirst().getEven().size());
+                }
+        );
     }
     
     @Test
     public void testGetGeneralGroupScheduleFiltered_withoutParams () {
         //given
-        String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1", port);
+        var url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1", port);
         
         //when
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);

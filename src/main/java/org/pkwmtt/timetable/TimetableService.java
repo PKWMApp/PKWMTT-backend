@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,10 +57,9 @@ public class TimetableService {
             matchedGroups.add(text);
         }
         
-        List<String> result = new ArrayList<>(matchedGroups.stream().toList());
-        Collections.sort(result);
-        
-        return result;
+        return matchedGroups.stream()
+                .sorted()
+                .toList();
     }
     
     
@@ -103,13 +103,9 @@ public class TimetableService {
      * @return List of general group's names
      */
     public List<String> getGeneralGroupList () throws WebPageContentNotAvailableException {
-        var result = new ArrayList<>(cachedService
-                                       .getGeneralGroupsMap()
-                                       .keySet()
-                                       .stream()
-                                       .toList());
-        Collections.sort(result);
-        return result;
+        return cachedService.getGeneralGroupsMap().keySet().stream()
+                .sorted()
+                .collect(Collectors.toList());
     }
     
 }
