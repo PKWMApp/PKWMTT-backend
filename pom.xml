@@ -12,7 +12,9 @@
     <artifactId>PKWMTT-backend</artifactId>
     <version>0.1.0-ALPHA</version>
     <name>PKWMTT-backend</name>
-    <description>PKWM App (Server) – timetable, exam calendar and ECTS calculator for students of Mechanical Engineering @ Cracow University of Technology </description>
+    <description>PKWM App (Server) – timetable, exam calendar and ECTS calculator for students of Mechanical Engineering
+        @ Cracow University of Technology
+    </description>
     <url>https://github.com/PKTTTeam/PKWMTT-backend</url>
     <licenses>
         <license>
@@ -146,6 +148,17 @@
             <groupId>org.wiremock.integrations</groupId>
             <artifactId>wiremock-spring-boot</artifactId>
             <version>3.10.0</version>
+        </dependency>
+        <!--EMAIL-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!--.ENV-->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
     <build>
