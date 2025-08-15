@@ -15,7 +15,7 @@ public class EmailService {
     
     private final JavaMailSender mailSender;
     
-    @Value("${EMAIL_USERNAME}")
+    @Value("${spring.mail.username}")
     private String hostEmail;
     
     public void send (MailDTO mail) throws MessagingException {

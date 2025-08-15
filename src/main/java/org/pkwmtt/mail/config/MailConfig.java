@@ -11,9 +11,9 @@ import java.util.Properties;
 @Configuration
 public class MailConfig {
     
-    @Value("${EMAIL_USERNAME}")
+    @Value("${spring.mail.username}")
     private String username;
-    @Value("${EMAIL_PASSWORD}")
+    @Value("${spring.mail.password}")
     private String password;
     
     @Bean
