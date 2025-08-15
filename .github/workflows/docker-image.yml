@@ -108,3 +108,6 @@ jobs:
             ghcr.io/${{ env.IMAGE_REPO }}:${{ github.run_number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
