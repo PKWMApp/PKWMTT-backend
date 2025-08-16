@@ -2,11 +2,12 @@ package org.pkwmtt.mail;
 
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.pkwmtt.exceptions.MailServiceNotAvailableException;
+import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.mail.dto.MailDTO;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,10 +18,18 @@ public class EmailTempController {
     
     @PostMapping
     public void sendMail (@RequestParam(name = "r") String recipientEmailAddress)
-      throws MessagingException {
+      throws MessagingException, MailServiceNotAvailableException {
         service.send(new MailDTO()
                        .setRecipient(recipientEmailAddress)
                        .setDescription("TEST")
                        .setTitle("TEST"));
+    }
+    
+    @ExceptionHandler(MailServiceNotAvailableException.class)
+    public ResponseEntity<ErrorResponseDTO> handle (Exception e) {
+        return new ResponseEntity<>(
+          new ErrorResponseDTO(e.getMessage()),
+                                    HttpStatus.SERVICE_UNAVAILABLE
+        );
     }
 }
