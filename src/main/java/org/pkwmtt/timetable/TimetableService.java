@@ -2,25 +2,35 @@ package org.pkwmtt.timetable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class TimetableService {
     private final TimetableCacheService cachedService;
+    
+    @Getter
+    private static final boolean enabled = TimetableCacheService.isConnectionAvailable();
+    
+    @Autowired
+    TimetableService (TimetableCacheService cachedService) {
+        this.cachedService = cachedService;
+    }
     
     /**
      * Parses the timetable JSON to extract subgroup identifiers like K01, P03, GL04 using regex.
@@ -57,9 +67,7 @@ public class TimetableService {
             matchedGroups.add(text);
         }
         
-        return matchedGroups.stream()
-                .sorted()
-                .toList();
+        return matchedGroups.stream().sorted().toList();
     }
     
     
@@ -103,9 +111,12 @@ public class TimetableService {
      * @return List of general group's names
      */
     public List<String> getGeneralGroupList () throws WebPageContentNotAvailableException {
-        return cachedService.getGeneralGroupsMap().keySet().stream()
-                .sorted()
-                .collect(Collectors.toList());
+        return cachedService
+          .getGeneralGroupsMap()
+          .keySet()
+          .stream()
+          .sorted()
+          .collect(Collectors.toList());
     }
     
 }
