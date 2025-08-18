@@ -1,0 +1,31 @@
+package org.pkwmtt.examCalendar.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "otp_codes")
+public class OTPCode {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer otp_code_id;
+
+    private String code;
+
+    private LocalDateTime timestamp;
+
+    private boolean used;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
+}
