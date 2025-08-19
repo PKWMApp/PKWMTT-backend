@@ -2,39 +2,48 @@ package org.pkwmtt.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.timetable.CacheableTimetableService;
+import org.pkwmtt.timetable.TimetableCacheService;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static java.util.Objects.isNull;
+
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public class CacheInspector {
-
+    
     private final CacheManager cacheManager;
-    private final CacheableTimetableService service;
-
-
-    public Map<Object, Object> getAllEntries(String cacheName) {
+    private final TimetableCacheService service;
+    
+    public Map<Object, Object> getAllEntries (String cacheName) {
         CaffeineCache springCache = (CaffeineCache) cacheManager.getCache(cacheName);
-
-        if (springCache == null)
+        
+        if (isNull(springCache)) {
             throw new IllegalArgumentException("No cache with name " + cacheName);
-
+        }
+        
         Cache<Object, Object> nativeCache = springCache.getNativeCache();
-
+        
         return nativeCache.asMap();
     }
-
-    public void printAllEntries(String cacheName) {
+    
+    public String printAllEntries (String cacheName) {
         service.getListOfHours();
         service.getGeneralGroupSchedule("12K1");
-        service.getGeneralGroupsList();
-
-        getAllEntries(cacheName).forEach((key, value) ->
-            System.out.println("Cache[" + cacheName + "] " + key + " -> " + value)
-        );
+        service.getGeneralGroupsMap();
+        var s = new StringBuilder();
+        getAllEntries(cacheName).forEach((key, value) -> s
+          .append("Cache[")
+          .append(cacheName)
+          .append("] ")
+          .append(key)
+          .append(" -> ")
+          .append(value)
+          .append("\n"));
+        return s.toString();
     }
 }

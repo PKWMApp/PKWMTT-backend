@@ -7,7 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.SubjectDTO;
-import org.pkwmtt.timetable.enums.SubjectType;
+import org.pkwmtt.enums.SubjectType;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -132,12 +132,11 @@ public class TimetableParserService {
         String classroom = cleanClassroomName(rawClassroom);
         SubjectType type = extractSubjectTypeFromName(name);
 
-        return SubjectDTO.builder()
-            .name(name)
-            .classroom(classroom)
-            .rowId(rowId)
-            .type(type)
-            .build();
+        return new SubjectDTO()
+                .setName(name)
+                .setClassroom(classroom)
+                .setRowId(rowId)
+                .setType(type);
     }
 
     /**

@@ -1,12 +1,13 @@
 package org.pkwmtt.timetable.dto;
 
 import lombok.*;
-import org.pkwmtt.timetable.enums.SubjectType;
+import lombok.experimental.Accessors;
+import org.pkwmtt.enums.SubjectType;
 
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
+import java.util.regex.Pattern;
+
+@Data
+@Accessors(chain = true)
 public class SubjectDTO {
     private String name;
     private String classroom;
@@ -14,8 +15,13 @@ public class SubjectDTO {
     private SubjectType type;
 
 
-    public void deleteTypeFromName() {
+    public void deleteTypeAndUnnecessaryCharactersFromName() {
         if (name.contains(" "))
-            this.name = name.substring(0,name.indexOf(' '));
+            this.name = name.substring(0, name.indexOf(' '));
+
+        name = name
+            .replaceAll("_", " ")
+            .replaceAll(Pattern.quote("("), "")
+            .replaceAll(Pattern.quote(")"), "");
     }
 }

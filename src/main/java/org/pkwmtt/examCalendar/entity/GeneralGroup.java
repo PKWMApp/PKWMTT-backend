@@ -17,10 +17,9 @@ import java.util.Set;
 public class GeneralGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer general_group_id;
+    @Column(name = "general_group_id")
+    private Integer generalGroupId;
 
+    @Column(nullable = false)
     private String name;
-
-    @OneToMany(mappedBy = "general_group")
-    private Set<Group> groups;
 }

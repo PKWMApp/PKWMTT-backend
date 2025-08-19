@@ -13,9 +13,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Table(name = "exam_type")
 public class ExamType {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer exam_type_id;
+    @Column(name = "exam_type_id", nullable = false)
+    private Integer examTypeId;
 
+    @Column(nullable = false)
     private String name;
 }

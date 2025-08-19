@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,30 +19,38 @@ import java.util.Arrays;
 public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "exam_id")
     private Integer examId;
 
+    @Column(nullable = false)
     private String title;
 
     private String description;
 
-    private LocalDateTime date;
-
-    @Column(name = "`groups`")
-    private String examGroups;
+    @Column(name = "`exam_date`", nullable = false)
+    private LocalDateTime examDate;
 
     @ManyToOne
-    @JoinColumn(name = "exam_type_id")
+    @JoinColumn(name = "exam_type_id", nullable = false)
     private ExamType examType;
 
-    @SuppressWarnings("unused")
-    public static class Builder {
-        public Exam build() {
-            //    max length of group identifier is 6
-            Arrays.stream(examGroups.split(", ")).forEach(group -> {
-                if(group.length() > 6)
-                    throw new InvalidGroupIdentifierException(group);
-            });
-            return new Exam(examId, title, description, date, examGroups, examType);
-        }
-    }
+    @ManyToMany
+    @JoinTable(
+            name="exams_groups",
+            joinColumns = @JoinColumn(name = "exam_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    private Set<StudentGroup> groups = new HashSet<>();
+
+//    @SuppressWarnings("unused")
+//    public static class Builder {
+//        public Exam build() {
+//            //    max length of group identifier is 6
+//            Arrays.stream(examGroups.split(", ")).forEach(group -> {
+//                if(group.length() > 6)
+//                    throw new InvalidGroupIdentifierException(group);
+//            });
+//            return new Exam(examId, title, description, date, examGroups, examType);
+//        }
+//    }
 }

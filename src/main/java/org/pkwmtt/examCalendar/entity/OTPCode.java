@@ -17,15 +17,16 @@ import java.time.LocalDateTime;
 public class OTPCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer otp_code_id;
+    @Column(name = "otp_code_id")
+    private Integer otpCodeId;
 
+    @Column(nullable = false)
     private String code;
 
-    private LocalDateTime timestamp;
-
-    private boolean used;
+    @Column(nullable = false)
+    private LocalDateTime expire;
 
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
-    private User user;
+    @JoinColumn(name = "`general_group_id`", nullable = false)
+    private GeneralGroup generalGroup;
 }

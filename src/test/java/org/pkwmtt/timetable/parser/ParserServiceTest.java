@@ -2,41 +2,64 @@ package org.pkwmtt.timetable.parser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runners.Suite;
+import org.pkwmtt.ValuesForTest;
 import org.pkwmtt.timetable.dto.TimetableDTO;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.test.context.support.WithMockUser;
+import test.TestConfig;
 
 import java.io.IOException;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 @Suite.SuiteClasses(TimetableParserService.class)
-class ParserServiceTest {
+class ParserServiceTest extends TestConfig {
     TimetableParserService parserService;
 
     {
         parserService = new TimetableParserService();
     }
 
+    @Value("${main.url}")
+    private String mainUrl;
+
+    @BeforeEach
+    public void initWireMock() {
+        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/plany/o25.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/*")
+                        .withBody(ValuesForTest.timetableHTML)));
+
+        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/lista.html"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/*")
+                        .withBody(ValuesForTest.listHTML)));
+    }
 
     @Test
     public void checkParserDataFor12K1_Monday_First() throws IOException {
+        //given
         //fetch 12K1
         Document document = Jsoup
-            .connect("https://podzial.mech.pk.edu.pl/stacjonarne/html/plany/o25.html")
+            .connect(mainUrl + "plany/o25.html")
             .get();
 
         //Create object
-        TimetableDTO timeTable = new TimetableDTO("12K1");
+        var timeTable = new TimetableDTO("12K1");
 
-        //Call method
+        //when
         timeTable.setData(parserService.parse(document.html()));
 
-        //Tests
+        //then
         assertEquals("12K1", timeTable.getName());
         assertEquals("Poniedziałek", timeTable.getData().getFirst().getName());
         assertEquals(5, timeTable.getData().size());
@@ -44,16 +67,17 @@ class ParserServiceTest {
 
     @Test
     public void isHoursListCorrect() throws IOException {
-
+        //given
         //fetch data
         Document document = Jsoup
-            .connect("https://podzial.mech.pk.edu.pl/stacjonarne/html/plany/o25.html")
+            .connect(mainUrl + "plany/o25.html")
             .get();
 
-
+        //when
         //call function
         var result = parserService.parseHours(document.html());
 
+        //then
         //Check first, last and middle element
         assertEquals("7:30- 8:15", result.getFirst());
         assertEquals("12:45-13:30", result.get(6));
@@ -63,13 +87,17 @@ class ParserServiceTest {
     @Test
     @WithMockUser
     public void isGeneralGroupListCorrect() throws IOException {
+        //given
         //fetch data
         Document document = Jsoup
-            .connect("http://podzial.mech.pk.edu.pl/stacjonarne/html/lista.html")
-            .get();
+                .connect(mainUrl + "lista.html")
+                .get();
 
+        //when
         //call method
         var result = parserService.parseGeneralGroups(document.html());
+
+        //then
         //Check if list contains specific elements
         assertTrue(result.containsKey("12K1"));
         assertTrue(result.containsKey("11A1"));

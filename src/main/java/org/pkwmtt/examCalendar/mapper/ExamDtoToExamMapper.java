@@ -24,7 +24,7 @@ public class ExamDtoToExamMapper {
         return Exam.builder()
                 .title(examDto.getTitle())
                 .description(examDto.getDescription())
-                .date(examDto.getDate())
+                .examDate(examDto.getDate())
                 .examGroups(examDto.getExamGroups())
                 .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType())))
                 .build();
@@ -41,7 +41,7 @@ public class ExamDtoToExamMapper {
                 .examId(id)
                 .title(examDto.getTitle())
                 .description(examDto.getDescription())
-                .date(examDto.getDate())
+                .examDate(examDto.getDate())
                 .examGroups(examDto.getExamGroups())
                 .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType())))
                 .build();

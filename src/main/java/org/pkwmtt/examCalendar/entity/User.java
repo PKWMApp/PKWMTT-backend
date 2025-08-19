@@ -16,18 +16,20 @@ import org.pkwmtt.enums.Role;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer user_id;
+    @Column(name = "user_id")
+    private Integer userId;
 
-    @ManyToOne
-    @JoinColumn(name = "general_group_id")
-    private GeneralGroup general_group;
+    @OneToOne
+    @JoinColumn(name = "general_group_id", nullable = false)
+    private GeneralGroup generalGroup;
 
+    @Column(nullable = false)
     private String email;
 
-    private boolean is_active;
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
-
-    @OneToOne(mappedBy = "user")
-    private OTPCode otp_code;
 }

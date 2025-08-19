@@ -2,7 +2,7 @@ package org.pkwmtt.examCalendar;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.pkwmtt.exceptions.ErrorResponseDTO;
+import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.exceptions.ExamTypeNotExistsException;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
 import org.springframework.http.HttpStatus;
