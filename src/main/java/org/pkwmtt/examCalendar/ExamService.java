@@ -56,26 +56,26 @@ public class ExamService {
         return examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
     }
 
-    /**
-     * @param groups set od groups (max 4)
-     * @return set of exams for specific groups
-     */
-    public Set<Exam> getExamByGroup(Set<String> groups) {
-        if (groups.size() > 4 || groups.isEmpty())
-            throw new UnsupportedCountOfArgumentsException(1, 5, groups.size());
-        List<String> groupList = new ArrayList<>(groups);
-        return switch (groupList.size()) {
-            case 4 -> examRepository.findExamsByGroupsIdentifier(
-                    groupList.get(0), groupList.get(1), groupList.get(2), groupList.get(3));
-            case 3 -> examRepository.findExamsByGroupsIdentifier(
-                    groupList.get(0), groupList.get(1), groupList.get(2));
-            case 2 -> examRepository.findExamsByGroupsIdentifier(
-                    groupList.get(0), groupList.get(1));
-            case 1 -> examRepository.findExamsByGroupsIdentifier(
-                    groupList.get(0));
-            default -> Set.of();
-        };
-    }
+//    /**
+//     * @param groups set od groups (max 4)
+//     * @return set of exams for specific groups
+//     */
+//    public Set<Exam> getExamByGroup(Set<String> groups) {
+//        if (groups.size() > 4 || groups.isEmpty())
+//            throw new UnsupportedCountOfArgumentsException(1, 5, groups.size());
+//        List<String> groupList = new ArrayList<>(groups);
+//        return switch (groupList.size()) {
+//            case 4 -> examRepository.findExamsByGroupsIdentifier(
+//                    groupList.get(0), groupList.get(1), groupList.get(2), groupList.get(3));
+//            case 3 -> examRepository.findExamsByGroupsIdentifier(
+//                    groupList.get(0), groupList.get(1), groupList.get(2));
+//            case 2 -> examRepository.findExamsByGroupsIdentifier(
+//                    groupList.get(0), groupList.get(1));
+//            case 1 -> examRepository.findExamsByGroupsIdentifier(
+//                    groupList.get(0));
+//            default -> Set.of();
+//        };
+//    }
 
     /**
      * @return list of examTypes

@@ -2,7 +2,7 @@ package org.pkwmtt.timetable.dto;
 
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.pkwmtt.enums.SubjectType;
+import org.pkwmtt.examCalendar.enums.SubjectType;
 
 import java.util.regex.Pattern;
 

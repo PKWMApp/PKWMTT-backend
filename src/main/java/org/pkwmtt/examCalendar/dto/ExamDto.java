@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.pkwmtt.examCalendar.entity.StudentGroup;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @RequiredArgsConstructor
@@ -24,10 +26,9 @@ public class ExamDto {
     @NotNull
     private final LocalDateTime date;
 
-    @NotBlank
-    @Size(max = 255, message = "max size of field is 255")
-    private final String examGroups;
-
     @NotNull
     private final String examType;
+
+    @NotNull
+    private final Set<StudentGroup> examGroups;
 }

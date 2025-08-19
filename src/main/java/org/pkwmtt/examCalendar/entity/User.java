@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.pkwmtt.enums.Role;
+import org.pkwmtt.examCalendar.enums.Role;
 
 @Entity
 @Getter

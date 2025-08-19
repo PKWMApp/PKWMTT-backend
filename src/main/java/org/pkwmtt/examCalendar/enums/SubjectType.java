@@ -1,4 +1,4 @@
-package org.pkwmtt.enums;
+package org.pkwmtt.examCalendar.enums;
 
 public enum SubjectType {
     LECTURE,

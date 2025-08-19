@@ -1,5 +1,6 @@
 package org.pkwmtt.examCalendar.mapper;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -8,11 +9,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
+import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -29,10 +33,16 @@ class ExamDtoToExamMapperTest {
     private ExamDto examDto;
     private String examTypeName;
 
-//    @BeforeEach
-//    void setup() {
-//
-//    }
+    private Set<StudentGroup> groups;
+
+    @BeforeEach
+    void setup(){
+        StudentGroup group = StudentGroup.builder()
+                .name("12K2")
+                .build();
+        groups = new HashSet<>();
+        groups.add(group);
+    }
 
     /**********************************************************************************/
 //    mapToNewExam
@@ -45,7 +55,7 @@ class ExamDtoToExamMapperTest {
                 "Linear algebra",
                 LocalDateTime.now().plusDays(1),
                 "12K2, 13S1",
-                examTypeName
+                groups
         );
         when(examTypeRepository.findByName(examTypeName)).thenReturn(
                 Optional.of(ExamType.builder()
@@ -58,8 +68,8 @@ class ExamDtoToExamMapperTest {
 //        test fields
         assertEquals(examDto.getTitle(), exam.getTitle());
         assertEquals(examDto.getDescription(), exam.getDescription());
-        assertEquals(examDto.getDate(), exam.getDate());
-        assertEquals(examDto.getExamGroups(), exam.getExamGroups());
+        assertEquals(examDto.getDate(), exam.getExamDate());
+        assertEquals(examDto.getExamGroups(), exam.getGroups());
         assertEquals(examTypeName, exam.getExamType().getName());
 //        test null id
         assertNull(exam.getExamId());
@@ -68,13 +78,17 @@ class ExamDtoToExamMapperTest {
     @Test
     void ShouldThrowExceptionWhenGroupIdentifierIsLongerThanSixCharactersForNewExam() {
         //        given
+        StudentGroup group = StudentGroup.builder()
+                .name("Not_Valid_Identifier")
+                .build();
+        groups.add(group);
         String examTypeName = "exam";
         ExamDto examDto = new ExamDto(
                 "Math exam",
                 "Linear algebra",
                 LocalDateTime.now().plusDays(1),
-                "12K2, 13S1, Not_Valid_Identifier, 41K1",
-                examTypeName
+                examTypeName,
+                groups
         );
         when(examTypeRepository.findByName(examTypeName)).thenReturn(
                 Optional.of(ExamType.builder()
@@ -101,8 +115,8 @@ class ExamDtoToExamMapperTest {
                 "Math exam",
                 "Linear algebra",
                 LocalDateTime.now().plusDays(1),
-                "12K2, 13S1",
-                examTypeName
+                examTypeName,
+                groups
         );
         when(examTypeRepository.findByName(examTypeName)).thenReturn(
                 Optional.of(ExamType.builder()
@@ -116,8 +130,8 @@ class ExamDtoToExamMapperTest {
         assertEquals(examId, exam.getExamId());
         assertEquals(examDto.getTitle(), exam.getTitle());
         assertEquals(examDto.getDescription(), exam.getDescription());
-        assertEquals(examDto.getDate(), exam.getDate());
-        assertEquals(examDto.getExamGroups(), exam.getExamGroups());
+        assertEquals(examDto.getDate(), exam.getExamDate());
+        assertEquals(examDto.getExamGroups(), exam.getGroups());
         assertEquals(examTypeName, exam.getExamType().getName());
 //        test not null id
         assertNotNull(exam.getExamId());
@@ -127,13 +141,17 @@ class ExamDtoToExamMapperTest {
     void ShouldThrowExceptionWhenGroupIdentifierIsLongerThanSixCharactersForExistingExam() {
         //        given
         int examId = 1;
+        StudentGroup group = StudentGroup.builder()
+                .name("Not_Valid_Identifier")
+                .build();
+        groups.add(group);
         String examTypeName = "exam";
         ExamDto examDto = new ExamDto(
                 "Math exam",
                 "Linear algebra",
                 LocalDateTime.now().plusDays(1),
-                "12K2, 13S1, Not_Valid_Identifier, 41K1",
-                examTypeName
+                examTypeName,
+                groups
         );
         when(examTypeRepository.findByName(examTypeName)).thenReturn(
                 Optional.of(ExamType.builder()

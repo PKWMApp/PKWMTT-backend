@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
+import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,9 +88,9 @@ class ExamControllerTest {
 //        compare dates with minutes level precision
         assertEquals(
                 examDtoRequest.getDate().truncatedTo(ChronoUnit.MINUTES),
-                examResponse.getDate().truncatedTo(ChronoUnit.MINUTES)
+                examResponse.getExamDate().truncatedTo(ChronoUnit.MINUTES)
         );
-        assertEquals(examDtoRequest.getExamGroups(), examResponse.getExamGroups());
+        assertEquals(examDtoRequest.getExamGroups(), examResponse.getGroups());
         assertEquals(examDtoRequest.getExamType(), examResponse.getExamType().getName());
     }
 
@@ -332,9 +335,9 @@ class ExamControllerTest {
         assertEquals("first exam", responseExam.getDescription());
         assertEquals(
                 LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.MINUTES),
-                responseExam.getDate().truncatedTo(ChronoUnit.MINUTES)
+                responseExam.getExamDate().truncatedTo(ChronoUnit.MINUTES)
         );
-        assertEquals("12K2, L04", responseExam.getExamGroups());
+        assertEquals("12K2, L04", responseExam.getGroups());
     }
 
     @Test
@@ -407,10 +410,10 @@ class ExamControllerTest {
         assertEquals(exam.getTitle(), responseNode.get("title").asText());
         assertEquals(exam.getDescription(), responseNode.get("description").asText());
         assertEquals(
-                exam.getDate().truncatedTo(ChronoUnit.MINUTES),
+                exam.getExamDate().truncatedTo(ChronoUnit.MINUTES),
                 LocalDateTime.parse(responseNode.get("date").textValue()).truncatedTo(ChronoUnit.MINUTES)
         );
-        assertEquals(exam.getExamGroups(), responseNode.get("examGroups").asText());
+        assertEquals(exam.getGroups(), responseNode.get("examGroups").asText());
         assertEquals(mapper.readTree(mapper.writeValueAsString(exam.getExamType())), responseNode.get("examType"));
     }
 
@@ -492,11 +495,14 @@ class ExamControllerTest {
      * @return created Exam
      */
     private Exam createExampleExam(ExamType type) {
+        Set<StudentGroup> examGroups = new HashSet<>();
+        examGroups.add(StudentGroup.builder().name("11K1").build());
+        examGroups.add(StudentGroup.builder().name("L01").build());
         return Exam.builder()
                 .title("Exam")
                 .description("Exam description")
-                .date(LocalDateTime.now().plusDays(1))
-                .examGroups("11K1, L01")
+                .examDate(LocalDateTime.now().plusDays(1))
+                .groups(examGroups)
                 .examType(type)
                 .build();
     }
@@ -506,12 +512,15 @@ class ExamControllerTest {
      * @return created ExamDto
      */
     private ExamDto createExampleExamDto(String examTypeName) {
+        Set<StudentGroup> examGroups = new HashSet<>();
+        examGroups.add(StudentGroup.builder().name("11K1").build());
+        examGroups.add(StudentGroup.builder().name("L01").build());
         return new ExamDto(
                 "Math exam",
                 "first exam",
                 LocalDateTime.now().plusDays(1),
-                "12K2, L04",
-                examTypeName
+                examTypeName,
+                examGroups
         );
     }
 

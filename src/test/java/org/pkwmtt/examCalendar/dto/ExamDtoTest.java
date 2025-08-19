@@ -3,10 +3,13 @@ package org.pkwmtt.examCalendar.dto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.pkwmtt.examCalendar.entity.StudentGroup;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,6 +26,17 @@ class ExamDtoTest {
     @Mock
     private ExamDto examDto;
 
+    private Set<StudentGroup> groups;
+
+    @BeforeEach
+    void setup(){
+        StudentGroup group = StudentGroup.builder()
+                .name("12K2")
+                .build();
+        groups = new HashSet<>();
+        groups.add(group);
+    }
+
     @Test
     void validData() {
 //        given
@@ -30,8 +44,8 @@ class ExamDtoTest {
                 "Math exam",
                 "First exam",
                 LocalDateTime.now().plusDays(1),
-                "12K2, K04",
-                "exam"
+                "exam",
+                groups
         );
 //        when, then
         assertTrue(validator.validate(examDto).isEmpty());
@@ -46,8 +60,8 @@ class ExamDtoTest {
                 "",
                 "First exam",
                 LocalDateTime.now().plusDays(1),
-                "12K2, K04",
-                "exam"
+                "exam",
+                groups
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -59,12 +73,14 @@ class ExamDtoTest {
     @Test
     void emptyExamGroups() {
         //        given
+        //        clear groups set
+        groups.clear();
         ExamDto examDto = new ExamDto(
                 "Math exam",
                 "First exam",
                 LocalDateTime.now().plusDays(1),
-                "",
-                "exam"
+                "exam",
+                groups
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -83,8 +99,8 @@ class ExamDtoTest {
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 "First exam",
                 LocalDateTime.now().plusDays(1),
-                "12K2, K04",
-                "exam"
+                "exam",
+                groups
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -101,8 +117,8 @@ class ExamDtoTest {
 //                256 characters
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 LocalDateTime.now().plusDays(1),
-                "12K2, K04",
-                "exam"
+                "exam",
+                groups
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -111,22 +127,23 @@ class ExamDtoTest {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }
 
-    @Test
-    void toLongExamGroups() {
-        //        given
-        ExamDto examDto = new ExamDto(
-                "Math exam",
-                "First exam",
-                LocalDateTime.now().plusDays(1),
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                "exam"
-        );
-//        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
-//        then
-        assertFalse(validator.validate(examDto).isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("examGroups")));
-    }
+    //    TODO: change to too large set
+//    @Test
+//    void toLongExamGroups() {
+//        //        given
+//        ExamDto examDto = new ExamDto(
+//                "Math exam",
+//                "First exam",
+//                LocalDateTime.now().plusDays(1),
+//                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+//                "exam"
+//        );
+////        when
+//        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+////        then
+//        assertFalse(validator.validate(examDto).isEmpty());
+//        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("examGroups")));
+//    }
 
 //    date not in future
 
@@ -137,8 +154,8 @@ class ExamDtoTest {
                 "Math exam",
                 "First exam",
                 LocalDateTime.now().minusHours(1),
-                "12K2, K04",
-                "exam"
+                "exam",
+                groups
         );
         //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);

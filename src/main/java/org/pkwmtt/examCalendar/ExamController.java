@@ -73,10 +73,10 @@ public class ExamController {
      * @param groups set of groups
      * @return 200 ok with list of exams for specific group
      */
-    @GetMapping("/by-groups")
-    public ResponseEntity<Set<Exam>> getExams(@RequestParam Set<String> groups){
-        return ResponseEntity.ok(examService.getExamByGroup(groups));
-    }
+//    @GetMapping("/by-groups")
+//    public ResponseEntity<Set<Exam>> getExams(@RequestParam Set<String> groups){
+//        return ResponseEntity.ok(examService.getExamByGroup(groups));
+//    }
 
     /**
      * @return 200 ok with list of available exam types
