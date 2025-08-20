@@ -377,3 +377,417 @@ Caused by: org.hibernate.query.SemanticException: Multi valued paths are only al
 	at org.hibernate.internal.AbstractSharedSessionContract.interpretHql(AbstractSharedSessionContract.java:832)
 	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:878)
 	... 72 common frames omitted
+2025-08-20 13:10:59 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 13:11:01 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:01 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:11:02 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 13:23:25 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 13:23:27 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:27 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 13:23:28 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:04:04 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:04:05 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:05 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:06 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:06 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:06 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:06 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:06 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:04:06 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:18:36 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:18:37 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:37 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:38 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:38 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:38 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:18:38 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:19:20 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:19:21 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:19:21 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:21 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:21 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:21 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:21 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:21 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:19:22 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:22:16 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:22:18 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:18 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "E1_0.exam_date" nie istnieje
+Column "E1_0.exam_date" not found; SQL statement:
+select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,e1_0.title from exams e1_0 [42122-232]
+2025-08-20 14:22:19 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties

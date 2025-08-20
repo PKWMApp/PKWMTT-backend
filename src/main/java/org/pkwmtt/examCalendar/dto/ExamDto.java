@@ -1,9 +1,6 @@
 package org.pkwmtt.examCalendar.dto;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +28,6 @@ public class ExamDto {
     @NotNull
     private final String examType;
 
-    @NotBlank
+    @NotEmpty
     private final Set<String> examGroups;
 }

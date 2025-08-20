@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -42,15 +43,15 @@ public class Exam {
     )
     private Set<StudentGroup> groups = new HashSet<>();
 
-//    @SuppressWarnings("unused")
-//    public static class Builder {
-//        public Exam build() {
-//            //    max length of group identifier is 6
-//            Arrays.stream(examGroups.split(", ")).forEach(group -> {
-//                if(group.length() > 6)
-//                    throw new InvalidGroupIdentifierException(group);
-//            });
-//            return new Exam(examId, title, description, date, examGroups, examType);
-//        }
-//    }
+    @SuppressWarnings("unused")
+    public static class Builder {
+        public Exam build() {
+            //    max length of group identifier is 6
+            groups.forEach(group -> {
+                if(group.getName().length() > 6)
+                    throw new InvalidGroupIdentifierException(group.getName());
+            });
+            return new Exam(examId, title, description, examDate, examType, groups);
+        }
+    }
 }

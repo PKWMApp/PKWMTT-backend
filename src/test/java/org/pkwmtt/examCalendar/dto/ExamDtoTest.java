@@ -23,20 +23,6 @@ class ExamDtoTest {
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
-    @Mock
-    private ExamDto examDto;
-
-    private Set<StudentGroup> groups;
-
-    @BeforeEach
-    void setup(){
-        StudentGroup group = StudentGroup.builder()
-                .name("12K2")
-                .build();
-        groups = new HashSet<>();
-        groups.add(group);
-    }
-
     @Test
     void validData() {
 //        given
@@ -45,7 +31,7 @@ class ExamDtoTest {
                 "First exam",
                 LocalDateTime.now().plusDays(1),
                 "exam",
-                groups
+                Set.of("12K2")
         );
 //        when, then
         assertTrue(validator.validate(examDto).isEmpty());
@@ -61,7 +47,7 @@ class ExamDtoTest {
                 "First exam",
                 LocalDateTime.now().plusDays(1),
                 "exam",
-                groups
+                Set.of("12K2")
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -73,14 +59,12 @@ class ExamDtoTest {
     @Test
     void emptyExamGroups() {
         //        given
-        //        clear groups set
-        groups.clear();
         ExamDto examDto = new ExamDto(
                 "Math exam",
                 "First exam",
                 LocalDateTime.now().plusDays(1),
                 "exam",
-                groups
+                Set.of()
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -100,7 +84,7 @@ class ExamDtoTest {
                 "First exam",
                 LocalDateTime.now().plusDays(1),
                 "exam",
-                groups
+                Set.of("12K2")
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -118,7 +102,7 @@ class ExamDtoTest {
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 LocalDateTime.now().plusDays(1),
                 "exam",
-                groups
+                Set.of("12K2")
         );
 //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
@@ -128,6 +112,7 @@ class ExamDtoTest {
     }
 
     //    TODO: change to too large set
+//    TODO: check if groups exists
 //    @Test
 //    void toLongExamGroups() {
 //        //        given
@@ -155,7 +140,7 @@ class ExamDtoTest {
                 "First exam",
                 LocalDateTime.now().minusHours(1),
                 "exam",
-                groups
+                Set.of("12K2")
         );
         //        when
         Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);

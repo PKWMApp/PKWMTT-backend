@@ -43,7 +43,7 @@ class ExamServiceTest {
                 "desc",
                 LocalDateTime.now().plusDays(1),
                 "Exam",
-                examGroups
+                Set.of("12k2", "13L1")
         );
         Exam exam = Exam.builder()
                 .title("Math exam")

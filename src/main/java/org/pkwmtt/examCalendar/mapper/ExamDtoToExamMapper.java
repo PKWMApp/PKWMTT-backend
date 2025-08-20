@@ -7,6 +7,7 @@ import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.exceptions.ExamTypeNotExistsException;
+import org.pkwmtt.exceptions.NoGroupsProvidedException;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -27,12 +28,17 @@ public class ExamDtoToExamMapper {
      *         Also contains examType field converted from String do ExamType
      */
     public Exam mapToNewExam(ExamDto examDto) {
+        Set<StudentGroup> studentGroups = groupRepository.findAllByNameIn(examDto.getExamGroups());
+        if(studentGroups.isEmpty())
+            throw new NoGroupsProvidedException();
         return Exam.builder()
                 .title(examDto.getTitle())
                 .description(examDto.getDescription())
                 .examDate(examDto.getDate())
-                .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType())))
-                .groups(groupRepository.findAllByNameIn(examDto.getExamGroups()))       //TODO: validate if groups is not null
+                .examType(examTypeRepository.findByName(examDto.getExamType())
+                        .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()))
+                )
+                .groups(studentGroups)
                 .build();
     }
 
@@ -43,13 +49,18 @@ public class ExamDtoToExamMapper {
      *         Also contains examType field converted from String do ExamType
      */
     public Exam mapToExistingExam(ExamDto examDto, int id) {
+        Set<StudentGroup> studentGroups = groupRepository.findAllByNameIn(examDto.getExamGroups());
+        if(studentGroups.isEmpty())
+            throw new NoGroupsProvidedException();
         return Exam.builder()
                 .examId(id)
                 .title(examDto.getTitle())
                 .description(examDto.getDescription())
                 .examDate(examDto.getDate())
-                .examType(examTypeRepository.findByName(examDto.getExamType()).orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType())))
-                .groups(groupRepository.findAllByNameIn(examDto.getExamGroups()))
+                .examType(examTypeRepository.findByName(examDto.getExamType())
+                        .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()))
+                )
+                .groups(studentGroups)
                 .build();
     }
 }

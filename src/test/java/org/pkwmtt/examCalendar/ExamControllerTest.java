@@ -512,15 +512,12 @@ class ExamControllerTest {
      * @return created ExamDto
      */
     private ExamDto createExampleExamDto(String examTypeName) {
-        Set<StudentGroup> examGroups = new HashSet<>();
-        examGroups.add(StudentGroup.builder().name("11K1").build());
-        examGroups.add(StudentGroup.builder().name("L01").build());
         return new ExamDto(
                 "Math exam",
                 "first exam",
                 LocalDateTime.now().plusDays(1),
                 examTypeName,
-                examGroups
+                Set.of("11k1", "L01")
         );
     }
 
