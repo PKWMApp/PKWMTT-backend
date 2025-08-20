@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
+import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -46,11 +47,9 @@ public class Exam {
     @SuppressWarnings("unused")
     public static class Builder {
         public Exam build() {
-            //    max length of group identifier is 6
-            groups.forEach(group -> {
-                if(group.getName().length() > 6)
-                    throw new InvalidGroupIdentifierException(group.getName());
-            });
+//          min 1 max 100 elements of set
+            if(groups.isEmpty() || groups.size() > 100)
+                throw new UnsupportedCountOfArgumentsException(1, 100, groups.size());
             return new Exam(examId, title, description, examDate, examType, groups);
         }
     }
