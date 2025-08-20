@@ -6,12 +6,13 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
-import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
-import org.pkwmtt.examCalendar.mapper.ExamToExamDtoMapper;
+import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
+import org.pkwmtt.exceptions.ExamTypeNotExistsException;
 import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
+import org.pkwmtt.exceptions.NoGroupsProvidedException;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,6 @@ import java.util.stream.Collectors;
 public class ExamService {
 
     private final ExamRepository examRepository;
-    private final ExamDtoToExamMapper examDtoToExamMapper;
     private final ExamTypeRepository examTypeRepository;
     private final GroupRepository groupRepository;
 
@@ -33,7 +33,17 @@ public class ExamService {
      * @return id of exam added to database
      */
     public int addExam(ExamDto examDto) {
-        return examRepository.save(examDtoToExamMapper.mapToNewExam(examDto)).getExamId();
+//        check if groups set isn't empty
+        Set<StudentGroup> groups = groupRepository.findAllByNameIn(examDto.getExamGroups());
+        if (groups.isEmpty())
+            throw new NoGroupsProvidedException();
+
+//        check if exam type exists
+        ExamType examType = examTypeRepository.findByName(examDto.getExamType())
+                .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()));
+
+//        save exam in repository and return id of created exam
+        return examRepository.save(ExamDtoMapper.mapToNewExam(examDto, groups, examType)).getExamId();
     }
 
     /**
@@ -41,8 +51,19 @@ public class ExamService {
      * @param id      of exam that need to be modified
      */
     public void modifyExam(ExamDto examDto, int id) {
+//        check if exam which would be modified exists
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
-        examRepository.save(examDtoToExamMapper.mapToExistingExam(examDto, id));
+
+//      check if groups set isn't empty
+        Set<StudentGroup> groups = groupRepository.findAllByNameIn(examDto.getExamGroups());
+        if (groups.isEmpty())
+            throw new NoGroupsProvidedException();
+
+//      check if exam type exists
+        ExamType examType = examTypeRepository.findByName(examDto.getExamType())
+                .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()));
+
+        examRepository.save(ExamDtoMapper.mapToExistingExam(examDto, groups, examType, id));
     }
 
     /**
@@ -61,10 +82,10 @@ public class ExamService {
         return examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
     }
 
-    public Set<Exam> getExamByGroups(Set<String> groupNames){
+    public Set<Exam> getExamByGroups(Set<String> groupNames) {
         Set<StudentGroup> studentGroups = groupRepository.findAllByNameIn(groupNames);
         Set<String> groupNamesFromDatabase = studentGroups.stream().map(StudentGroup::getName).collect(Collectors.toSet());
-        if(!groupNamesFromDatabase.equals(groupNames)){
+        if (!groupNamesFromDatabase.equals(groupNames)) {
             groupNames.removeAll(groupNamesFromDatabase);
             throw new InvalidGroupIdentifierException(groupNames);
         }

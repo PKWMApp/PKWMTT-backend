@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
-import org.pkwmtt.examCalendar.mapper.ExamToExamDtoMapper;
+import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -75,7 +75,7 @@ public class ExamController {
      */
     @GetMapping("/by-groups")
     public ResponseEntity<Set<ExamDto>> getExams(@RequestParam Set<String> groups){
-        return ResponseEntity.ok(ExamToExamDtoMapper.mapToExamDto(examService.getExamByGroups(groups)));
+        return ResponseEntity.ok(ExamDtoMapper.mapToExamDto(examService.getExamByGroups(groups)));
     }
 
     /**

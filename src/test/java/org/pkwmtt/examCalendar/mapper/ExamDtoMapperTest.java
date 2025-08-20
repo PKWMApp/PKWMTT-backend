@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ExamDtoToExamMapperTest {
+class ExamDtoMapperTest {
 
     @Mock
     private ExamTypeRepository examTypeRepository;
@@ -34,7 +34,7 @@ class ExamDtoToExamMapperTest {
     private GroupRepository groupRepository;
 
     @InjectMocks
-    private ExamDtoToExamMapper examDtoToExamMapper;
+    private ExamDtoMapper examDtoMapper;
 
     private ExamDto examDto;
     private String examTypeName;
@@ -74,7 +74,7 @@ class ExamDtoToExamMapperTest {
                 new HashSet<>(groups)
         );
 //        when
-        Exam exam = examDtoToExamMapper.mapToNewExam(examDto);
+        Exam exam = examDtoMapper.mapToNewExam(examDto);
 //        then
 //        test fields
         assertEquals(examDto.getTitle(), exam.getTitle());
@@ -111,7 +111,7 @@ class ExamDtoToExamMapperTest {
 //        then
         RuntimeException exception = assertThrows(
                 InvalidGroupIdentifierException.class,
-                () -> examDtoToExamMapper.mapToNewExam(examDto)
+                () -> examDtoMapper.mapToNewExam(examDto)
         );
         assertEquals("Invalid group identifier: Not_Valid_Identifier", exception.getMessage());
     }
@@ -142,7 +142,7 @@ class ExamDtoToExamMapperTest {
                 new HashSet<>(groups)
         );
 //        when
-        Exam exam = examDtoToExamMapper.mapToExistingExam(examDto, examId);
+        Exam exam = examDtoMapper.mapToExistingExam(examDto, examId);
 //        then
 //        test fields
         assertEquals(examId, exam.getExamId());
@@ -180,7 +180,7 @@ class ExamDtoToExamMapperTest {
 //        then
         RuntimeException exception = assertThrows(
                 InvalidGroupIdentifierException.class,
-                () -> examDtoToExamMapper.mapToExistingExam(examDto, examId)
+                () -> examDtoMapper.mapToExistingExam(examDto, examId)
         );
         assertEquals("Invalid group identifier: Not_Valid_Identifier", exception.getMessage());
     }

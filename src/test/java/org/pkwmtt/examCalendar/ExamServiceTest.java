@@ -9,7 +9,7 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
-import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
+import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 
 import java.lang.reflect.Field;
@@ -26,7 +26,7 @@ class ExamServiceTest {
     private ExamRepository examRepository;
 
     @Mock
-    private ExamDtoToExamMapper examDtoToExamMapper;
+    private ExamDtoMapper examDtoMapper;
 
     @InjectMocks
     private ExamService examService;
@@ -52,7 +52,7 @@ class ExamServiceTest {
                 .groups(examGroups)
                 .examType(new ExamType(1, "Exam"))
                 .build();
-        when(examDtoToExamMapper.mapToNewExam(examDto)).thenReturn(exam);
+        when(examDtoMapper.mapToNewExam(examDto)).thenReturn(exam);
 
 //        assign exam id in repository
         when(examRepository.save(exam)).thenAnswer(invocation -> {
@@ -67,7 +67,7 @@ class ExamServiceTest {
 //        then
         assertEquals(examId, result);
         verify(examRepository).save(exam);
-        verify(examDtoToExamMapper).mapToNewExam(examDto);
+        verify(examDtoMapper).mapToNewExam(examDto);
     }
 
     /************************************************************************************/
@@ -79,12 +79,12 @@ class ExamServiceTest {
         ExamDto examDto = mock(ExamDto.class);
         Exam exam = mock(Exam.class);
 
-        when(examDtoToExamMapper.mapToExistingExam(examDto, examId)).thenReturn(exam);
+        when(examDtoMapper.mapToExistingExam(examDto, examId)).thenReturn(exam);
         when(examRepository.findById(examId)).thenReturn(Optional.of(exam));
 //        when
         examService.modifyExam(examDto, examId);
 //        then
-        verify(examDtoToExamMapper).mapToExistingExam(examDto, examId);
+        verify(examDtoMapper).mapToExistingExam(examDto, examId);
         verify(examRepository).save(exam);
     }
 
@@ -100,7 +100,7 @@ class ExamServiceTest {
                 () -> examService.modifyExam(examDto, examId)
         );
 //        then
-        verify(examDtoToExamMapper, never()).mapToExistingExam(examDto, examId);
+        verify(examDtoMapper, never()).mapToExistingExam(examDto, examId);
         verify(examRepository, never()).save(any());
         assertEquals("Exam not found", exception.getMessage());
     }
