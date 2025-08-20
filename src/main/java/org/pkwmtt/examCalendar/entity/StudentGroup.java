@@ -23,6 +23,6 @@ public class StudentGroup {
     private String name;
 
 //    FIXME: remove?
-    @ManyToMany(mappedBy = "groups")
-    private Set<Exam> exams = new HashSet<>();
+//    @ManyToMany(mappedBy = "groups")
+//    private Set<Exam> exams = new HashSet<>();
 }

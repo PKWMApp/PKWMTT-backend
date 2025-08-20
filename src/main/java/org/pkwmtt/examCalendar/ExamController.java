@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
+import org.pkwmtt.examCalendar.mapper.ExamToExamDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,6 @@ public class ExamController {
                 .buildAndExpand(id)
                 .toUri();
         return ResponseEntity.created(uri).build();
-//        TODO: test not null validation in controller
     }
 
     /**
@@ -73,15 +73,14 @@ public class ExamController {
      * @param groups set of groups
      * @return 200 ok with list of exams for specific group
      */
-//    @GetMapping("/by-groups")
-//    public ResponseEntity<Set<Exam>> getExams(@RequestParam Set<String> groups){
-//        return ResponseEntity.ok(examService.getExamByGroup(groups));
-//    }
+    @GetMapping("/by-groups")
+    public ResponseEntity<Set<ExamDto>> getExams(@RequestParam Set<String> groups){
+        return ResponseEntity.ok(ExamToExamDtoMapper.mapToExamDto(examService.getExamByGroups(groups)));
+    }
 
     /**
      * @return 200 ok with list of available exam types
      */
-//    should be moved to new controller?
     @GetMapping("/exam-types")
     public ResponseEntity<List<ExamType>> getExamTypes(){
         return ResponseEntity.ok(examService.getExamTypes());

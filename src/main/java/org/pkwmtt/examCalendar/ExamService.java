@@ -5,14 +5,18 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
+import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
+import org.pkwmtt.examCalendar.mapper.ExamToExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
+import org.pkwmtt.examCalendar.repository.GroupRepository;
+import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
-import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +24,16 @@ import java.util.*;
 public class ExamService {
 
     private final ExamRepository examRepository;
-    private final ExamDtoToExamMapper examMapper;
+    private final ExamDtoToExamMapper examDtoToExamMapper;
     private final ExamTypeRepository examTypeRepository;
+    private final GroupRepository groupRepository;
 
     /**
      * @param examDto details of exam
      * @return id of exam added to database
      */
     public int addExam(ExamDto examDto) {
-        return examRepository.save(examMapper.mapToNewExam(examDto)).getExamId();
+        return examRepository.save(examDtoToExamMapper.mapToNewExam(examDto)).getExamId();
     }
 
     /**
@@ -37,7 +42,7 @@ public class ExamService {
      */
     public void modifyExam(ExamDto examDto, int id) {
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
-        examRepository.save(examMapper.mapToExistingExam(examDto, id));
+        examRepository.save(examDtoToExamMapper.mapToExistingExam(examDto, id));
     }
 
     /**
@@ -54,6 +59,16 @@ public class ExamService {
      */
     public Exam getExamById(int id) {
         return examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
+    }
+
+    public Set<Exam> getExamByGroups(Set<String> groupNames){
+        Set<StudentGroup> studentGroups = groupRepository.findAllByNameIn(groupNames);
+        Set<String> groupNamesFromDatabase = studentGroups.stream().map(StudentGroup::getName).collect(Collectors.toSet());
+        if(!groupNamesFromDatabase.equals(groupNames)){
+            groupNames.removeAll(groupNamesFromDatabase);
+            throw new InvalidGroupIdentifierException(groupNames);
+        }
+        return examRepository.findByGroupsIn(studentGroups);
     }
 
 //    /**

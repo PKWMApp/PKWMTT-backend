@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @Getter
 @RequiredArgsConstructor
+@Builder
 public class ExamDto {
 
     @NotBlank
@@ -29,6 +31,6 @@ public class ExamDto {
     @NotNull
     private final String examType;
 
-    @NotNull
-    private final Set<StudentGroup> examGroups;
+    @NotBlank
+    private final Set<String> examGroups;
 }

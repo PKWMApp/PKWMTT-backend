@@ -2,7 +2,6 @@ package org.pkwmtt.examCalendar;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,12 +11,10 @@ import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.mapper.ExamDtoToExamMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
-import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
