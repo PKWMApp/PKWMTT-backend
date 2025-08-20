@@ -111,26 +111,8 @@ class ExamDtoTest {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }
 
-    //    TODO: change to too large set
-//    TODO: check if groups exists
-//    @Test
-//    void toLongExamGroups() {
-//        //        given
-//        ExamDto examDto = new ExamDto(
-//                "Math exam",
-//                "First exam",
-//                LocalDateTime.now().plusDays(1),
-//                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-//                "exam"
-//        );
-////        when
-//        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
-////        then
-//        assertFalse(validator.validate(examDto).isEmpty());
-//        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("examGroups")));
-//    }
-
-//    date not in future
+    //    TODO: change to too large set is Exam builder tests
+    //    TODO: check if groups exists
 
     @Test
     void dateNotInFuture() {

@@ -11,6 +11,7 @@ import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
+import org.pkwmtt.timetable.TimetableService;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ class ExamServiceTest {
     private ExamRepository examRepository;
 
     @Mock
-    private ExamDtoMapper examDtoMapper;
+    private TimetableService timetableService;
 
     @InjectMocks
     private ExamService examService;
@@ -35,9 +36,6 @@ class ExamServiceTest {
     void addExam() {
 //        given
         int examId = 1;
-        Set<StudentGroup> examGroups = new HashSet<>();
-        examGroups.add(StudentGroup.builder().name("12K2").build());
-        examGroups.add(StudentGroup.builder().name("13L1").build());
         ExamDto examDto = new ExamDto(
                 "Math exam",
                 "desc",
@@ -67,7 +65,6 @@ class ExamServiceTest {
 //        then
         assertEquals(examId, result);
         verify(examRepository).save(exam);
-        verify(examDtoMapper).mapToNewExam(examDto);
     }
 
     /************************************************************************************/
