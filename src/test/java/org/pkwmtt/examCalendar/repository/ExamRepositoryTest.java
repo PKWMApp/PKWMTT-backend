@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,10 +38,10 @@ class ExamRepositoryTest {
     private StudentGroup gL04;
     private StudentGroup gL05;
 
-    private Exam exam1;
-    private Exam exam2;
-    private Exam exam3;
-    private Exam exam4;
+    private Integer exam1Id;
+    private Integer exam2Id;
+    private Integer exam3Id;
+    private Integer exam4Id;
 
     @BeforeAll
     void setUp() {
@@ -64,7 +66,7 @@ class ExamRepositoryTest {
         groupRepository.save(gL04);
         groupRepository.save(gL05);
 
-        exam1 = Exam.builder()
+        Exam exam1 = Exam.builder()
                 .title("math exam")
                 .description("Linear Algebra")
                 .examDate(LocalDateTime.now().plusDays(1))
@@ -72,15 +74,15 @@ class ExamRepositoryTest {
                 .groups(Set.of(gL04))
                 .build();
 
-        exam2 = Exam.builder()
+        Exam exam2 = Exam.builder()
                 .title("math exam")
                 .description("Linear Algebra")
                 .examDate(LocalDateTime.now().plusDays(1))
                 .examType(examType)
-                .groups(Set.of(g12K1, g12K2 ,gL04, gL05))
+                .groups(Set.of(g12K1, g12K2, gL04, gL05))
                 .build();
 
-        exam3 = Exam.builder()
+        Exam exam3 = Exam.builder()
                 .title("math exam")
                 .description("Linear Algebra")
                 .examDate(LocalDateTime.now().plusDays(1))
@@ -88,7 +90,7 @@ class ExamRepositoryTest {
                 .groups(Set.of(g12K1))
                 .build();
 
-        exam4 = Exam.builder()
+        Exam exam4 = Exam.builder()
                 .title("math exam")
                 .description("Linear Algebra")
                 .examDate(LocalDateTime.now().plusDays(1))
@@ -96,10 +98,10 @@ class ExamRepositoryTest {
                 .groups(Set.of(gL04, g12K1))
                 .build();
 
-        examRepository.save(exam1);
-        examRepository.save(exam2);
-        examRepository.save(exam3);
-        examRepository.save(exam4);
+        exam1Id = examRepository.save(exam1).getExamId();
+        exam2Id = examRepository.save(exam2).getExamId();
+        exam3Id = examRepository.save(exam3).getExamId();
+        exam4Id = examRepository.save(exam4).getExamId();
     }
 
 
@@ -115,9 +117,12 @@ class ExamRepositoryTest {
     void shouldReturnOneElementOutOfFour() {
 //        when
         Set<Exam> exams = examRepository.findByGroupsIn(Set.of(g12K2, gL05));
+        Set<Integer> examsId = exams.stream().map(Exam::getExamId).collect(Collectors.toSet());
+
 //        then
+
         assertEquals(1, exams.size());
-        assertTrue(exams.contains(exam2));
+        assertTrue(examsId.contains(exam2Id));
 
     }
 
@@ -125,12 +130,13 @@ class ExamRepositoryTest {
     void shouldReturnFourElementsOutOfFour() {
 //        when
         Set<Exam> exams = examRepository.findByGroupsIn(Set.of(g12K1, gL04));
+        Set<Integer> examsId = exams.stream().map(Exam::getExamId).collect(Collectors.toSet());
 //        then
         assertEquals(4, exams.size());
-        assertTrue(exams.contains(exam1));
-        assertTrue(exams.contains(exam2));
-        assertTrue(exams.contains(exam3));
-        assertTrue(exams.contains(exam4));
+        assertTrue(examsId.contains(exam1Id));
+        assertTrue(examsId.contains(exam2Id));
+        assertTrue(examsId.contains(exam3Id));
+        assertTrue(examsId.contains(exam4Id));
     }
 
     @Test
@@ -141,13 +147,13 @@ class ExamRepositoryTest {
         assertTrue(exams.isEmpty());
     }
 
-//    FIXME:
     @Test
     void ShouldReturnEmptySetWhenGroupNotExistsInDatabase() {
 //        when
         Set<Exam> exams = examRepository.findByGroupsIn(Set.of(
                 StudentGroup.builder()
-                .name("NotValid").build())
+                        .groupId(Integer.MAX_VALUE)
+                        .name("NotValid").build())
         );
 //        then
         assertTrue(exams.isEmpty());

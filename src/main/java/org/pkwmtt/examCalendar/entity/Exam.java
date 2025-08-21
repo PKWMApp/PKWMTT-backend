@@ -29,7 +29,7 @@ public class Exam {
 
     private String description;
 
-    @Column(name = "`exam_date`", nullable = false)
+    @Column(name = "exam_date", nullable = false)
     private LocalDateTime examDate;
 
     @ManyToOne

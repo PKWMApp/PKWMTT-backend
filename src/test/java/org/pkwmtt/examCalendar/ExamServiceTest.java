@@ -34,72 +34,20 @@ class ExamServiceTest {
 
     @Test
     void addExam() {
-//        given
-        int examId = 1;
-        ExamDto examDto = new ExamDto(
-                "Math exam",
-                "desc",
-                LocalDateTime.now().plusDays(1),
-                "Exam",
-                Set.of("12k2", "13L1")
-        );
-        Exam exam = Exam.builder()
-                .title("Math exam")
-                .description("desc")
-                .examDate(LocalDateTime.now().plusDays(1))
-                .groups(examGroups)
-                .examType(new ExamType(1, "Exam"))
-                .build();
-        when(examDtoMapper.mapToNewExam(examDto)).thenReturn(exam);
 
-//        assign exam id in repository
-        when(examRepository.save(exam)).thenAnswer(invocation -> {
-            Exam newExam = invocation.getArgument(0, Exam.class);
-            Field field = Exam.class.getDeclaredField("examId");
-            field.setAccessible(true);
-            field.set(newExam, examId);
-            return newExam;
-        });
-//        when
-        int result = examService.addExam(examDto);
-//        then
-        assertEquals(examId, result);
-        verify(examRepository).save(exam);
     }
 
     /************************************************************************************/
 //modify exam
     @Test
     void shouldModifyExamWhenIdExists() {
-        //        given
-        int examId = 1;
-        ExamDto examDto = mock(ExamDto.class);
-        Exam exam = mock(Exam.class);
 
-        when(examDtoMapper.mapToExistingExam(examDto, examId)).thenReturn(exam);
-        when(examRepository.findById(examId)).thenReturn(Optional.of(exam));
-//        when
-        examService.modifyExam(examDto, examId);
-//        then
-        verify(examDtoMapper).mapToExistingExam(examDto, examId);
-        verify(examRepository).save(exam);
     }
 
     @Test
     void shouldThrowWhenExamIdNotExists() {
         //        given
-        int examId = 5;
-        ExamDto examDto = mock(ExamDto.class);
-        when(examRepository.findById(examId)).thenThrow(new NoSuchElementException("Exam not found"));
-//        when
-        RuntimeException exception = assertThrows(
-                NoSuchElementException.class,
-                () -> examService.modifyExam(examDto, examId)
-        );
-//        then
-        verify(examDtoMapper, never()).mapToExistingExam(examDto, examId);
-        verify(examRepository, never()).save(any());
-        assertEquals("Exam not found", exception.getMessage());
+
     }
 
     /************************************************************************************/

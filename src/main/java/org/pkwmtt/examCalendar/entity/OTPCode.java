@@ -27,6 +27,6 @@ public class OTPCode {
     private LocalDateTime expire;
 
     @OneToOne
-    @JoinColumn(name = "`general_group_id`", nullable = false)
+    @JoinColumn(name = "general_group_id", nullable = false)
     private GeneralGroup generalGroup;
 }
