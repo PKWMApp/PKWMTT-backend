@@ -1,9 +1,9 @@
 package org.pkwmtt.examCalendar;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
@@ -11,14 +11,19 @@ import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
+import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
+import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.timetable.TimetableService;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class ExamServiceTest {
@@ -27,14 +32,101 @@ class ExamServiceTest {
     private ExamRepository examRepository;
 
     @Mock
+    private GroupRepository groupRepository;
+
+    @Mock
+    private ExamTypeRepository examTypeRepository;
+
+    @Mock
     private TimetableService timetableService;
 
     @InjectMocks
     private ExamService examService;
 
     @Test
-    void addExam() {
+    void addExam() throws JsonProcessingException {
+//        given
+        String examTypeName = "exam";
+        ExamType examType = ExamType.builder().name(examTypeName).build();
+        examTypeRepository.save(examType);
 
+        ExamDto examDto = ExamDto.builder()
+                .title("title")
+                .description("desc")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType(examTypeName)
+                .examGroups(Set.of("12K1", "P05", "L02"))
+                .build();
+
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1", "12K2", "12K3"));
+        when(timetableService.getAvailableSubGroups("12K1")).thenReturn(List.of(
+                "K01", "K04", "L01", "L02", "L04", "P01", "P04"
+        ));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of(
+                "K02", "K04", "K05", "L02", "L03", "L04", "L05", "P02", "P04", "P05"
+        ));
+        when(timetableService.getAvailableSubGroups("12K3")).thenReturn(List.of(
+                "K03", "K05", "L03", "L05", "L06", "P03", "P05"
+        ));
+
+        when(groupRepository.findAllByNameIn(Set.of("12K1", "P05", "L02"))).thenReturn(
+                Stream.of("12K1", "P05", "L02").map(s ->
+                        StudentGroup.builder()
+                                .name(s)
+                                .build()
+                ).collect(Collectors.toSet())
+        );
+
+        when(examTypeRepository.findByName("exam")).thenReturn(Optional.of(ExamType.builder()
+                .examTypeId(1)
+                .name("exam")
+                .build()));
+
+        Set<StudentGroup> studentGroups = Stream.of("12K1", "P05", "L02").map(s ->
+                StudentGroup.builder()
+                        .name(s)
+                        .build()
+        ).collect(Collectors.toSet());
+
+        when(examRepository.save(any(Exam.class))).thenReturn(Exam.builder()
+                .examId(1)
+                .title("title")
+                .description("desc")
+                .examDate(LocalDateTime.now().plusDays(1))
+                .examType(ExamType.builder()
+                        .examTypeId(1)
+                        .name("exam")
+                        .build())
+                .groups(studentGroups)
+                .build()
+        );
+//        when
+        int returnedExamID = examService.addExam(examDto);
+//        then
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(timetableService, times(1)).getAvailableSubGroups("12K1");
+        verify(timetableService, times(1)).getAvailableSubGroups("12K2");
+        verify(timetableService, times(1)).getAvailableSubGroups("12K3");
+
+        ArgumentCaptor<Set<StudentGroup>> studentGroupCaptor = ArgumentCaptor.forClass(Set.class);
+        verify(groupRepository, times(1)).saveAll(studentGroupCaptor.capture());
+
+        Set<String> expectedGroups = studentGroups.stream()
+                .map(StudentGroup::getName)
+                .collect(Collectors.toSet());
+
+        Set<String> providedGroups = studentGroupCaptor.getValue().stream()
+                .map(StudentGroup::getName)
+                .collect(Collectors.toSet());
+
+        assertEquals(expectedGroups, providedGroups);
+
+        verify(examTypeRepository, times(1)).findByName(examTypeName);
+
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        assertNull(examCaptor.getValue().getExamId());
+        assertEquals(1, returnedExamID);
     }
 
     /************************************************************************************/
@@ -257,7 +349,8 @@ class ExamServiceTest {
 //        when(examRepository.findExamsByGroupsIdentifier(any(), any(), any(), any())).thenReturn(exams);
 ////        when
 //        Set<Exam> result = examService.getExamByGroup(groups);
-////        then
+
+    /// /        then
 //        List<ArgumentCaptor<String>> cap = new ArrayList<>();
 //        for (int i = 0; i < 4; ++i)
 //            cap.add(ArgumentCaptor.forClass(String.class));

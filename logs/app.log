@@ -876,3 +876,24 @@ select e1_0.exam_id,e1_0.description,e1_0."exam_date",e1_0.exam_type_id,et1_0.ex
 2025-08-21 13:01:14 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Kolumna "exam_date" nie istnieje
 Column "exam_date" not found; SQL statement:
 insert into exams (description,"exam_date",exam_type_id,title,exam_id) values (?,?,?,?,default) [42122-232]
+2025-08-21 13:26:56 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-21 13:26:59 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-21 13:27:04 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-21 14:13:30 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in org.pkwmtt.examCalendar.ExamController required a bean of type 'org.pkwmtt.examCalendar.ExamService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'org.pkwmtt.examCalendar.ExamService' in your configuration.
+
+2025-08-22 23:16:11 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-22 23:16:13 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-22 23:16:16 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties

@@ -123,7 +123,7 @@ public class ExamService {
                         .map(g -> StudentGroup.builder()
                                 .name(g)
                                 .build())
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toSet())
                 );
         } catch (JsonProcessingException e) {
             allGroups = groupRepository.findAllByNameIn(examDto.getExamGroups())
