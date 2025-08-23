@@ -1,16 +1,23 @@
 package org.pkwmtt.otp;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.GeneralGroup;
 import org.pkwmtt.examCalendar.entity.OTPCode;
+import org.pkwmtt.examCalendar.repository.GeneralGroupRepository;
 import org.pkwmtt.examCalendar.repository.UserRepository;
 import org.pkwmtt.exceptions.OTPCodeNotFoundException;
 import org.pkwmtt.exceptions.UserNotFoundException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
+import org.pkwmtt.mail.EmailService;
+import org.pkwmtt.mail.dto.MailDTO;
+import org.pkwmtt.otp.dto.OTPRequest;
 import org.pkwmtt.otp.repository.OTPCodeRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +26,8 @@ import java.util.regex.Pattern;
 public class OTPService {
     private final OTPCodeRepository repository;
     private final UserRepository userRepository;
+    private final GeneralGroupRepository generalGroupRepository;
+    private final EmailService emailService;
     
     private GeneralGroup getGeneralGroupAssignedToCode (String code) throws OTPCodeNotFoundException, WrongOTPFormatException {
         this.validateCode(code);
@@ -44,7 +53,6 @@ public class OTPService {
         if (!matcher.find()) {
             throw new WrongOTPFormatException("Wrong format of provided code.");
         }
-        
     }
     
     public String generateTokenForRepresentative (String code) throws OTPCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
@@ -54,10 +62,55 @@ public class OTPService {
         }
         var userEmail = userRepository.findByGeneralGroup(generalGroup).get().getEmail();
         
-        String token = "example-token";
+        //Delete use code
+        repository.deleteByCode(code);
+        
+        String token = "example-token_" + generalGroup.getName();
         
         //TODO here generate token with provided credentials
         
         return token;
     }
+    
+    public void sendOTPCodes (List<OTPRequest> requests) {
+        requests.forEach(request -> {
+            var code = generateNewCode();
+            MailDTO mail = new MailDTO()
+              .setTitle("Kod Starosty " + request.getGeneralGroupName())
+              .setRecipient(request.getEmail())
+              .setDescription(request.getMailMessage(code));
+            
+            try { //TODO return if all mail were sens or which wasn't
+                emailService.send(mail);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+            
+            //Save general group, if it doesn't exist
+            if (generalGroupRepository.findByName(request.getGeneralGroupName()).isEmpty()) {
+                generalGroupRepository.save(new GeneralGroup(null, request.getGeneralGroupName()));
+            }
+            
+            var generalGroup = generalGroupRepository.findByName(request.getGeneralGroupName()).get();
+            
+            repository.save(new OTPCode(code, generalGroup));
+        });
+    }
+    
+    private String generateNewCode () {
+        String availableCharacters = "ABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+        StringBuilder code = new StringBuilder();
+        Random random = new Random();
+        
+        do {
+            code.setLength(0);
+            for (int i = 0; i < 6; i++) {
+                code.append(availableCharacters.charAt(random.nextInt(availableCharacters.length())));
+            }
+        } while (repository.findByCode(code.toString()).isPresent());
+        
+        return code.toString();
+    }
+    
+    
 }
