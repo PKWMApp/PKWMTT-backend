@@ -1,11 +1,17 @@
-package org.pkwmtt.entity;
+package org.pkwmtt.examCalendar.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Entity
-@Data
-@Table(name = "`exam_type`")
+@Getter
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Table(name = "exam_type")
 public class ExamType {
 
     @Id
