@@ -32,7 +32,7 @@ public class ExamService {
      * @param examDto details of exam
      * @return id of exam added to database
      */
-    public int addExam(ExamDto examDto) {
+    public int addExam(ExamDto examDto) throws JsonProcessingException {
 
         verifyAndUpdateExamGroups(examDto);
         Set<StudentGroup> groups = groupRepository.findAllByNameIn(examDto.getExamGroups());
@@ -49,7 +49,7 @@ public class ExamService {
      * @param examDto new details of exam that overwrite old ones
      * @param id      of exam that need to be modified
      */
-    public void modifyExam(ExamDto examDto, int id) {
+    public void modifyExam(ExamDto examDto, int id) throws JsonProcessingException {
 //        check if exam which would be modified exists
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
 
@@ -111,7 +111,7 @@ public class ExamService {
      * when timetable service is unavailable check groups of existing exams for verification
      * @param examDto
      */
-    private void verifyAndUpdateExamGroups(ExamDto examDto) {
+    private void verifyAndUpdateExamGroups(ExamDto examDto) throws JsonProcessingException {
         Set<String> allGroups;
         try {
             allGroups = getGroupsFromTimetableService();
@@ -125,13 +125,13 @@ public class ExamService {
                                 .build())
                         .collect(Collectors.toSet())
                 );
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | SpecifiedGeneralGroupDoesntExistsException | WebPageContentNotAvailableException e) {
             allGroups = groupRepository.findAllByNameIn(examDto.getExamGroups())
                     .stream()
                     .map(StudentGroup::getName)
                     .collect(Collectors.toSet());
             if (!allGroups.containsAll(examDto.getExamGroups()))
-                throw new WebPageContentNotAvailableException();
+                throw e;
         }
     }
 }

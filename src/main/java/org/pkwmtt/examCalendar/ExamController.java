@@ -1,5 +1,6 @@
 package org.pkwmtt.examCalendar;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class ExamController {
      * @return 201 created with URI to GET method which returns created resource
      */
     @PostMapping("")
-    public ResponseEntity<Void> addExam(@RequestBody @Valid ExamDto examDto) {
+    public ResponseEntity<Void> addExam(@RequestBody @Valid ExamDto examDto) throws JsonProcessingException {
         int id = examService.addExam(examDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -45,7 +46,7 @@ public class ExamController {
      * @return 204 no content
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid ExamDto examDto) {
+    public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid ExamDto examDto) throws JsonProcessingException {
         examService.modifyExam(examDto, id);
         return ResponseEntity.noContent().build();
     }
