@@ -33,7 +33,7 @@ public class JwtServiceImpl implements JwtService {
                 .claim("group", user.getGroup())
                 .claim("role", user.getRole())
                 .issuedAt(new Date())
-                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getEXPIRATION_MS())))
+                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
                 .compact();
     }
@@ -46,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
      * @return secret key for JWT signing
      */
     private SecretKey decodeSecretKey(){
-        byte[] decodedKey = Base64.getDecoder().decode(jwtUtils.getSECRET());
+        byte[] decodedKey = Base64.getDecoder().decode(jwtUtils.getSecret());
         return Keys.hmacShaKeyFor(decodedKey);
     }
 
