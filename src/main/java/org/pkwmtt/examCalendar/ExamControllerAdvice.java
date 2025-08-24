@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.exceptions.ExamTypeNotExistsException;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
+import org.pkwmtt.timetable.TimetableController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
+@RestControllerAdvice(assignableTypes = {ExamController.class})
 public class ExamControllerAdvice {
 
 //  TODO: handle or remove UnsupportedCountOfArgumentsException
