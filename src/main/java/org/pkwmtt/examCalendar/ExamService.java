@@ -34,8 +34,7 @@ public class ExamService {
      */
     public int addExam(ExamDto examDto) throws JsonProcessingException {
 
-        verifyAndUpdateExamGroups(examDto);
-        Set<StudentGroup> groups = groupRepository.findAllByNameIn(examDto.getExamGroups());
+        Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
 //        check if exam type exists
         ExamType examType = examTypeRepository.findByName(examDto.getExamType())
@@ -53,8 +52,7 @@ public class ExamService {
 //        check if exam which would be modified exists
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
 
-        verifyAndUpdateExamGroups(examDto);
-        Set<StudentGroup> groups = groupRepository.findAllByNameIn(examDto.getExamGroups());
+        Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
 //      check if exam type exists
         ExamType examType = examTypeRepository.findByName(examDto.getExamType())
@@ -109,29 +107,56 @@ public class ExamService {
     /**
      * verify if groups exists in timetable if exist updates database.
      * when timetable service is unavailable check groups of existing exams for verification
+     *
      * @param examDto
      */
-    private void verifyAndUpdateExamGroups(ExamDto examDto) throws JsonProcessingException {
-        Set<String> allGroups;
+    private Set<StudentGroup> verifyAndUpdateExamGroups(ExamDto examDto) throws JsonProcessingException {
+        Set<String> allGeneralGroups;
         try {
-            allGroups = getGroupsFromTimetableService();
-            if (!allGroups.containsAll(examDto.getExamGroups())) {
-                examDto.getExamGroups().removeAll(allGroups);
-                throw new InvalidGroupIdentifierException(examDto.getExamGroups());
-            } else
-                groupRepository.saveAll(examDto.getExamGroups().stream()
-                        .map(g -> StudentGroup.builder()
-                                .name(g)
-                                .build())
-                        .collect(Collectors.toSet())
-                );
-        } catch (JsonProcessingException | SpecifiedGeneralGroupDoesntExistsException | WebPageContentNotAvailableException e) {
-            allGroups = groupRepository.findAllByNameIn(examDto.getExamGroups())
-                    .stream()
-                    .map(StudentGroup::getName)
-                    .collect(Collectors.toSet());
-            if (!allGroups.containsAll(examDto.getExamGroups()))
+//        only one general group could be assigned to subgroups
+            if (examDto.getGeneralGroups().size() != 1 && !examDto.getSubgroups().isEmpty())
+                throw new InvalidGroupIdentifierException("ambiguous general group for subgroups");
+            allGeneralGroups = new HashSet<>(timetableService.getGeneralGroupList());
+//        verify generalGroups using timetable service
+            if (!allGeneralGroups.containsAll(examDto.getGeneralGroups()))
+                throw new InvalidGroupIdentifierException("one of generalGroups identifier is incorrect");
+//        if subgroups exists verify them using timetable service (get subgroups for generalGroup)
+            if (!examDto.getSubgroups().isEmpty() && !new HashSet<>(timetableService.getAvailableSubGroups(examDto.getGeneralGroups().iterator().next())).containsAll(examDto.getSubgroups()))
+                throw new InvalidGroupIdentifierException("one or more of subgroups identifier is incorrect");
+
+//        change subgroups format from "L04" to "12K-L04" and save them to database
+            Set<String> groups = reformatGroups(examDto);
+            return new HashSet<>(groupRepository.saveAll(groups.stream()
+                    .map(g -> StudentGroup.builder()
+                            .name(g)
+                            .build())
+                    .collect(Collectors.toList())
+            ));
+        } catch (WebPageContentNotAvailableException | JsonProcessingException |
+                 SpecifiedGeneralGroupDoesntExistsException e) {
+            Set<String> groups = reformatGroups(examDto);
+//                verify groups using database
+            Set<StudentGroup> studentGroups = groupRepository.findAllByNameIn(groups);
+            if (studentGroups.stream().map(StudentGroup::getName).collect(Collectors.toSet()) == groups)
+                return studentGroups;
+            else
                 throw e;
         }
+    }
+
+    private static Set<String> reformatGroups(ExamDto examDto) {
+        Set<String> groups = new HashSet<>();
+        if (examDto.getGeneralGroups().size() == 1) {
+//            change 12K2 to 12K
+            String generalGroupIdentifier = examDto.getGeneralGroups().iterator().next();
+            generalGroupIdentifier = generalGroupIdentifier.substring(0, generalGroupIdentifier.length() - 1);
+            for (String groupName : examDto.getSubgroups()) {
+                groups.add(generalGroupIdentifier + "-" + groupName);
+            }
+        }
+        if (examDto.getSubgroups().isEmpty()) {
+            groups.addAll(examDto.getGeneralGroups());
+        }
+        return groups;
     }
 }

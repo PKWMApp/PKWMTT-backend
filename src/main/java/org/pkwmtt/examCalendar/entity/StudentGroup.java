@@ -12,7 +12,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "groups")
+@Table(name = "`groups`")
 public class StudentGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

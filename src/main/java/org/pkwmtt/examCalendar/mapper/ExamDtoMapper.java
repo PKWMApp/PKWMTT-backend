@@ -50,17 +50,17 @@ public class ExamDtoMapper {
                 .build();
     }
 
-    public static Set<ExamDto> mapToExamDto(Set<Exam> exams) {
-        return exams.stream().map(ExamDtoMapper::mapToExamDto).collect(Collectors.toSet());
-    }
+//    public static Set<ExamDto> mapToExamDto(Set<Exam> exams) {
+//        return exams.stream().map(ExamDtoMapper::mapToExamDto).collect(Collectors.toSet());
+//    }
 
-    public static ExamDto mapToExamDto(Exam exam) {
-        return ExamDto.builder()
-                .title(exam.getTitle())
-                .description(exam.getDescription())
-                .date(exam.getExamDate())
-                .examType(exam.getExamType().getName())
-                .examGroups(exam.getGroups().stream().map(StudentGroup::getName).collect(Collectors.toSet()))
-                .build();
-    }
+//    public static ExamDto mapToExamDto(Exam exam) {
+//        return ExamDto.builder()
+//                .title(exam.getTitle())
+//                .description(exam.getDescription())
+//                .date(exam.getExamDate())
+//                .examType(exam.getExamType().getName())
+//                .examGroups(exam.getGroups().stream().map(StudentGroup::getName).collect(Collectors.toSet()))
+//                .build();
+//    }
 }

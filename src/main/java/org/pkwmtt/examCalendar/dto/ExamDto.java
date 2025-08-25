@@ -29,5 +29,7 @@ public class ExamDto {
     private final String examType;
 
     @NotEmpty
-    private final Set<String> examGroups;
+    private final Set<String> generalGroups;
+
+    private final Set<String> subgroups;
 }

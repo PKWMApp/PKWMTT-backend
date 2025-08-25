@@ -75,8 +75,8 @@ public class ExamController {
      * @return 200 ok with list of exams for specific group
      */
     @GetMapping("/by-groups")
-    public ResponseEntity<Set<ExamDto>> getExams(@RequestParam Set<String> groups){
-        return ResponseEntity.ok(ExamDtoMapper.mapToExamDto(examService.getExamByGroups(groups)));
+    public ResponseEntity<Set<Exam>> getExams(@RequestParam Set<String> groups){
+        return ResponseEntity.ok(examService.getExamByGroups(groups));
     }
 
     /**

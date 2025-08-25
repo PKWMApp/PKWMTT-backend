@@ -29,6 +29,7 @@ public class Exam {
 
     private String description;
 
+//    TODO: set timezone for accurate hours of exam
     @Column(name = "exam_date", nullable = false)
     private LocalDateTime examDate;
 
