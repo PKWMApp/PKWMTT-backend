@@ -76,11 +76,7 @@ public class OTPService {
     public void sendOTPCodes (List<OTPRequest> requests) throws MailCouldNotBeSendException {
         requests.forEach(request -> {
             var code = generateNewCode();
-            
-            MailDTO mail = new MailDTO()
-              .setTitle("Kod Starosty " + request.getGeneralGroupName())
-              .setRecipient(request.getEmail())
-              .setDescription(request.getMailMessage(code));
+            var mail = createMail(request, code);
             
             try {
                 emailService.send(mail);
@@ -88,15 +84,21 @@ public class OTPService {
                 throw new MailCouldNotBeSendException("Couldn't send mail for group: " + request.getGeneralGroupName());
             }
             
-            //Save general group, if it doesn't exist
-            if (generalGroupRepository.findByName(request.getGeneralGroupName()).isEmpty()) {
-                generalGroupRepository.save(new GeneralGroup(null, request.getGeneralGroupName()));
+            var generalGroup = generalGroupRepository.findByName(request.getGeneralGroupName());
+            
+            if (generalGroup.isEmpty()) {
+                generalGroup = Optional.of(generalGroupRepository.save(new GeneralGroup(null, request.getGeneralGroupName())));
             }
             
-            var generalGroup = generalGroupRepository.findByName(request.getGeneralGroupName()).get();
-            
-            repository.save(new OTPCode(code, generalGroup));
+            repository.save(new OTPCode(code, generalGroup.get()));
         });
+    }
+    
+    private MailDTO createMail (OTPRequest request, String code) {
+        return new MailDTO()
+          .setTitle("Kod Starosty " + request.getGeneralGroupName())
+          .setRecipient(request.getEmail())
+          .setDescription(request.getMailMessage(code));
     }
     
     private String generateNewCode () {

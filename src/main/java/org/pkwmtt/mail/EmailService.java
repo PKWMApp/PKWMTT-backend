@@ -31,7 +31,6 @@ public class EmailService {
             throw new MailServiceNotAvailableException();
         }
         
-        
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         
@@ -41,6 +40,5 @@ public class EmailService {
         helper.setSubject(mail.getTitle());
         
         mailSender.send(message);
-        
     }
 }
