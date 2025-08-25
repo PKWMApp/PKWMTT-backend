@@ -6,6 +6,7 @@ import org.pkwmtt.examCalendar.entity.GeneralGroup;
 import org.pkwmtt.examCalendar.entity.OTPCode;
 import org.pkwmtt.examCalendar.repository.GeneralGroupRepository;
 import org.pkwmtt.examCalendar.repository.UserRepository;
+import org.pkwmtt.exceptions.MailCouldNotBeSendException;
 import org.pkwmtt.exceptions.OTPCodeNotFoundException;
 import org.pkwmtt.exceptions.UserNotFoundException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
@@ -72,18 +73,19 @@ public class OTPService {
         return token;
     }
     
-    public void sendOTPCodes (List<OTPRequest> requests) {
+    public void sendOTPCodes (List<OTPRequest> requests) throws MailCouldNotBeSendException {
         requests.forEach(request -> {
             var code = generateNewCode();
+            
             MailDTO mail = new MailDTO()
               .setTitle("Kod Starosty " + request.getGeneralGroupName())
               .setRecipient(request.getEmail())
               .setDescription(request.getMailMessage(code));
             
-            try { //TODO return if all mail were sens or which wasn't
+            try {
                 emailService.send(mail);
             } catch (MessagingException e) {
-                throw new RuntimeException(e);
+                throw new MailCouldNotBeSendException("Couldn't send mail for group: " + request.getGeneralGroupName());
             }
             
             //Save general group, if it doesn't exist
