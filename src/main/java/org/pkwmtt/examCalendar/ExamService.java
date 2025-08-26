@@ -120,6 +120,7 @@ public class ExamService {
 //        verify generalGroups using timetable service
             if (!allGeneralGroups.containsAll(examDto.getGeneralGroups()))
                 throw new InvalidGroupIdentifierException("one of generalGroups identifier is incorrect");
+//            TODO: find not valid identifier
 //        if subgroups exists verify them using timetable service (get subgroups for generalGroup)
             if (!examDto.getSubgroups().isEmpty() && !new HashSet<>(timetableService.getAvailableSubGroups(examDto.getGeneralGroups().iterator().next())).containsAll(examDto.getSubgroups()))
                 throw new InvalidGroupIdentifierException("one or more of subgroups identifier is incorrect");
@@ -146,13 +147,13 @@ public class ExamService {
 
     private static Set<String> reformatGroups(ExamDto examDto) {
         Set<String> groups = new HashSet<>();
-        if (examDto.getGeneralGroups().size() == 1) {
-//            change 12K2 to 12K
+        if (examDto.getGeneralGroups().size() == 1 && !examDto.getSubgroups().isEmpty()) {
+//            change 12K2 to 12K and add to groups
             String generalGroupIdentifier = examDto.getGeneralGroups().iterator().next();
-            generalGroupIdentifier = generalGroupIdentifier.substring(0, generalGroupIdentifier.length() - 1);
-            for (String groupName : examDto.getSubgroups()) {
-                groups.add(generalGroupIdentifier + "-" + groupName);
-            }
+            if(Character.isDigit(generalGroupIdentifier.charAt(generalGroupIdentifier.length() - 1)))
+                generalGroupIdentifier = generalGroupIdentifier.substring(0, generalGroupIdentifier.length() - 1);
+            groups.add(generalGroupIdentifier);
+            groups.addAll(examDto.getSubgroups());
         }
         if (examDto.getSubgroups().isEmpty()) {
             groups.addAll(examDto.getGeneralGroups());
