@@ -30,7 +30,7 @@ public class ExamController {
      * @return 201 created with URI to GET method which returns created resource
      */
     @PostMapping("")
-    public ResponseEntity<Void> addExam(@RequestBody @Valid ExamDto examDto) throws JsonProcessingException {
+    public ResponseEntity<Void> addExam(@RequestBody @Valid ExamDto examDto){
         int id = examService.addExam(examDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -46,7 +46,7 @@ public class ExamController {
      * @return 204 no content
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid ExamDto examDto) throws JsonProcessingException {
+    public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid ExamDto examDto) {
         examService.modifyExam(examDto, id);
         return ResponseEntity.noContent().build();
     }

@@ -19,7 +19,7 @@ public class StudentGroup {
     @Column(name = "group_id")
     private Integer groupId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
 //    FIXME: remove?
