@@ -103,15 +103,6 @@ public class ExamService {
         return examTypeRepository.findAll();
     }
 
-
-    private Set<String> getGroupsFromTimetableService() throws JsonProcessingException {
-        List<String> generalGroups = timetableService.getGeneralGroupList();
-        Set<String> allGroups = new HashSet<>(generalGroups);
-        for (String groupName : generalGroups)
-            allGroups.addAll(timetableService.getAvailableSubGroups(groupName));
-        return allGroups;
-    }
-
     /**
      * verify if groups exists in timetable if exist updates database.
      * when timetable service is unavailable verifies groups using groupsRepository

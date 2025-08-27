@@ -4935,3 +4935,9 @@ Caused by: java.lang.ClassNotFoundException: org.pkwmtt.examCalendar.ExamService
 	... 27 common frames omitted
 2025-08-27 19:49:22 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
 2025-08-27 19:49:23 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-27 20:42:56 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Table "groups" not found (candidates are: "GROUPS"); SQL statement:
+insert into "groups" (name,group_id) values (?,default) [42103-232]
+2025-08-27 20:56:12 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-27 20:56:14 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-27 20:56:52 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-27 20:56:53 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties

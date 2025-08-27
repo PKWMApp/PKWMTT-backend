@@ -13,9 +13,6 @@ import java.util.Set;
 
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
 
-//    @Query("SELECT e FROM Exam e JOIN FETCH e.examType JOIN FETCH e.groups g WHERE g IN :gr")
-//    Set<Exam> findByGroupsIn(@Param("gr") Set<StudentGroup> groups);
-
     /**
      * @param groups set of generalGroups
      * @return list of exams for generalGroups
@@ -33,9 +30,5 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
                 JOIN FETCH e.groups g2
                 WHERE g1.name = :general AND g2.name IN :sub
             """)
-    List<Exam> findAllBySubgroupsOfGeneralGroup(@Param("general") String generalGroup , @Param("sub") Set<String> subgroup);
-
-
-
-
+    List<Exam> findAllBySubgroupsOfGeneralGroup(@Param("general") String generalGroup, @Param("sub") Set<String> subgroup);
 }
