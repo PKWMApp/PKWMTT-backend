@@ -1,20 +1,24 @@
 package org.pkwmtt.examCalendar.mapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * maps ExamDto to Exam entity. Couldn't be utility class, because needs ExamTypeRepository to validate exam types
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ExamDtoMapper {
     private ExamDtoMapper examDtoMapper;
 
@@ -50,17 +54,23 @@ public class ExamDtoMapper {
                 .build();
     }
 
-//    public static Set<ExamDto> mapToExamDto(Set<Exam> exams) {
-//        return exams.stream().map(ExamDtoMapper::mapToExamDto).collect(Collectors.toSet());
-//    }
+    public static List<ExamDto> mapToExamDto(List<Exam> exams) {
+        return exams.stream().map(ExamDtoMapper::mapToExamDto).collect(Collectors.toList());
+    }
 
-//    public static ExamDto mapToExamDto(Exam exam) {
-//        return ExamDto.builder()
-//                .title(exam.getTitle())
-//                .description(exam.getDescription())
-//                .date(exam.getExamDate())
-//                .examType(exam.getExamType().getName())
-//                .examGroups(exam.getGroups().stream().map(StudentGroup::getName).collect(Collectors.toSet()))
-//                .build();
-//    }
+    public static ExamDto mapToExamDto(Exam exam) {
+        Set<String> groups = exam.getGroups().stream().map(StudentGroup::getName).collect(Collectors.toSet());
+        Set<String> generalGroups = groups.stream().filter(group -> Character.isDigit(group.charAt(0))).collect(Collectors.toSet());
+        Set<String> subgroups = groups.stream().filter(group -> Character.isAlphabetic(group.charAt(0))).collect(Collectors.toSet());
+        if(groups.size() != subgroups.size() + generalGroups.size())
+            log.warn("Some groups of {} were not consumed in ExamDtoMapper.mapToExamDto()", groups);
+        return ExamDto.builder()
+                .title(exam.getTitle())
+                .description(exam.getDescription())
+                .date(exam.getExamDate())
+                .examType(exam.getExamType().getName())
+                .generalGroups(generalGroups)
+                .subgroups(subgroups)
+                .build();
+    }
 }

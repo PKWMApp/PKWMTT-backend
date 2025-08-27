@@ -71,15 +71,17 @@ public class ExamController {
     }
 
     /**
-//TODO: update javadoc
-     * @return 200 ok with list of exams for specific group
+     * when subgroups isn't null all generalGroups must be form the same year of study. e.g. 12K2, 12K1 is from 12K
+     * @param generalGroups set of general groups e.g. 12K2
+     * @param subgroups set of subgroups of general group e.g. L04
+     * @return List of ExamDto for specific groups
      */
     @GetMapping("/by-groups")
-    public ResponseEntity<List<Exam>> getExams(
+    public ResponseEntity<List<ExamDto>> getExams(
             @RequestParam Set<String> generalGroups,
             @RequestParam(required = false) Set<String> subgroups
     ){
-        return ResponseEntity.ok(examService.getExamByGroups(generalGroups, subgroups));
+        return ResponseEntity.ok(ExamDtoMapper.mapToExamDto(examService.getExamByGroups(generalGroups, subgroups)));
     }
 
     /**
