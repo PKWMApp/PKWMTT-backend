@@ -208,9 +208,6 @@ class ExamDtoTest {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }
 
-    //    TODO: change to too large set in Exam builder tests
-    //    TODO: check if groups exists
-
     @Test
     void dateNotInFuture() {
         //        given

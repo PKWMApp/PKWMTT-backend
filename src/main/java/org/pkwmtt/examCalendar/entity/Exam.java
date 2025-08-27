@@ -49,6 +49,8 @@ public class Exam {
     public static class Builder {
         public Exam build() {
 //          min 1 max 100 elements of set
+            if(groups == null)
+                throw new UnsupportedCountOfArgumentsException(1, 100, null);
             if(groups.isEmpty() || groups.size() > 100)
                 throw new UnsupportedCountOfArgumentsException(1, 100, groups.size());
             return new Exam(examId, title, description, examDate, examType, groups);
