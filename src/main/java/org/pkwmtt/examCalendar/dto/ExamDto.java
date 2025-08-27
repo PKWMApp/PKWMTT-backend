@@ -29,6 +29,7 @@ public class ExamDto {
     private final String examType;
 
     @NotEmpty
+    @Size(min = 1)
     private final Set<String> generalGroups;
 
     private final Set<String> subgroups;

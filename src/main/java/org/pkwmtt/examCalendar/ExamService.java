@@ -136,7 +136,7 @@ public class ExamService {
 //        if there are no subgroups save exam for exercise groups or whole year e.g.
 //               12K2             - exercise group exam
 //               12K1, 12K2, 12K3 - whole year exam
-        if (subgroups.isEmpty()) {
+        if (subgroups == null || subgroups.isEmpty()) {
 //                TODO: change groups.name in database to unique
             return saveNewStudentGroups(generalGroups);
 //         exams for subgroups e.g. L04 must have only superior group to avoid ambiguity
