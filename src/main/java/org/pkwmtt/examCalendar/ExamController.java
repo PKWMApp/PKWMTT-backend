@@ -71,12 +71,15 @@ public class ExamController {
     }
 
     /**
-     * @param groups set of groups
+//TODO: update javadoc
      * @return 200 ok with list of exams for specific group
      */
     @GetMapping("/by-groups")
-    public ResponseEntity<Set<Exam>> getExams(@RequestParam Set<String> groups){
-        return ResponseEntity.ok(examService.getExamByGroups(groups));
+    public ResponseEntity<List<Exam>> getExams(
+            @RequestParam Set<String> generalGroups,
+            @RequestParam(required = false) Set<String> subgroups
+    ){
+        return ResponseEntity.ok(examService.getExamByGroups(generalGroups, subgroups));
     }
 
     /**

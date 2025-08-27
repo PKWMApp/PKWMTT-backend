@@ -77,15 +77,23 @@ public class ExamService {
         return examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
     }
 
-    public Set<Exam> getExamByGroups(Set<String> groupNames) {
-//        validate provided groups
-        Set<StudentGroup> studentGroups = groupRepository.findAllByNameIn(groupNames);
-        Set<String> groupNamesFromDatabase = studentGroups.stream().map(StudentGroup::getName).collect(Collectors.toSet());
-        if (!groupNamesFromDatabase.equals(groupNames)) {
-            groupNames.removeAll(groupNamesFromDatabase);
-            throw new InvalidGroupIdentifierException(groupNames);
+    public List<Exam> getExamByGroups(Set<String> generalGroups, Set<String> subgroups) {
+//        get exams for general groups
+        List<Exam> exams = new ArrayList<>(examRepository.findAllByGroups_NameIn(generalGroups));
+//        convert general group identifiers. e.g. 12K2 to 12K
+        Set<String> superiorGroups = generalGroups.stream().map(g -> {
+            if (Character.isDigit(g.charAt(g.length() - 1)))
+                return g.substring(0, g.length() - 1);
+            return g;
+        }).collect(Collectors.toSet());
+//        check if subgroups are provided
+        if(subgroups != null && !subgroups.isEmpty()){
+//            check if superior group identifies the groups unambiguously
+            if(superiorGroups.size() != 1)
+                throw new InvalidGroupIdentifierException("ambiguous superior group identifier for subgroups");
+            exams.addAll(examRepository.findAllBySubgroupsOfGeneralGroup(superiorGroups.iterator().next(), subgroups));
         }
-        return examRepository.findByGroupsIn(studentGroups);
+        return exams;
     }
 
     /**
