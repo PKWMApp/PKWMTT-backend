@@ -56,20 +56,23 @@ public class OTPService {
         }
     }
     
-    public String generateTokenForRepresentative (String code) throws OTPCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
+    public String generateTokenForRepresentative (String code)
+      throws OTPCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
         var generalGroup = this.getGeneralGroupAssignedToCode(code);
-        if (userRepository.findByGeneralGroup(generalGroup).isEmpty()) {
-            throw new UserNotFoundException("No user is assigned to this code.");
-        }
-        var userEmail = userRepository.findByGeneralGroup(generalGroup).get().getEmail();
         
-        //Delete use code
-        repository.deleteByCode(code);
+        var user = userRepository
+          .findByGeneralGroup(generalGroup)
+          .orElseThrow(() -> new UserNotFoundException("No user is assigned to this code."));
         
+        var userEmail = user.getEmail();
+        
+        //TODO DELETE
         String token = "example-token_" + generalGroup.getName();
         
         //TODO here generate token with provided credentials
         
+        //Delete used code
+        repository.deleteByCode(code);
         return token;
     }
     
