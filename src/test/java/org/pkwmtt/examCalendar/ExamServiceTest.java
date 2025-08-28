@@ -43,74 +43,96 @@ class ExamServiceTest {
     @InjectMocks
     private ExamService examService;
 
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - blank
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
     @Test
-    void addExamWithCorrectData() throws JsonProcessingException {
+    void addExamWithCorrectData() {
 //        given
-        String examTypeName = "exam";
-        ExamType examType = mock(ExamType.class);
-        ExamDto examDto = mock(ExamDto.class);
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = ExamDto.builder()
+                .title("title")
+                .description("description")
+                .date(date)
+                .examType("exam")
+                .generalGroups(new HashSet<>(Set.of("12K2")))
+                .build();
 
-//        List<String> generalGroups = mockGetGeneralGroupList();
-//        List<String> subGroups = mockGetSubGroupsList();
-        when(groupRepository.findAllByNameIn(anySet())).thenReturn(mock(Set.class));
-        when(examTypeRepository.findByName(any(String.class))).thenReturn(Optional.of(mock(ExamType.class)));
-//        mockExamRepositoryFindByName();
+        ExamType examType = ExamType.builder()
+                .examTypeId(1)
+                .name("exam")
+                .build();
 
-//        Set<StudentGroup> studentGroups = getExampleStudentGroupsSet();
-        Set<StudentGroup> studentGroups = mock(Set.class);
+        Exam exam = Exam.builder()
+                .examId(1)
+                .groups(Set.of(StudentGroup.builder().groupId(1).name("12K2").build()))
+                .build();
 
-//        when(examTypeRepository.findByName(examTypeName)).thenReturn(Optional.of(ExamType.builder().examTypeId(1).name(examTypeName).build()));
+        StudentGroup groupWithId = StudentGroup.builder()
+                .groupId(1)
+                .name("12K2")
+                .build();
 
-        try (MockedStatic<ExamDtoMapper> mockedMapper = mockStatic(ExamDtoMapper.class)) {
-            mockedMapper.when(() -> ExamDtoMapper.mapToNewExam(any(ExamDto.class), any(Set.class), any(ExamType.class))).thenReturn(mock(Exam.class));
+        List<StudentGroup> groupListWithId = new ArrayList<>();
+        groupListWithId.add(groupWithId);
 
-            mockedMapper.verify(() -> ExamDtoMapper.mapToNewExam(any(ExamDto.class), any(Set.class), any(ExamType.class)), times(1));
-        }
-
-//        mockExamRepositorySaveExam(studentGroups);
-        when(examRepository.save(any(Exam.class))).thenReturn(mock(Exam.class));
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K1", "12K2", "12K3")));
+        when(groupRepository.findAllByNameIn(Set.of("12K2"))).thenReturn(new HashSet<>(Set.of()));
+        when(groupRepository.saveAll(anyList())).thenReturn(groupListWithId);
+        when(examRepository.save(any(Exam.class))).thenReturn(exam);
 //        when
-//        int returnedExamID = examService.addExam(examDto);
-        examService.addExam(examDto);
+        int savedId = examService.addExam(examDto);
 //        then
-//        verify(timetableService, times(1)).getGeneralGroupList();
-//        verify(timetableService, times(1)).getAvailableSubGroups("12K1");
-//        verify(timetableService, times(1)).getAvailableSubGroups("12K2");
-//        verify(timetableService, times(1)).getAvailableSubGroups("12K3");
-
+        verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
         verify(timetableService, times(1)).getGeneralGroupList();
-        verify(timetableService, times(1)).getAvailableSubGroups(any(String.class));
-        verify(timetableService, times(1)).getAvailableSubGroups(any(String.class));
-        verify(timetableService, times(1)).getAvailableSubGroups(any(String.class));
+        verify(groupRepository, times(1)).findAllByNameIn(Set.of("12K2"));
 
-        verify(groupRepository, times(1)).saveAll(anySet());
+        ArgumentCaptor<List<StudentGroup>> groupCaptor = ArgumentCaptor.forClass(List.class);
+        verify(groupRepository, times(1)).saveAll(groupCaptor.capture());
+        assertEquals("12K2", groupCaptor.getValue().getFirst().getName());
 
-//        ArgumentCaptor<Set<StudentGroup>> studentGroupCaptor = ArgumentCaptor.forClass(Set.class);
-//        verify(groupRepository, times(1)).saveAll(studentGroupCaptor.capture());
-//
-//        Set<String> expectedGroups = studentGroups.stream()
-//                .map(StudentGroup::getName)
-//                .collect(Collectors.toSet());
-//
-//        Set<String> providedGroups = studentGroupCaptor.getValue().stream()
-//                .map(StudentGroup::getName)
-//                .collect(Collectors.toSet());
-//
-//        assertEquals(expectedGroups, providedGroups);
-
-//        verify(examTypeRepository, times(1)).findByName(examTypeName);
-        verify(examTypeRepository, times(1)).findByName(any(String.class));
-
-//        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
-//        verify(examRepository, times(1)).save(examCaptor.capture());
-        verify(examRepository, times(1)).save(any(Exam.class));
-
-//        assertNull(examCaptor.getValue().getExamId());
-//        assertEquals(1, returnedExamID);
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        Exam savedExam = examCaptor.getValue();
+        assertEquals("title", savedExam.getTitle());
+        assertEquals("description", savedExam.getDescription());
+        assertEquals(date, savedExam.getExamDate());
+        assertEquals("exam", savedExam.getExamType().getName());
+        assertEquals(1, savedExam.getGroups().size());
+        assertEquals("12K2", savedExam.getGroups().iterator().next().getName());
+        assertEquals(1, savedId);
     }
 
     @Test
-    void addExamWithWrongExamType() throws JsonProcessingException {
+    void addExamForMultipleGeneralGroupsWithEmptySubgroups() {
+        ExamDto examDto = ExamDto.builder()
+                .title("title")
+                .description("description")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("exam")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of())
+                .build();
+    }
+
+    @Test
+    void addExamForSingleSubgroup() {
+
+    }
+
+    @Test
+    void addExamForMultipleSubgroups() {
+
+    }
+
+    @Test
+    void addExamWithWrongExamType() {
     }
 
     /************************************************************************************/

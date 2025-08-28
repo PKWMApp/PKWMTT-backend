@@ -110,25 +110,25 @@ public class ExamService {
      * @param examDto containing groups for verification
      */
     private Set<StudentGroup> verifyAndUpdateExamGroups(ExamDto examDto) {
-        Set<String> generalGroupsGromRepository;
+        Set<String> generalGroupsFromRepository;
         Set<String> generalGroups = examDto.getGeneralGroups();
+//        TODO: NullPointerException ???
         Set<String> subgroups = examDto.getSubgroups();
 //        if timetable service is unavailable verify general groups using GroupRepository
         try {
-            generalGroupsGromRepository = new HashSet<>(timetableService.getGeneralGroupList());
+            generalGroupsFromRepository = new HashSet<>(timetableService.getGeneralGroupList());
         } catch (WebPageContentNotAvailableException e) {
-            generalGroupsGromRepository = verifyUsingRepository(generalGroups);
+            generalGroupsFromRepository = verifyUsingRepository(generalGroups);
         }
 //        verify generalGroups using timetable service
-        if (!generalGroupsGromRepository.containsAll(generalGroups)) {
-            generalGroups.removeAll(generalGroupsGromRepository);
+        if (!generalGroupsFromRepository.containsAll(generalGroups)) {
+            generalGroups.removeAll(generalGroupsFromRepository);
             throw new InvalidGroupIdentifierException(generalGroups);
         }
 //        if there are no subgroups save exam for exercise groups or whole year e.g.
 //               12K2             - exercise group exam
 //               12K1, 12K2, 12K3 - whole year exam
         if (subgroups == null || subgroups.isEmpty()) {
-//                TODO: change groups.name in database to unique
             return saveNewStudentGroups(generalGroups);
 //         exams for subgroups e.g. L04 must have only superior group to avoid ambiguity
         } else if (generalGroups.size() == 1) {
