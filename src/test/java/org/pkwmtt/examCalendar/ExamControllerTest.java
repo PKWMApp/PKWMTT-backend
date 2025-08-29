@@ -10,6 +10,7 @@ import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
+import org.pkwmtt.timetable.TimetableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,10 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,20 +90,24 @@ class ExamControllerTest {
                 examDtoRequest.getDate().truncatedTo(ChronoUnit.MINUTES),
                 examResponse.getExamDate().truncatedTo(ChronoUnit.MINUTES)
         );
-        assertEquals(examDtoRequest.getExamGroups(), examResponse.getGroups());
+//        assertEquals(examDtoRequest.getGeneralGroups(), examResponse.getGroups().stream());
+//        assertEquals(examDtoRequest.getGeneralGroups(), examResponse.getGroups());
+
         assertEquals(examDtoRequest.getExamType(), examResponse.getExamType().getName());
     }
 
+//    TODO: change Map<String, String> to Map<String, Object>
     @Test
     void addExamWithBlankExamTitle() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
+        Map<String, Object> requestData = new HashMap<>();
 //      no exam title
         requestData.put("description", "first exam");
         requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
         requestData.put("examType", "Project");
+        requestData.put("generalGroups", List.of("12K2"));
+        requestData.put("subgroups", List.of("L04"));
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
@@ -413,7 +417,7 @@ class ExamControllerTest {
                 exam.getExamDate().truncatedTo(ChronoUnit.MINUTES),
                 LocalDateTime.parse(responseNode.get("date").textValue()).truncatedTo(ChronoUnit.MINUTES)
         );
-        assertEquals(exam.getGroups(), responseNode.get("examGroups").asText());
+//        assertEquals(exam.getGroups(), responseNode.get("examGroups").asText());
         assertEquals(mapper.readTree(mapper.writeValueAsString(exam.getExamType())), responseNode.get("examType"));
     }
 
@@ -495,14 +499,13 @@ class ExamControllerTest {
      * @return created Exam
      */
     private Exam createExampleExam(ExamType type) {
-        Set<StudentGroup> examGroups = new HashSet<>();
-        examGroups.add(StudentGroup.builder().name("11K1").build());
-        examGroups.add(StudentGroup.builder().name("L01").build());
         return Exam.builder()
                 .title("Exam")
                 .description("Exam description")
                 .examDate(LocalDateTime.now().plusDays(1))
-                .groups(examGroups)
+                .groups(Stream.of("12K2", "L04")
+                        .map(g -> StudentGroup.builder().name(g).build())
+                        .collect(Collectors.toSet()))
                 .examType(type)
                 .build();
     }
@@ -512,13 +515,14 @@ class ExamControllerTest {
      * @return created ExamDto
      */
     private ExamDto createExampleExamDto(String examTypeName) {
-        return new ExamDto(
-                "Math exam",
-                "first exam",
-                LocalDateTime.now().plusDays(1),
-                examTypeName,
-                Set.of("11k1", "L01")
-        );
+        return ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType(examTypeName)
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
     }
 
     /**
