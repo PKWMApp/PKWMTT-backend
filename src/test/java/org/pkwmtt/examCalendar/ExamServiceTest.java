@@ -43,6 +43,7 @@ class ExamServiceTest {
     @InjectMocks
     private ExamService examService;
 
+    //<editor-fold desc="repository don't contain groups, service available">
     /**
      * test specification
      * generalGroup         - 1 item
@@ -109,6 +110,14 @@ class ExamServiceTest {
         assertEquals(1, savedId);
     }
 
+    /**
+     * test specification
+     * generalGroup         - 3 item
+     * subgroup             - 0 items
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
     @Test
     void addExamForMultipleGeneralGroupsWithEmptySubgroups() {
         ExamDto examDto = ExamDto.builder()
@@ -120,6 +129,155 @@ class ExamServiceTest {
                 .subgroups(Set.of())
                 .build();
     }
+
+
+
+    /**
+     * test specification
+     * generalGroup         - 3 item
+     * subgroup             - 2 items
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - 1 items
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - 4 items
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 0 item
+     * subgroup             - 1 items
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - blank
+     * subgroup             - 1 items
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    //</editor-fold>
+
+    //<editor-fold desc="service available, groups don't match service">
+    /**
+     * test specification
+     * generalGroup         - 2 item
+     * subgroup             - 0 items
+     * timetable service    - available
+     * provided groups      - don't match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - 3 items
+     * timetable service    - available
+     * provided groups      - partially match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+    //</editor-fold>
+
+    //<editor-fold desc="repository contain groups, service available">
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - blank
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - 4 items
+     * timetable service    - available
+     * provided groups      - match groups from timetable service
+     * groupRepository      - partially contain provided groups
+     */
+
+    //</editor-fold>
+
+    //<editor-fold desc="repository don't contain groups, service unavailable">
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - blank
+     * timetable service    - unavailable
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - 3 items
+     * timetable service    - unavailable
+     * provided groups      - match groups from timetable service
+     * groupRepository      - don't contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - 4 items
+     * timetable service    - unavailable
+     * provided groups      - match groups from timetable service
+     * groupRepository      - partially contain provided groups
+     */
+    //</editor-fold>
+
+    //<editor-fold desc="repository contain groups, service unavailable">
+    /**
+     * test specification
+     * generalGroup         - 2 item
+     * subgroup             - 0 item
+     * timetable service    - unavailable
+     * provided groups      - match groups from timetable service
+     * groupRepository      - contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 1 item
+     * subgroup             - 4 items
+     * timetable service    - unavailable
+     * provided groups      - match groups from timetable service
+     * groupRepository      - contain provided groups
+     */
+
+    /**
+     * test specification
+     * generalGroup         - 3 item
+     * subgroup             - 1 items
+     * timetable service    - unavailable
+     * provided groups      - match groups from timetable service
+     * groupRepository      - contain provided groups
+     */
+    //</editor-fold>
+
 
     @Test
     void addExamForSingleSubgroup() {
