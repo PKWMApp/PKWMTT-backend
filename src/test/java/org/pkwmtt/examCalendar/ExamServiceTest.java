@@ -58,7 +58,13 @@ class ExamServiceTest {
         Set<String> g12K2 = Set.of("12K2");
 
         LocalDateTime date = LocalDateTime.now().plusDays(1);
-        ExamDto examDto = buildExampleExamDto(g12K2, date);
+        ExamDto examDto = ExamDto.builder()
+                .title("title")
+                .description("description")
+                .date(date)
+                .examType("exam")
+                .generalGroups(new HashSet<>(g12K2))
+                .build();
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(g12K2);
         Exam exam = buildExamWithIdAndGroups(1, studentGroups);
@@ -589,7 +595,6 @@ class ExamServiceTest {
 //                .build()
 //        );
 //    }
-
     private static List<StudentGroup> buildExampleStudentGroupList(Set<String> groupNames) {
         AtomicInteger id = new AtomicInteger();
         return groupNames.stream()
@@ -614,13 +619,14 @@ class ExamServiceTest {
                 .build();
     }
 
-    private static ExamDto buildExampleExamDto(Set<String> groups, LocalDateTime date) {
+    private static ExamDto buildExampleExamDto(Set<String> generalGroups, Set<String> subgroups, LocalDateTime date) {
         return ExamDto.builder()
                 .title("title")
                 .description("description")
                 .date(date)
                 .examType("exam")
-                .generalGroups(new HashSet<>(groups))
+                .generalGroups(new HashSet<>(generalGroups))
+                .subgroups(new HashSet<>(subgroups))
                 .build();
     }
 
