@@ -156,8 +156,10 @@ public class ExamService {
         }
 //          only one general group could be assigned to subgroups (when there are more than 1 general group and
 //          more than 0 subgroups)
+        else if(generalGroups.isEmpty())
+            throw new InvalidGroupIdentifierException("general group is missing");
         else
-            throw new InvalidGroupIdentifierException("ambiguous general group for subgroups");
+            throw new InvalidGroupIdentifierException("ambiguous general groups for subgroups");
     }
 
     /**
