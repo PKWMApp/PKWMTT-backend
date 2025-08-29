@@ -227,6 +227,35 @@ class ExamServiceTest {
      * provided groups      - don't match groups from timetable service
      * groupRepository      - don't contain provided groups
      */
+    @Test
+    void shouldThrowWhenGeneralGroupsDontMatchService() {
+        //        given
+        Set<String> generalGroups = Set.of("12K1", "12K2");
+        Set<String> subgroups = Set.of();
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of()));
+//        when
+        RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.addExam(examDto));
+//        then
+        assertEquals("Invalid group identifiers: [12K1, 12K2]", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenNotAllGeneralGroupsMatchService() {
+        //        given
+        Set<String> generalGroups = Set.of("12K1", "12K2");
+        Set<String> subgroups = Set.of();
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K1")));
+//        when
+        RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.addExam(examDto));
+//        then
+        assertEquals("Invalid group identifiers: [12K2]", exception.getMessage());
+    }
 
     /**
      * test specification
@@ -236,13 +265,57 @@ class ExamServiceTest {
      * provided groups      - partially match groups from timetable service
      * groupRepository      - don't contain provided groups
      */
+    @Test
+    void shouldThrowWhenSubgroupsDontMatchService() throws JsonProcessingException {
+        //        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of("K04", "P04", "L04");
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K2")));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K05"));
+//        when
+        RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.addExam(examDto));
+//        then
+        String message = exception.getMessage();
+        assertTrue(message.startsWith("Invalid group identifiers:"));
+        assertFalse(message.contains("12K2"));
+        assertTrue(message.contains("K04"));
+        assertTrue(message.contains("P04"));
+        assertTrue(message.contains("L04"));
+        assertFalse(message.contains("K05"));
+    }
+
+    @Test
+    void shouldThrowWhenNotAllSubgroupsMatchService() throws JsonProcessingException {
+        //        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of("K04", "P04", "L04");
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K2")));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("P04", "L04", "K05"));
+//        when
+        RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.addExam(examDto));
+//        then
+        String message = exception.getMessage();
+        assertTrue(message.startsWith("Invalid group identifiers:"));
+        assertFalse(message.contains("12K2"));
+        assertTrue(message.contains("K04"));
+        assertFalse(message.contains("P04"));
+        assertFalse(message.contains("L04"));
+        assertFalse(message.contains("K05"));
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="repository contain groups, service available">
     /**
      * test specification
      * generalGroup         - 1 item
-     * subgroup             - blank
+     * subgroup             - 0 items
      * timetable service    - available
      * provided groups      - match groups from timetable service
      * groupRepository      - contain provided groups
@@ -316,19 +389,6 @@ class ExamServiceTest {
      * groupRepository      - contain provided groups
      */
     //</editor-fold>
-    @Test
-    void addExamForSingleSubgroup() {
-
-    }
-
-    @Test
-    void addExamForMultipleSubgroups() {
-
-    }
-
-    @Test
-    void addExamWithWrongExamType() {
-    }
 
     /************************************************************************************/
 //modify exam
