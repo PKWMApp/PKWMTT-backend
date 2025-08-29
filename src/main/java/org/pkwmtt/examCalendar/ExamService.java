@@ -112,7 +112,6 @@ public class ExamService {
     private Set<StudentGroup> verifyAndUpdateExamGroups(ExamDto examDto) {
         Set<String> generalGroupsFromRepository;
         Set<String> generalGroups = examDto.getGeneralGroups();
-//        TODO: NullPointerException ???
         Set<String> subgroups = examDto.getSubgroups();
 //        if timetable service is unavailable verify general groups using GroupRepository
         try {
