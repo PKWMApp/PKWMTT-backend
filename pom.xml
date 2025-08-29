@@ -87,6 +87,25 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.7</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.7</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.7</version>
+            <scope>runtime</scope>
+        </dependency>
+
+
         <!--TESTING-->
         <dependency>
             <groupId>junit</groupId>
@@ -138,6 +157,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
         <!--LOGBACK-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -149,11 +169,13 @@
             <artifactId>wiremock-spring-boot</artifactId>
             <version>3.10.0</version>
         </dependency>
+
         <!--EMAIL-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+
         <!--.ENV-->
         <dependency>
             <groupId>io.github.cdimascio</groupId>
