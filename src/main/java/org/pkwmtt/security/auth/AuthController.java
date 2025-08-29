@@ -18,7 +18,7 @@ public class AuthController {
 
     @PostMapping("/authenticate")
     public String authenticate(@RequestBody UserRequestDTO requestUser) {
-        UserDTO user = authService.authenticateUser(requestUser);
+        UserDTO user = authService.authenticateUser(requestUser.getEmail());
         return jwtServiceImpl.generateToken(user);
     }
 }

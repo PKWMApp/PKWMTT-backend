@@ -1,8 +1,11 @@
 package org.pkwmtt.security.token.dto;
 
 import lombok.Data;
+import org.pkwmtt.entity.GeneralGroup;
 import org.pkwmtt.entity.User;
 import org.pkwmtt.enums.Role;
+
+import java.util.Optional;
 
 @Data
 public class UserDTO {
@@ -12,7 +15,9 @@ public class UserDTO {
 
     public UserDTO(User user){
         this.email = user.getEmail();
-        this.group = user.getGeneralGroup() != null ? user.getGeneralGroup().getName() : null;
         this.role = user.getRole();
+        this.group = Optional.ofNullable(user.getGeneralGroup())
+                .map(GeneralGroup::getName)
+                .orElse(null);
     }
 }

@@ -22,7 +22,6 @@ public class OTPAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getName();
-        String otpCode = authentication.getCredentials().toString();
 
         // Fetch user from DB
         User user = userRepository.findByEmail(email)
@@ -33,22 +32,15 @@ public class OTPAuthenticationProvider implements AuthenticationProvider {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .toList();
 
-        // Validate critical user fields before OTP check
+        // Validate critical user fields
         if(!isValidForAuthentication(user)){
             throw new BadCredentialsException(
                     "Invalid User Credentials. Please contact the administrator."
             );
         }
 
-        // TODO: integrate with real OTP service
-        boolean OTP_SERVICE_AUTH_RESULT = true;
-
-        if(OTP_SERVICE_AUTH_RESULT){
-            UserDTO userMapped = new UserDTO(user);
-            return new UsernamePasswordAuthenticationToken(userMapped, otpCode, authorities);
-        } else {
-            throw new BadCredentialsException("Invalid OTP");
-        }
+        UserDTO userMapped = new UserDTO(user);
+        return new UsernamePasswordAuthenticationToken(userMapped, null, authorities);
     }
 
     @Override

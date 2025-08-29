@@ -15,10 +15,10 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public UserDTO authenticateUser(UserRequestDTO requestUser) {
+    public UserDTO authenticateUser(String email) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                requestUser.getEmail(),
-                requestUser.getOtp_code()
+                email,
+                null
         ));
 
         if (!authentication.isAuthenticated()) {
