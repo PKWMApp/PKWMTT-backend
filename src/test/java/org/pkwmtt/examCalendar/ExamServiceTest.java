@@ -1,6 +1,8 @@
 package org.pkwmtt.examCalendar;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -15,6 +17,8 @@ import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
+import org.pkwmtt.exceptions.ServiceNotAvailableException;
+import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.TimetableService;
 
 import java.time.LocalDateTime;
@@ -116,7 +120,6 @@ class ExamServiceTest {
 
         when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
-//        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
 
         when(groupRepository.findAllByNameIn(generalGroups)).thenReturn(new HashSet<>(Set.of()));
         when(groupRepository.saveAll(anyList())).thenReturn(studentGroups);
@@ -320,6 +323,37 @@ class ExamServiceTest {
      * provided groups      - match groups from timetable service
      * groupRepository      - contain provided groups
      */
+    @Test
+    void addExamForSingleGeneralGroupWithRepositoryContainingGroup() {
+        //        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of();
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        ExamType examType = buildExampleExamType();
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
+        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
+
+        when(groupRepository.findAllByNameIn(generalGroups)).thenReturn(new HashSet<>(studentGroups));
+        when(groupRepository.saveAll(any())).thenReturn(List.of());
+        when(examRepository.save(any(Exam.class))).thenReturn(exam);
+//        when
+        int savedId = examService.addExam(examDto);
+//        then
+        verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(1)).findAllByNameIn(any());       //???
+        verify(groupRepository, times(1)).saveAll(List.of());
+
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        Exam savedExam = examCaptor.getValue();
+        assertExam(savedExam, date, savedId, generalGroups);
+    }
 
     /**
      * test specification
@@ -329,6 +363,39 @@ class ExamServiceTest {
      * provided groups      - match groups from timetable service
      * groupRepository      - partially contain provided groups
      */
+    @Test
+    void addExamForSingleGeneralGroupAndSubgroupsWithRepositoryContainingGroups() throws JsonProcessingException {
+        //        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of("K04", "P04", "L04", "K05");
+        Set<String> combinedGroups = Set.of("12K", "K04", "P04", "L04", "K05");
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        ExamType examType = buildExampleExamType();
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(combinedGroups);
+        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04", "P04", "L04", "K05"));
+
+        when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(new HashSet<>(studentGroups.subList(0,3)));
+        when(groupRepository.saveAll(any())).thenReturn(studentGroups.subList(3,5));
+        when(examRepository.save(any(Exam.class))).thenReturn(exam);
+//        when
+        int savedId = examService.addExam(examDto);
+//        then
+        verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(1)).findAllByNameIn(any());
+        verify(groupRepository, times(1)).saveAll(any());
+
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        Exam savedExam = examCaptor.getValue();
+        assertExam(savedExam, date, savedId, combinedGroups);
+    }
 
     //</editor-fold>
 
@@ -336,11 +403,31 @@ class ExamServiceTest {
     /**
      * test specification
      * generalGroup         - 1 item
-     * subgroup             - blank
+     * subgroup             - 0 item
      * timetable service    - unavailable
      * provided groups      - match groups from timetable service
      * groupRepository      - don't contain provided groups
      */
+    @Test
+    void unavailableServiceAndRepositoryDontMatch() {
+//        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of();
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+
+//        more groups than in set
+        when(timetableService.getGeneralGroupList()).thenThrow(new WebPageContentNotAvailableException());
+        when(groupRepository.findAllByNameIn(generalGroups)).thenReturn(new HashSet<>(Set.of()));
+//        when
+        RuntimeException exception = assertThrows(ServiceNotAvailableException.class, () -> examService.addExam(examDto));
+//        then
+        assertEquals("Couldn't verify groups using repository" ,exception.getMessage());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(1)).findAllByNameIn(generalGroups);
+    }
+
 
     /**
      * test specification
@@ -348,17 +435,30 @@ class ExamServiceTest {
      * subgroup             - 3 items
      * timetable service    - unavailable
      * provided groups      - match groups from timetable service
-     * groupRepository      - don't contain provided groups
-     */
-
-    /**
-     * test specification
-     * generalGroup         - 1 item
-     * subgroup             - 4 items
-     * timetable service    - unavailable
-     * provided groups      - match groups from timetable service
      * groupRepository      - partially contain provided groups
      */
+    @Test
+    void unavailableServiceAndRepositoryDontMatchForSubgroups() throws JsonProcessingException {
+//        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of("L04", "K04", "P04");
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(Set.of("12K2", "L04"));
+
+//        more groups than in set
+        when(timetableService.getGeneralGroupList()).thenThrow(new WebPageContentNotAvailableException());
+        when(timetableService.getAvailableSubGroups("12K2")).thenThrow(new WebPageContentNotAvailableException());
+        when(groupRepository.findAllByNameIn(any())).thenReturn(new HashSet<>(studentGroups));
+//        when
+        RuntimeException exception = assertThrows(ServiceNotAvailableException.class, () -> examService.addExam(examDto));
+//        then
+        assertEquals("Couldn't verify groups using timetable service" ,exception.getMessage());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(1)).findAllByNameIn(generalGroups);
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="repository contain groups, service unavailable">
@@ -370,6 +470,37 @@ class ExamServiceTest {
      * provided groups      - match groups from timetable service
      * groupRepository      - contain provided groups
      */
+    @Test
+    void addExamWhenServiceIsUnavailableAndRepositoryContainsGeneralGroups(){
+        //        given
+        Set<String> generalGroups = Set.of("12K1", "12K2");
+        Set<String> subgroups = Set.of();
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        ExamType examType = buildExampleExamType();
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
+        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(timetableService.getGeneralGroupList()).thenThrow(new WebPageContentNotAvailableException());
+
+        when(groupRepository.findAllByNameIn(generalGroups)).thenReturn(new HashSet<>(studentGroups));
+        when(groupRepository.saveAll(anyList())).thenReturn(studentGroups);
+        when(examRepository.save(any(Exam.class))).thenReturn(exam);
+//        when
+        int savedId = examService.addExam(examDto);
+//        then
+        verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(2)).findAllByNameIn(any());
+        verify(groupRepository, times(1)).saveAll(any());
+
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        Exam savedExam = examCaptor.getValue();
+        assertExam(savedExam, date, savedId, generalGroups);
+    }
 
     /**
      * test specification
@@ -379,15 +510,41 @@ class ExamServiceTest {
      * provided groups      - match groups from timetable service
      * groupRepository      - contain provided groups
      */
+    @Test
+    @Disabled("Not supported yet")
+    void addExamWhenServiceIsUnavailableAndRepositoryContainsGroups() throws JsonProcessingException {
+        //        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of("L04", "K04", "P04", "K05");
+        Set<String> combinedGroups = Set.of("12K2", "L04", "K04", "P04", "K05");
 
-    /**
-     * test specification
-     * generalGroup         - 3 item
-     * subgroup             - 1 items
-     * timetable service    - unavailable
-     * provided groups      - match groups from timetable service
-     * groupRepository      - contain provided groups
-     */
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        ExamType examType = buildExampleExamType();
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(combinedGroups);
+        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(timetableService.getGeneralGroupList()).thenThrow(new WebPageContentNotAvailableException());
+        when(timetableService.getAvailableSubGroups("12K2")).thenThrow(new JsonParseException("parsing subgroups failed"));
+
+        when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(new HashSet<>(studentGroups));
+        when(groupRepository.saveAll(anyList())).thenReturn(List.of());
+        when(examRepository.save(any(Exam.class))).thenReturn(exam);
+//        when
+        int savedId = examService.addExam(examDto);
+//        then
+        verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(2)).findAllByNameIn(any());
+        verify(groupRepository, times(1)).saveAll(any());
+
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        Exam savedExam = examCaptor.getValue();
+        assertExam(savedExam, date, savedId, generalGroups);
+    }
+
     //</editor-fold>
 
     /************************************************************************************/

@@ -194,8 +194,8 @@ public class ExamService {
         List<StudentGroup> savedGroups = groupRepository.saveAll(groups.stream()
                 .map(g -> StudentGroup.builder()
                         .name(g)
-                        .build())
-                .collect(Collectors.toList())
+                        .build()
+                ).collect(Collectors.toList())
         );
         existingGroups.addAll(savedGroups);
         return existingGroups;
