@@ -1,25 +1,24 @@
 package org.pkwmtt.examCalendar;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
-import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.timetable.TimetableService;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,6 +43,7 @@ class ExamServiceTest {
     private ExamService examService;
 
     //<editor-fold desc="repository don't contain groups, service available">
+
     /**
      * test specification
      * generalGroup         - 1 item
@@ -55,44 +55,25 @@ class ExamServiceTest {
     @Test
     void addExamWithCorrectData() {
 //        given
+        Set<String> g12K2 = Set.of("12K2");
+
         LocalDateTime date = LocalDateTime.now().plusDays(1);
-        ExamDto examDto = ExamDto.builder()
-                .title("title")
-                .description("description")
-                .date(date)
-                .examType("exam")
-                .generalGroups(new HashSet<>(Set.of("12K2")))
-                .build();
-
-        ExamType examType = ExamType.builder()
-                .examTypeId(1)
-                .name("exam")
-                .build();
-
-        Exam exam = Exam.builder()
-                .examId(1)
-                .groups(Set.of(StudentGroup.builder().groupId(1).name("12K2").build()))
-                .build();
-
-        StudentGroup groupWithId = StudentGroup.builder()
-                .groupId(1)
-                .name("12K2")
-                .build();
-
-        List<StudentGroup> groupListWithId = new ArrayList<>();
-        groupListWithId.add(groupWithId);
+        ExamDto examDto = buildExampleExamDto(g12K2, date);
+        ExamType examType = buildExampleExamType();
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(g12K2);
+        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
 
         when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K1", "12K2", "12K3")));
-        when(groupRepository.findAllByNameIn(Set.of("12K2"))).thenReturn(new HashSet<>(Set.of()));
-        when(groupRepository.saveAll(anyList())).thenReturn(groupListWithId);
+        when(groupRepository.findAllByNameIn(g12K2)).thenReturn(new HashSet<>(Set.of()));
+        when(groupRepository.saveAll(anyList())).thenReturn(studentGroups);
         when(examRepository.save(any(Exam.class))).thenReturn(exam);
 //        when
         int savedId = examService.addExam(examDto);
 //        then
         verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
         verify(timetableService, times(1)).getGeneralGroupList();
-        verify(groupRepository, times(1)).findAllByNameIn(Set.of("12K2"));
+        verify(groupRepository, times(1)).findAllByNameIn(g12K2);
 
         ArgumentCaptor<List<StudentGroup>> groupCaptor = ArgumentCaptor.forClass(List.class);
         verify(groupRepository, times(1)).saveAll(groupCaptor.capture());
@@ -109,6 +90,7 @@ class ExamServiceTest {
         assertEquals("12K2", savedExam.getGroups().iterator().next().getName());
         assertEquals(1, savedId);
     }
+
 
     /**
      * test specification
@@ -129,7 +111,6 @@ class ExamServiceTest {
                 .subgroups(Set.of())
                 .build();
     }
-
 
 
     /**
@@ -277,8 +258,6 @@ class ExamServiceTest {
      * groupRepository      - contain provided groups
      */
     //</editor-fold>
-
-
     @Test
     void addExamForSingleSubgroup() {
 
@@ -611,5 +590,38 @@ class ExamServiceTest {
 //        );
 //    }
 
+    private static List<StudentGroup> buildExampleStudentGroupList(Set<String> groupNames) {
+        AtomicInteger id = new AtomicInteger();
+        return groupNames.stream()
+                .map(g -> StudentGroup.builder()
+                        .groupId(id.getAndIncrement())
+                        .name(g)
+                        .build()
+                ).collect(Collectors.toList());
+    }
+
+    private static Exam buildExamWithIdAndGroups(int id, List<StudentGroup> groups) {
+        return Exam.builder()
+                .examId(id)
+                .groups(new HashSet<>(groups))
+                .build();
+    }
+
+    private static ExamType buildExampleExamType() {
+        return ExamType.builder()
+                .examTypeId(1)
+                .name("exam")
+                .build();
+    }
+
+    private static ExamDto buildExampleExamDto(Set<String> groups, LocalDateTime date) {
+        return ExamDto.builder()
+                .title("title")
+                .description("description")
+                .date(date)
+                .examType("exam")
+                .generalGroups(new HashSet<>(groups))
+                .build();
+    }
 
 }
