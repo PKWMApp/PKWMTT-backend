@@ -4941,3 +4941,119 @@ insert into "groups" (name,group_id) values (?,default) [42103-232]
 2025-08-27 20:56:14 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
 2025-08-27 20:56:52 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
 2025-08-27 20:56:53 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-27 21:34:42 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-27 21:34:44 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:03:31 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:03:33 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:06:42 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:06:44 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:07:59 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:08:01 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:43:26 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:49:50 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:50:30 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:53:50 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-29 23:57:59 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 00:58:59 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 01:03:09 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 01:07:16 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 14:53:20 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 14:56:00 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:08:58 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:11:10 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:12:05 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:18:21 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:19:58 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:20:51 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:21:58 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:22:58 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:24:29 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:35:16 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:36:07 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:38:08 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:45:03 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:45:33 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:48:28 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:48:51 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:48:52 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Naruszenie ograniczenia Klucza Głównego lub Indeksu Unikalnego: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"
+Unique index or primary key violation: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"; SQL statement:
+insert into student_groups (name,group_id) values (?,default) [23505-232]
+2025-08-30 15:48:52 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Naruszenie ograniczenia Klucza Głównego lub Indeksu Unikalnego: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"
+Unique index or primary key violation: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"; SQL statement:
+insert into student_groups (name,group_id) values (?,default) [23505-232]
+2025-08-30 15:48:52 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Naruszenie ograniczenia Klucza Głównego lub Indeksu Unikalnego: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"
+Unique index or primary key violation: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"; SQL statement:
+insert into student_groups (name,group_id) values (?,default) [23505-232]
+2025-08-30 15:48:53 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Naruszenie ograniczenia Klucza Głównego lub Indeksu Unikalnego: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"
+Unique index or primary key violation: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 4 */ '12K2' )"; SQL statement:
+insert into student_groups (name,group_id) values (?,default) [23505-232]
+2025-08-30 15:50:02 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:50:52 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:52:36 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:52:58 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:53:00 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 15:53:01 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:00:54 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:07:14 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:07:38 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:08:30 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:09:03 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:11:39 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:32:46 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 16:32:46 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - Naruszenie ograniczenia Klucza Głównego lub Indeksu Unikalnego: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 1 */ '12K2' )"
+Unique index or primary key violation: "PUBLIC.CONSTRAINT_INDEX_B ON PUBLIC.student_groups(name NULLS FIRST) VALUES ( /* 1 */ '12K2' )"; SQL statement:
+insert into student_groups (name,group_id) values (?,default) [23505-232]
+2025-08-30 16:56:30 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:00:44 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:02:28 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:03:18 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:47:32 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:49:15 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:49:40 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:50:03 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:50:54 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:52:23 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:55:32 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:56:04 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:56:24 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:57:07 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:57:41 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 17:58:08 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:00:12 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:01:17 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:04:11 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:05:09 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:05:33 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:06:50 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:09:58 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:12:59 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:14:16 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:16:24 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:17:01 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:17:47 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:46:43 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:47:01 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:48:52 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:49:20 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:50:03 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:57:08 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:58:17 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:59:03 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 18:59:33 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:00:05 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:20:40 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:24:11 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:24:37 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:25:01 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:27:10 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:29:04 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:29:22 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:32:17 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:32:19 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:32:21 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:43:42 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:43:45 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:43:46 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:45:42 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:45:44 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties
+2025-08-30 19:45:46 ERROR org.pkwmtt.config.StartupConfig - !Couldn't log the server base url. Check properties in application.properties

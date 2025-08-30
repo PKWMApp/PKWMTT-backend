@@ -86,6 +86,7 @@ class ExamServiceTest {
         verify(timetableService, times(1)).getGeneralGroupList();
         verify(groupRepository, times(1)).findAllByNameIn(g12K2);
 
+        @SuppressWarnings("unchecked")
         ArgumentCaptor<List<StudentGroup>> groupCaptor = ArgumentCaptor.forClass(List.class);
         verify(groupRepository, times(1)).saveAll(groupCaptor.capture());
         assertEquals("12K2", groupCaptor.getValue().getFirst().getName());
@@ -129,6 +130,7 @@ class ExamServiceTest {
         verify(timetableService, times(1)).getGeneralGroupList();
         verify(groupRepository, times(1)).findAllByNameIn(generalGroups);
 
+        @SuppressWarnings("unchecked")
         ArgumentCaptor<List<StudentGroup>> groupCaptor = ArgumentCaptor.forClass(List.class);
         verify(groupRepository, times(1)).saveAll(groupCaptor.capture());
         Set<String> capturedGroups = groupCaptor.getValue().stream().map(StudentGroup::getName).collect(Collectors.toSet());
@@ -727,6 +729,7 @@ class ExamServiceTest {
                 ).collect(Collectors.toList());
     }
 
+
     private static Exam buildExamWithIdAndGroups(int id, List<StudentGroup> groups) {
         return Exam.builder()
                 .examId(id)
@@ -787,6 +790,7 @@ class ExamServiceTest {
         verify(timetableService, times(1)).getGeneralGroupList();
         verify(groupRepository, times(1)).findAllByNameIn(combinedGroups);
 
+        @SuppressWarnings("unchecked")
         ArgumentCaptor<List<StudentGroup>> groupCaptor = ArgumentCaptor.forClass(List.class);
         verify(groupRepository, times(1)).saveAll(groupCaptor.capture());
         Set<String> capturedGroups = groupCaptor.getValue().stream().map(StudentGroup::getName).collect(Collectors.toSet());

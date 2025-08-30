@@ -1,10 +1,8 @@
 package org.pkwmtt.examCalendar;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.pkwmtt.exceptions.*;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
-import org.pkwmtt.timetable.TimetableController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
