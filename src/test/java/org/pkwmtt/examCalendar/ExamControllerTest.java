@@ -2,6 +2,7 @@ package org.pkwmtt.examCalendar;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.pkwmtt.examCalendar.dto.ExamDto;
@@ -10,7 +11,7 @@ import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
-import org.pkwmtt.timetable.TimetableService;
+import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,11 +50,14 @@ class ExamControllerTest {
 
     @Autowired
     private ObjectMapper mapper;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @BeforeEach
     void setupBeforeEach() {
         examRepository.deleteAll();
         examTypeRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     //<editor-fold desc="addExam">
@@ -62,6 +66,7 @@ class ExamControllerTest {
      * check if addExam endpoint create new exam with correct URI and correct data
      */
     @Test
+    @Transactional
     void addExamWithCorrectData() throws Exception {
 //        given
         createExampleExamType("Project");
@@ -83,6 +88,17 @@ class ExamControllerTest {
 
         Exam examResponse = examRepository.findById(id).orElseThrow();
 
+        Set<String> responseSubgroups = examResponse.getGroups().stream()
+                .map(StudentGroup::getName)
+                .collect(Collectors.toSet());
+        Set<String> responseGeneralGroups = responseSubgroups.stream()
+                 .filter(g -> g.matches("^\\d.*"))
+                 .collect(Collectors.toSet());
+        responseSubgroups.removeAll(responseGeneralGroups);
+
+        assertEquals(responseGeneralGroups, Set.of("12K"));
+        assertEquals(responseSubgroups, examDtoRequest.getSubgroups());
+
         assertEquals(examDtoRequest.getTitle(), examResponse.getTitle());
         assertEquals(examDtoRequest.getDescription(), examResponse.getDescription());
 //        compare dates with minutes level precision
@@ -90,25 +106,21 @@ class ExamControllerTest {
                 examDtoRequest.getDate().truncatedTo(ChronoUnit.MINUTES),
                 examResponse.getExamDate().truncatedTo(ChronoUnit.MINUTES)
         );
-//        assertEquals(examDtoRequest.getGeneralGroups(), examResponse.getGroups().stream());
-//        assertEquals(examDtoRequest.getGeneralGroups(), examResponse.getGroups());
 
         assertEquals(examDtoRequest.getExamType(), examResponse.getExamType().getName());
     }
 
-//    TODO: change Map<String, String> to Map<String, Object>
     @Test
     void addExamWithBlankExamTitle() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, Object> requestData = new HashMap<>();
-//      no exam title
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examType", "Project");
-        requestData.put("generalGroups", List.of("12K2"));
-        requestData.put("subgroups", List.of("L04"));
-
+        ExamDto requestData = ExamDto.builder()
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
@@ -120,13 +132,13 @@ class ExamControllerTest {
     void addExamWithBlankExamDescription() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-//        no exam description
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
-        requestData.put("examType", "Project");
-
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 //        when
         MvcResult result = assertPostRequest(status().isCreated(), requestData);
 
@@ -142,13 +154,13 @@ class ExamControllerTest {
     void addExamWithBlankDate() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "first exam");
-//      no date
-        requestData.put("examGroups", "12K2, L04");
-        requestData.put("examType", "Project");
-
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
@@ -160,30 +172,47 @@ class ExamControllerTest {
     void addExamWithBlankExamGroups() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-//        no examGroups
-        requestData.put("examType", "Project");
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .build();
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
 //        then
-        assertResponseMessage("examGroups : must not be blank", result);
+        assertResponseMessage("generalGroups : must not be empty", result);
+    }
+
+    @Test
+    void addExamWithBlankGeneralGroups() throws Exception {
+//        TODO
+    }
+
+    @Test
+    void addExamWithBlankSubgroups() throws Exception {
+//        TODO
+    }
+
+    @Test
+    void addExamWithMultipleGeneralGroupsAndSubgroups() throws Exception {
+//        TODO
     }
 
     @Test
     void addExamWithNullExamTypes() throws Exception {
 //        given
-        createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
-//      no examType
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType(null) // brak typu egzaminu
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+//               no examType
+                .build();
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
@@ -196,13 +225,14 @@ class ExamControllerTest {
     void addExamWithNotFutureDate() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().minusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
-        requestData.put("examType", "Project");
-
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().minusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
@@ -214,12 +244,14 @@ class ExamControllerTest {
     void addExamWithEmptyStringExamTitle() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
-        requestData.put("examType", "Project");
+        ExamDto requestData = ExamDto.builder()
+                .title("")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
@@ -229,33 +261,17 @@ class ExamControllerTest {
     }
 
     @Test
-    void addExamWithEmptyStringExamGroups() throws Exception {
-//        given
-        createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "");
-        requestData.put("examType", "Project");
-
-//        when
-        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
-
-//        then
-        assertResponseMessage("examGroups : must not be blank", result);
-    }
-
-    @Test
     void addExamWithTooLongExamTitle() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
-        requestData.put("examType", "Project");
+        ExamDto requestData = ExamDto.builder()
+                .title("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") // 256 znaków
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
@@ -268,12 +284,14 @@ class ExamControllerTest {
     void addExamWithTooLongDescription() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
-        requestData.put("examType", "Project");
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") // 256 znaków
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
@@ -283,33 +301,17 @@ class ExamControllerTest {
     }
 
     @Test
-    void addExamWithTooLongExamGroups() throws Exception {
-//        given
-        createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        requestData.put("examType", "Project");
-
-//        when
-        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
-
-//        then
-        assertResponseMessage("examGroups : max size of field is 255", result);
-    }
-
-    @Test
     void addExamWithNonExistingExamType() throws Exception {
 //        given
         createExampleExamType("Project");
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("title", "Math exam");
-        requestData.put("description", "first exam");
-        requestData.put("date", LocalDateTime.now().plusDays(1).toString());
-        requestData.put("examGroups", "12K2, L04");
-        requestData.put("examType", "NonExistingExamType");
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("NonExistingExamType")
+                .generalGroups(Set.of("12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
@@ -323,6 +325,7 @@ class ExamControllerTest {
 
     //    <editor-fold desc="modifyExam">
     @Test
+    @Transactional
     void modifyExamWithCorrectData() throws Exception {
 //        given
         ExamType examType = createExampleExamType("Exam");
@@ -335,13 +338,23 @@ class ExamControllerTest {
 
 //        then
         Exam responseExam = examRepository.findById(id).orElseThrow();
+
+        Set<String> responseSubgroups = responseExam.getGroups().stream()
+                .map(StudentGroup::getName)
+                .collect(Collectors.toSet());
+        Set<String> responseGeneralGroups = responseSubgroups.stream()
+                .filter(g -> g.matches("^\\d.*"))
+                .collect(Collectors.toSet());
+        responseSubgroups.removeAll(responseGeneralGroups);
+
         assertEquals("Math exam", responseExam.getTitle());
         assertEquals("first exam", responseExam.getDescription());
         assertEquals(
                 LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.MINUTES),
                 responseExam.getExamDate().truncatedTo(ChronoUnit.MINUTES)
         );
-        assertEquals("12K2, L04", responseExam.getGroups());
+        assertEquals(Set.of("12K"), responseGeneralGroups);
+        assertEquals(Set.of("L04"), responseSubgroups);
     }
 
     @Test
@@ -415,7 +428,7 @@ class ExamControllerTest {
         assertEquals(exam.getDescription(), responseNode.get("description").asText());
         assertEquals(
                 exam.getExamDate().truncatedTo(ChronoUnit.MINUTES),
-                LocalDateTime.parse(responseNode.get("date").textValue()).truncatedTo(ChronoUnit.MINUTES)
+                LocalDateTime.parse(responseNode.get("examDate").textValue()).truncatedTo(ChronoUnit.MINUTES)
         );
 //        assertEquals(exam.getGroups(), responseNode.get("examGroups").asText());
         assertEquals(mapper.readTree(mapper.writeValueAsString(exam.getExamType())), responseNode.get("examType"));
@@ -499,13 +512,14 @@ class ExamControllerTest {
      * @return created Exam
      */
     private Exam createExampleExam(ExamType type) {
+        List<StudentGroup> savedGroups = groupRepository.saveAll(Stream.of("12K2", "L04")
+                .map(g -> StudentGroup.builder().name(g).build())
+                .collect(Collectors.toList()));
         return Exam.builder()
                 .title("Exam")
                 .description("Exam description")
                 .examDate(LocalDateTime.now().plusDays(1))
-                .groups(Stream.of("12K2", "L04")
-                        .map(g -> StudentGroup.builder().name(g).build())
-                        .collect(Collectors.toSet()))
+                .groups(new HashSet<>(savedGroups))
                 .examType(type)
                 .build();
     }
