@@ -92,8 +92,8 @@ class ExamControllerTest {
                 .map(StudentGroup::getName)
                 .collect(Collectors.toSet());
         Set<String> responseGeneralGroups = responseSubgroups.stream()
-                 .filter(g -> g.matches("^\\d.*"))
-                 .collect(Collectors.toSet());
+                .filter(g -> g.matches("^\\d.*"))
+                .collect(Collectors.toSet());
         responseSubgroups.removeAll(responseGeneralGroups);
 
         assertEquals(responseGeneralGroups, Set.of("12K"));
@@ -239,7 +239,7 @@ class ExamControllerTest {
                 .description("first exam")
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("Project")
-                .generalGroups(Set.of("12K1","12K2"))
+                .generalGroups(Set.of("12K1", "12K2"))
                 .subgroups(Set.of("L04"))
                 .build();
 
@@ -501,7 +501,49 @@ class ExamControllerTest {
 //  </editor-fold>
 
     @Test
-    void getExams() {
+    void getExamsWithGeneralGroups() throws Exception {
+//        given
+        Exam exam1 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex1", Set.of("12K2")));
+        Exam exam2 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex2", Set.of("12K2", "12K1")));
+        Exam exam3 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex3", Set.of("12A2")));
+        Exam exam4 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex4", Set.of("12K", "L04")));
+
+//        when
+        MvcResult result = assertGetByGroupsRequest(status().isOk(), Set.of("12K2"));
+
+//        then
+        JsonNode responseArray = mapper.readTree(result.getResponse().getContentAsString());
+        assertEquals(2, responseArray.size());
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam1.getTitle())));
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam2.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam3.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam4.getTitle())));
+    }
+
+    @Test
+    void getExamsWithSubgroups() throws Exception {
+//        given
+        Exam exam1 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex1", Set.of("12K2")));
+        Exam exam2 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex2", Set.of("12K2", "11K2")));
+        Exam exam3 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex3", Set.of("12A2")));
+        Exam exam4 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex4", Set.of("12K", "L04")));
+        Exam exam5 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex5", Set.of("11K", "L04")));
+
+//        when
+        MvcResult result = assertGetByGroupsRequest(status().isOk(), Set.of("11K2"), Set.of("L04"));
+
+//        then
+        JsonNode responseArray = mapper.readTree(result.getResponse().getContentAsString());
+        assertEquals(2, responseArray.size());
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam2.getTitle())));
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam5.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam1.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam3.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam4.getTitle())));
+    }
+
+    @Test
+    void getExamsMultipleGeneralGroupsAndSubgroups() {
 //        TODO: test getExamsByGroups after implementing new version
     }
 
@@ -545,6 +587,7 @@ class ExamControllerTest {
 
     /**
      * this method create examType object and add it to repository
+     *
      * @param name of new examType
      * @return created examType object
      */
@@ -556,6 +599,7 @@ class ExamControllerTest {
 
     /**
      * this method don't add created Exam to repository, because in that case id of created Exam would be unreachable
+     *
      * @param type ExamType object which is required argument of Exam
      * @return created Exam
      */
@@ -569,6 +613,26 @@ class ExamControllerTest {
                 .examDate(LocalDateTime.now().plusDays(1))
                 .groups(new HashSet<>(savedGroups))
                 .examType(type)
+                .build();
+    }
+
+    private Exam createAndSaveExamWithTitleAndGroups(String title, Set<String> groups) {
+        ExamType examType = examTypeRepository.findByName("Project")
+                .orElseGet(() -> createExampleExamType("Project"));
+
+        Set<String> groupsFromRepository = groupRepository.findAll().stream().map(StudentGroup::getName).collect(Collectors.toSet());
+        List<StudentGroup> savedGroups = groupRepository.saveAll(groups.stream().filter(g -> !groupsFromRepository.contains(g))
+                .map(g -> StudentGroup.builder().name(g).build())
+                .collect(Collectors.toList()));
+
+        Set<StudentGroup> groupsToSave = groupRepository.findAll().stream().filter(g -> groups.contains(g.getName())).collect(Collectors.toSet());
+
+        return Exam.builder()
+                .title(title)
+                .description("Exam description")
+                .examDate(LocalDateTime.now().plusDays(1))
+                .groups(groupsToSave)
+                .examType(examType)
                 .build();
     }
 
@@ -589,8 +653,9 @@ class ExamControllerTest {
 
     /**
      * compare error message form response with expected value
+     *
      * @param expectedMessage full message that is expected in response
-     * @param result response generated by mockMvc.perform() or one of assert[httpMethod]Request()
+     * @param result          response generated by mockMvc.perform() or one of assert[httpMethod]Request()
      * @throws Exception
      */
     private void assertResponseMessage(String expectedMessage, MvcResult result) throws Exception {
@@ -602,9 +667,10 @@ class ExamControllerTest {
     /**
      * method send POST request to ExamController with content as JSON attached to body and then check if response
      * code is the same as expected
+     *
      * @param expectedStatus status().[http response] (example: status().isCreated() )
-     * @param content object that would be mapped to JSON by ObjectMapper and then attached to request
-     *                it could be dto object or Map<String, String>
+     * @param content        object that would be mapped to JSON by ObjectMapper and then attached to request
+     *                       it could be dto object or Map<String, String>
      * @return MvcResult object which could be used to capture response body
      * @throws Exception
      */
@@ -621,9 +687,10 @@ class ExamControllerTest {
     /**
      * method send PUT request to ExamController with content as JSON attached to body and examId as pathID.
      * Then check if response code is the same as expected
+     *
      * @param expectedStatus status().[http response] (example: status().isNoContent() )
-     * @param content object that would be mapped to JSON by ObjectMapper and then attached to request
-     * @param pathId id of resource that would be updated
+     * @param content        object that would be mapped to JSON by ObjectMapper and then attached to request
+     * @param pathId         id of resource that would be updated
      * @return MvcResult object which could be used to capture response body
      * @throws Exception
      */
@@ -640,8 +707,9 @@ class ExamControllerTest {
     /**
      * method send DELETE request to ExamController with examId as pathID.
      * Then check if response code is the same as expected
+     *
      * @param expectedStatus status().[http response] (example: status().isNoContent() )
-     * @param pathId id of resource that would be deleted
+     * @param pathId         id of resource that would be deleted
      * @return MvcResult object which could be used to capture response body
      * @throws Exception
      */
@@ -657,8 +725,9 @@ class ExamControllerTest {
     /**
      * method send GET request to ExamController at /pkwmtt/api/v1/exams/{id} URI with examId as pathID.
      * Then check if response code is the same as expected
+     *
      * @param expectedStatus status().[http response] (example: status().isOk() )
-     * @param pathId id of resource that would be returned
+     * @param pathId         id of resource that would be returned
      * @return MvcResult object which could be used to capture response body
      * @throws Exception
      */
@@ -671,9 +740,31 @@ class ExamControllerTest {
                 .andReturn();
     }
 
+    private MvcResult assertGetByGroupsRequest(ResultMatcher expectedStatus, Set<String> generalGroups) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders
+                                .get("/pkwmtt/api/v1/exams/by-groups")
+                                .param("generalGroups", generalGroups.toArray(new String[0]))
+                                .contentType("application/json")
+                ).andDo(print())
+                .andExpect(expectedStatus)
+                .andReturn();
+    }
+
+    private MvcResult assertGetByGroupsRequest(ResultMatcher expectedStatus, Set<String> generalGroups, Set<String> subgroups) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders
+                        .get("/pkwmtt/api/v1/exams/by-groups")
+                        .param("generalGroups", generalGroups.toArray(new String[0]))
+                        .param("subgroups", subgroups.toArray(new String[0]))
+                        .contentType("application/json")
+                ).andDo(print())
+                .andExpect(expectedStatus)
+                .andReturn();
+    }
+
     /**
      * method send GET request to ExamController at /pkwmtt/api/v1/exams/exam-types URI.
      * Then check if response code is the same as expected
+     *
      * @param expectedStatus expectedStatus status().[http response] (example: status().isOk() )
      * @return MvcResult object which could be used to capture response body
      * @throws Exception

@@ -16,9 +16,7 @@ import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
-import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
-import org.pkwmtt.exceptions.ServiceNotAvailableException;
-import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
+import org.pkwmtt.exceptions.*;
 import org.pkwmtt.timetable.TimetableService;
 
 import java.time.LocalDateTime;
@@ -627,7 +625,6 @@ class ExamServiceTest {
 //    given
         Set<String> generalGroups = Set.of("12K2");
         Set<String> subgroups = Set.of("L04", "K04", "P04");
-
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
@@ -640,7 +637,6 @@ class ExamServiceTest {
 //    given
         Set<String> generalGroups = Set.of("1Er");
         Set<String> subgroups = Set.of("L01", "K01", "P01");
-
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
@@ -653,7 +649,6 @@ class ExamServiceTest {
 //    given
         Set<String> generalGroups = Set.of("12K2");
         Set<String> subgroups = Set.of();
-
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
@@ -666,7 +661,6 @@ class ExamServiceTest {
 //    given
         Set<String> generalGroups = Set.of("12K2");
         Set<String> subgroups = null;
-
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
@@ -679,12 +673,35 @@ class ExamServiceTest {
 //    given
         Set<String> generalGroups = Set.of("12K1", "12K2");
         Set<String> subgroups = Set.of("L01", "K01", "P01");
-
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
         verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
         verify(examRepository, times(1)).findAllBySubgroupsOfGeneralGroup("12K", subgroups);
+    }
+
+    @Test
+    void shouldThrowWhenSubgroupsAreSwappedWithGeneralGroups() {
+//    given
+        Set<String> generalGroups = new HashSet<>(Set.of("L01", "K01", "P01"));
+        Set<String> subgroups = new HashSet<>( Set.of("12K1"));
+//    when then
+        assertThrows(
+                SpecifiedGeneralGroupDoesntExistsException.class,
+                () -> examService.getExamByGroups(generalGroups, subgroups)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenSubgroupsAreTheGeneralGroups() {
+//    given
+        Set<String> generalGroups = new HashSet<>(Set.of("12K1"));
+        Set<String> subgroups = new HashSet<>( Set.of("12K1", "12K2", "12K3"));
+//    when, then
+        assertThrows(
+                SpecifiedSubGroupDoesntExistsException.class,
+                () -> examService.getExamByGroups(generalGroups, subgroups)
+        );
     }
 
     @Test

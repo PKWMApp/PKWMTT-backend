@@ -78,6 +78,11 @@ public class ExamService {
     }
 
     public List<Exam> getExamByGroups(Set<String> generalGroups, Set<String> subgroups) {
+//        verify generalGroups identifiers
+        generalGroups.forEach(group -> {
+            if(!Character.isDigit(group.charAt(0)))
+                throw new SpecifiedGeneralGroupDoesntExistsException(group);
+        });
 //        get exams for general groups
         List<Exam> exams = new ArrayList<>(examRepository.findAllByGroups_NameIn(generalGroups));
 //        convert general group identifiers. e.g. 12K2 to 12K
@@ -88,6 +93,11 @@ public class ExamService {
         }).collect(Collectors.toSet());
 //        check if subgroups are provided
         if(subgroups != null && !subgroups.isEmpty()){
+//            verify subgroups identifiers
+            subgroups.forEach(group -> {
+                if(!Character.isAlphabetic(group.charAt(0)))
+                    throw new SpecifiedSubGroupDoesntExistsException(group);
+            });
 //            check if superior group identifies the groups unambiguously
             if(superiorGroups.size() != 1)
                 throw new InvalidGroupIdentifierException("ambiguous superior group identifier for subgroups");
