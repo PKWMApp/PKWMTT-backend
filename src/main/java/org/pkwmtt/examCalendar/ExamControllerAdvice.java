@@ -2,11 +2,8 @@ package org.pkwmtt.examCalendar;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
-import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
+import org.pkwmtt.exceptions.*;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
-import org.pkwmtt.exceptions.ExamTypeNotExistsException;
-import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
 import org.pkwmtt.timetable.TimetableController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +16,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice(assignableTypes = {ExamController.class})
 public class ExamControllerAdvice {
 
-//  TODO: handle or remove UnsupportedCountOfArgumentsException
+//UnsupportedCountOfArgumentsException isn't handled but probably would never be thrown
 
     @ExceptionHandler(NoSuchElementWithProvidedIdException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoSuchElementWithProvidedIdException(NoSuchElementWithProvidedIdException e) {
@@ -54,6 +51,11 @@ public class ExamControllerAdvice {
 
     @ExceptionHandler(SpecifiedGeneralGroupDoesntExistsException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidGroupIdentifierException(SpecifiedGeneralGroupDoesntExistsException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(SpecifiedSubGroupDoesntExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidGroupIdentifierException(SpecifiedSubGroupDoesntExistsException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(e.getMessage()));
     }
 

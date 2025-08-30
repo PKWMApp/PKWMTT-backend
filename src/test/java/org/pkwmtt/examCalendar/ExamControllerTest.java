@@ -530,7 +530,7 @@ class ExamControllerTest {
         Exam exam5 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex5", Set.of("11K", "L04")));
 
 //        when
-        MvcResult result = assertGetByGroupsRequest(status().isOk(), Set.of("11K2"), Set.of("L04"));
+        MvcResult result = assertGetByGroupsRequest(status().isOk(), Set.of("11K2"), Set.of("L04","P04", "K04"));
 
 //        then
         JsonNode responseArray = mapper.readTree(result.getResponse().getContentAsString());
@@ -543,8 +543,27 @@ class ExamControllerTest {
     }
 
     @Test
-    void getExamsMultipleGeneralGroupsAndSubgroups() {
-//        TODO: test getExamsByGroups after implementing new version
+    void getExamsMultipleGeneralGroupsAndSubgroups() throws Exception {
+        //        when
+        MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("11K2", "12A1"), Set.of("L04"));
+        //        then
+        assertResponseMessage("Invalid group identifier: ambiguous superior group identifier for subgroups",result);
+    }
+
+    @Test
+    void getExamsWithSwappedGroupNames() throws Exception {
+        //        when
+        MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("K04"), Set.of("11K2", "12A1"));
+        //        then
+        assertResponseMessage("Specified general group [K04] doesn't exists",result);
+    }
+
+    @Test
+    void getExamsWithInvalidSubgroup() throws Exception {
+        //        when
+        MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("12K1,", "12K2"), Set.of("11K2"));
+        //        then
+        assertResponseMessage("Specified sub group [11K2] doesn't exists",result);
     }
 
     //    <editor-fold desc="getExamTypes">
