@@ -188,17 +188,65 @@ class ExamControllerTest {
 
     @Test
     void addExamWithBlankGeneralGroups() throws Exception {
-//        TODO
+//      given
+        createExampleExamType("Project");
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+//              null generalGroups
+                .subgroups(Set.of("L04"))
+                .build();
+
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
+//        then
+        assertResponseMessage("generalGroups : must not be empty", result);
     }
 
     @Test
+    @Transactional
     void addExamWithBlankSubgroups() throws Exception {
-//        TODO
+//      given
+        createExampleExamType("Project");
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K2"))
+//                null subgroups
+                .build();
+
+//        when
+        MvcResult result = assertPostRequest(status().isCreated(), requestData);
+//        then
+        String location = result.getResponse().getHeader("Location");
+        @SuppressWarnings("DataFlowIssue")
+        int id = Integer.parseInt(location.substring(location.lastIndexOf("/") + 1));
+        Exam examResponse = examRepository.findById(id).orElseThrow();
+
+        assertEquals("12K2", examResponse.getGroups().iterator().next().getName());
     }
 
     @Test
     void addExamWithMultipleGeneralGroupsAndSubgroups() throws Exception {
-//        TODO
+        //      given
+        createExampleExamType("Project");
+        ExamDto requestData = ExamDto.builder()
+                .title("Math exam")
+                .description("first exam")
+                .date(LocalDateTime.now().plusDays(1))
+                .examType("Project")
+                .generalGroups(Set.of("12K1","12K2"))
+                .subgroups(Set.of("L04"))
+                .build();
+
+//        when
+        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
+//        then
+        assertResponseMessage("Invalid group identifier: ambiguous general groups for subgroups", result);
     }
 
     @Test

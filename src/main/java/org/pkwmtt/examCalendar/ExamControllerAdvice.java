@@ -2,6 +2,7 @@ package org.pkwmtt.examCalendar;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.exceptions.ExamTypeNotExistsException;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
@@ -43,6 +44,11 @@ public class ExamControllerAdvice {
                 .map(field -> field.getPropertyPath() + " : " + field.getMessage())
                 .collect(Collectors.joining(", "));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(message));
+    }
+
+    @ExceptionHandler(InvalidGroupIdentifierException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidGroupIdentifierException(InvalidGroupIdentifierException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(e.getMessage()));
     }
 
 
