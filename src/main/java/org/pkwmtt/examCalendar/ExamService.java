@@ -121,7 +121,7 @@ public class ExamService {
         try {
             generalGroupsFromRepository = new HashSet<>(timetableService.getGeneralGroupList());
         } catch (WebPageContentNotAvailableException e) {
-            generalGroupsFromRepository = verifyUsingRepository(generalGroups);
+            generalGroupsFromRepository = verifyGroupsUsingRepository(generalGroups);
         }
 //        verify generalGroups using timetable service
         if (!generalGroupsFromRepository.containsAll(generalGroups)) {
@@ -171,7 +171,7 @@ public class ExamService {
      * @return set of groups (String) when verification succeeded
      * @throws WebPageContentNotAvailableException when verification not succeeded
      */
-    private Set<String> verifyUsingRepository(Set<String> groups) throws WebPageContentNotAvailableException {
+    private Set<String> verifyGroupsUsingRepository(Set<String> groups) throws WebPageContentNotAvailableException {
         verifyGeneralGroupsFormat(groups);
         Set<String> groupsFromRepository = groupRepository.findAllByNameIn(groups).stream()
                 .map(StudentGroup::getName)
@@ -208,14 +208,14 @@ public class ExamService {
 
     private static void verifyGeneralGroupsFormat(Set<String> generalGroups) throws SpecifiedGeneralGroupDoesntExistsException{
         generalGroups.forEach(group -> {
-            if(!Character.isDigit(group.charAt(0)))
+            if (!group.matches("^\\d.*"))
                 throw new SpecifiedGeneralGroupDoesntExistsException(group);
         });
     }
 
     private static void verifySubgroupsFormat(Set<String> subgroups) {
         subgroups.forEach(group -> {
-            if(!Character.isAlphabetic(group.charAt(0)))
+            if(!group.matches("^[A-Z].*"))
                 throw new SpecifiedSubGroupDoesntExistsException(group);
         });
     }
