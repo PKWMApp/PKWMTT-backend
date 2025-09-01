@@ -14,15 +14,19 @@ import java.util.stream.Collectors;
 @RestControllerAdvice(assignableTypes = {ExamController.class})
 public class ExamControllerAdvice {
 
-//UnsupportedCountOfArgumentsException isn't handled but probably would never be thrown
-
     @ExceptionHandler(NoSuchElementWithProvidedIdException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoSuchElementWithProvidedIdException(NoSuchElementWithProvidedIdException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
     }
 
-    @ExceptionHandler(ExamTypeNotExistsException.class)
-    public ResponseEntity<ErrorResponseDTO> handleExamTypeNotExistsException(ExamTypeNotExistsException e) {
+    @ExceptionHandler({
+            ExamTypeNotExistsException.class,
+            InvalidGroupIdentifierException.class,
+            SpecifiedGeneralGroupDoesntExistsException.class,
+            SpecifiedSubGroupDoesntExistsException.class,
+            UnsupportedCountOfArgumentsException.class
+    })
+    public ResponseEntity<ErrorResponseDTO> handleBadRequest(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(e.getMessage()));
     }
 
@@ -41,21 +45,4 @@ public class ExamControllerAdvice {
                 .collect(Collectors.joining(", "));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(message));
     }
-
-    @ExceptionHandler(InvalidGroupIdentifierException.class)
-    public ResponseEntity<ErrorResponseDTO> handleInvalidGroupIdentifierException(InvalidGroupIdentifierException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(e.getMessage()));
-    }
-
-    @ExceptionHandler(SpecifiedGeneralGroupDoesntExistsException.class)
-    public ResponseEntity<ErrorResponseDTO> handleInvalidGroupIdentifierException(SpecifiedGeneralGroupDoesntExistsException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(e.getMessage()));
-    }
-
-    @ExceptionHandler(SpecifiedSubGroupDoesntExistsException.class)
-    public ResponseEntity<ErrorResponseDTO> handleInvalidGroupIdentifierException(SpecifiedSubGroupDoesntExistsException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(e.getMessage()));
-    }
-
-
 }
