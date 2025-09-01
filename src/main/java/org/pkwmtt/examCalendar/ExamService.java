@@ -77,11 +77,16 @@ public class ExamService {
         return examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
     }
 
-    public List<Exam> getExamByGroups(Set<String> generalGroups, Set<String> subgroups) {
+    public Set<Exam> getExamByGroups(Set<String> generalGroups, Set<String> subgroups) {
 //        verify generalGroups identifiers
         verifyGeneralGroupsFormat(generalGroups);
 //        get exams for general groups
-        List<Exam> exams = new ArrayList<>(examRepository.findAllByGroups_NameIn(generalGroups));
+        Set<Exam> exams = new HashSet<>(examRepository.findAllByGroups_NameIn(generalGroups));
+        exams = exams.stream()
+                .filter(exam -> exam.getGroups().stream()
+                        .allMatch(group -> group.getName().matches("^\\d.*")))
+                .collect(Collectors.toSet());
+
 //        convert general group identifiers. e.g. 12K2 to 12K
         Set<String> superiorGroups = generalGroups.stream().map(g -> {
             if (Character.isDigit(g.charAt(g.length() - 1)))
@@ -89,11 +94,11 @@ public class ExamService {
             return g;
         }).collect(Collectors.toSet());
 //        check if subgroups are provided
-        if(subgroups != null && !subgroups.isEmpty()){
+        if (subgroups != null && !subgroups.isEmpty()) {
 //            verify subgroups identifiers
             verifySubgroupsFormat(subgroups);
 //            check if superior group identifies the groups unambiguously
-            if(superiorGroups.size() != 1)
+            if (superiorGroups.size() != 1)
                 throw new InvalidGroupIdentifierException("ambiguous superior group identifier for subgroups");
             exams.addAll(examRepository.findAllBySubgroupsOfGeneralGroup(superiorGroups.iterator().next(), subgroups));
         }
@@ -160,7 +165,7 @@ public class ExamService {
         }
 //          only one general group could be assigned to subgroups (when there are more than 1 general group and
 //          more than 0 subgroups)
-        else if(generalGroups.isEmpty())
+        else if (generalGroups.isEmpty())
             throw new InvalidGroupIdentifierException("general group is missing");
         else
             throw new InvalidGroupIdentifierException("ambiguous general groups for subgroups");
@@ -206,7 +211,7 @@ public class ExamService {
         return existingGroups;
     }
 
-    private static void verifyGeneralGroupsFormat(Set<String> generalGroups) throws SpecifiedGeneralGroupDoesntExistsException{
+    private static void verifyGeneralGroupsFormat(Set<String> generalGroups) throws SpecifiedGeneralGroupDoesntExistsException {
         generalGroups.forEach(group -> {
             if (!group.matches("^\\d.*"))
                 throw new SpecifiedGeneralGroupDoesntExistsException(group);
@@ -215,7 +220,7 @@ public class ExamService {
 
     private static void verifySubgroupsFormat(Set<String> subgroups) {
         subgroups.forEach(group -> {
-            if(!group.matches("^[A-Z].*"))
+            if (!group.matches("^[A-Z].*"))
                 throw new SpecifiedSubGroupDoesntExistsException(group);
         });
     }

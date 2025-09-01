@@ -54,7 +54,7 @@ public class ExamDtoMapper {
                 .build();
     }
 
-    public static List<ExamDto> mapToExamDto(List<Exam> exams) {
+    public static List<ExamDto> mapToExamDto(Set<Exam> exams) {
         return exams.stream().map(ExamDtoMapper::mapToExamDto).collect(Collectors.toList());
     }
 

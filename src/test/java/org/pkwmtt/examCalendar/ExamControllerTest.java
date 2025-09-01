@@ -543,6 +543,30 @@ class ExamControllerTest {
     }
 
     @Test
+    void getExamsWithSubgroupsUsingWholeYearIdentifier() throws Exception {
+//        given
+        Exam exam1 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex1", Set.of("12K2")));
+        Exam exam2 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex2", Set.of("12K2", "11K2")));
+        Exam exam3 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex3", Set.of("12A2")));
+        Exam exam4 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex4", Set.of("12K", "L04")));
+        Exam exam5 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex5", Set.of("11K", "L04")));
+        Exam exam6 = examRepository.save(createAndSaveExamWithTitleAndGroups("ex6", Set.of("12K", "L04", "P04")));
+
+//        when
+        MvcResult result = assertGetByGroupsRequest(status().isOk(), Set.of("12K"), Set.of("L04", "K04"));
+
+//        then
+        JsonNode responseArray = mapper.readTree(result.getResponse().getContentAsString());
+        assertEquals(2, responseArray.size());
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam4.getTitle())));
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam6.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam1.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam2.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam3.getTitle())));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam5.getTitle())));
+    }
+
+    @Test
     void getExamsMultipleGeneralGroupsAndSubgroups() throws Exception {
         //        when
         MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("11K2", "12A1"), Set.of("L04"));

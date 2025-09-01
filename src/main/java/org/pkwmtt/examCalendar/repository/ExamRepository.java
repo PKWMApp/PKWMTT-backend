@@ -1,13 +1,10 @@
 package org.pkwmtt.examCalendar.repository;
 
 import org.pkwmtt.examCalendar.entity.Exam;
-import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -30,5 +27,5 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
                 JOIN FETCH e.groups g2
                 WHERE g1.name = :general AND g2.name IN :sub
             """)
-    List<Exam> findAllBySubgroupsOfGeneralGroup(@Param("general") String generalGroup, @Param("sub") Set<String> subgroup);
+    Set<Exam> findAllBySubgroupsOfGeneralGroup(@Param("general") String generalGroup, @Param("sub") Set<String> subgroup);
 }

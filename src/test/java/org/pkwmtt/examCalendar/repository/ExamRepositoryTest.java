@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -126,7 +127,7 @@ class ExamRepositoryTest {
 
     @Test
     void shouldReturnExamsWhenNotAllSubgroupsFromRepositoryMatched() {
-        List<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of("L04"));
+        Set<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of("L04"));
         assertEquals(2, exams.size());
         List<String> examTitles = exams.stream().map(Exam::getTitle).sorted().toList();
         assertEquals("small Group Exam 1", examTitles.get(0));
@@ -135,7 +136,7 @@ class ExamRepositoryTest {
 
     @Test
     void shouldReturnExamWhenNotAllSubgroupsFromArgumentsMatchedAndNotReturnExamsForWrongGeneralGroup() {
-        List<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of("L05"));
+        Set<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of("L05"));
         assertEquals(1, exams.size());
         List<String> examTitles = exams.stream().map(Exam::getTitle).sorted().toList();
         assertEquals("small Group Exam 2", examTitles.getFirst());
@@ -143,28 +144,28 @@ class ExamRepositoryTest {
 
     @Test
     void shouldReturnExamsWhenMultipleArgumentsMatch() {
-        List<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of("L04", "L05"));
+        Set<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of("L04", "L05"));
         assertEquals(2, exams.size());
-        List<String> examTitles = exams.stream().map(Exam::getTitle).sorted().toList();
-        assertEquals("small Group Exam 1", examTitles.get(0));
-        assertEquals("small Group Exam 2", examTitles.get(1));
+        Set<String> examTitles = exams.stream().map(Exam::getTitle).collect(Collectors.toSet());
+        assertTrue(examTitles.contains("small Group Exam 1"));
+        assertTrue(examTitles.contains("small Group Exam 2"));
     }
 
     @Test
     void ShouldReturnEmptyListWhenSubgroupsSetIsEmpty() {
-        List<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of());
+        Set<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K", Set.of());
         assertTrue(exams.isEmpty());
     }
 
     @Test
     void shouldReturnEmptyListWhenGeneralGroupIdentifierHasInvalidFormat() {
-        List<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K2", Set.of("L04"));
+        Set<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12K2", Set.of("L04"));
         assertTrue(exams.isEmpty());
     }
 
     @Test
     void shouldReturnEmptyListWhenGeneralGroupIdentifierDontMatch() {
-        List<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12B", Set.of("L04", "L05"));
+        Set<Exam> exams = examRepository.findAllBySubgroupsOfGeneralGroup("12B", Set.of("L04", "L05"));
         assertTrue(exams.isEmpty());
     }
 }
