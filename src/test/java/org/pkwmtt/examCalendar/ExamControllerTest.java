@@ -313,7 +313,7 @@ class ExamControllerTest {
 //        given
         createExampleExamType("Project");
         ExamDto requestData = ExamDto.builder()
-                .title("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") // 256 znaków
+                .title("a".repeat(256)) // 256 znaków
                 .description("first exam")
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("Project")

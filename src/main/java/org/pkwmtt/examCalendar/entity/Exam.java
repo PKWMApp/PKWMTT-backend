@@ -9,7 +9,9 @@ import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -29,7 +31,6 @@ public class Exam {
 
     private String description;
 
-//    TODO: set timezone for accurate hours of exam
     @Column(name = "exam_date", nullable = false)
     private LocalDateTime examDate;
 
@@ -55,5 +56,27 @@ public class Exam {
                 throw new UnsupportedCountOfArgumentsException(1, 100, groups.size());
             return new Exam(examId, title, description, examDate, examType, groups);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Exam exam = (Exam) o;
+        return getTitle().equals(exam.getTitle()) &&
+                Objects.equals(getDescription(), exam.getDescription()) &&
+                getExamDate().truncatedTo(ChronoUnit.MINUTES).equals(exam.getExamDate().truncatedTo(ChronoUnit.MINUTES)) &&
+                getExamType().equals(exam.getExamType()) &&
+                getGroups().equals(exam.getGroups());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getTitle().hashCode();
+        result = 31 * result + Objects.hashCode(getDescription());
+        result = 31 * result + getExamDate().truncatedTo(ChronoUnit.MINUTES).hashCode();
+        result = 31 * result + getExamType().hashCode();
+        result = 31 * result + getGroups().hashCode();
+        return result;
     }
 }
