@@ -1,11 +1,19 @@
-package org.pkwmtt.entity;
+package org.pkwmtt.examCalendar.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Entity
-@Data
-@Table(name = "`general_group`")
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "general_group")
 public class GeneralGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

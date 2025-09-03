@@ -1,11 +1,18 @@
-package org.pkwmtt.entity;
+package org.pkwmtt.examCalendar.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "otp_codes")
 public class OTPCode {
     @Id
@@ -20,6 +27,6 @@ public class OTPCode {
     private LocalDateTime expire;
 
     @OneToOne
-    @JoinColumn(name = "`general_group_id`", nullable = false)
+    @JoinColumn(name = "general_group_id", nullable = false)
     private GeneralGroup generalGroup;
 }

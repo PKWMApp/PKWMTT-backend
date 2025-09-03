@@ -1,11 +1,17 @@
-package org.pkwmtt.entity;
+package org.pkwmtt.examCalendar.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import org.pkwmtt.enums.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.pkwmtt.examCalendar.enums.Role;
 
 @Entity
-@Data
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "`users`")
 public class User {
     @Id
