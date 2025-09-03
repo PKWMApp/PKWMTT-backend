@@ -1,9 +1,9 @@
 package org.pkwmtt.security.token.dto;
 
 import lombok.Data;
-import org.pkwmtt.entity.GeneralGroup;
-import org.pkwmtt.entity.User;
-import org.pkwmtt.enums.Role;
+import org.pkwmtt.examCalendar.entity.GeneralGroup;
+import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.examCalendar.enums.Role;
 
 import java.util.Optional;
 

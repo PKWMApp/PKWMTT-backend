@@ -8,6 +8,7 @@ import org.pkwmtt.ValuesForTest;
 import org.pkwmtt.cache.CacheInspector;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import test.TestConfig;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
+@SpringBootTest
 class TimetableCacheServiceTest extends TestConfig {
     @Autowired
     TimetableCacheService cachedService;
@@ -29,20 +31,18 @@ class TimetableCacheServiceTest extends TestConfig {
     
     @Autowired
     CacheInspector cacheInspector;
-
+    
     @BeforeEach
-    public void initWireMock() {
-        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/plany/o25.html"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "text/*")
-                        .withBody(ValuesForTest.timetableHTML)));
-
-        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/lista.html"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "text/*")
-                        .withBody(ValuesForTest.listHTML)));
+    public void initWireMock () {
+        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/plany/o25.html")).willReturn(aResponse()
+                                                                                               .withStatus(200)
+                                                                                               .withHeader("Content-Type", "text/*")
+                                                                                               .withBody(ValuesForTest.timetableHTML)));
+        
+        EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/lista.html")).willReturn(aResponse()
+                                                                                           .withStatus(200)
+                                                                                           .withHeader("Content-Type", "text/*")
+                                                                                           .withBody(ValuesForTest.listHTML)));
     }
     
     @Test
@@ -56,13 +56,12 @@ class TimetableCacheServiceTest extends TestConfig {
         
         //then
         assertAll(
-                () -> assertNotNull(cacheData),
-                () -> assertTrue(cacheData.containsKey(key)),
-                () -> {
-                    var hourList = cacheData.get(key);
-                    assertNotNull(hourList);
-                    assertThat(hourList).isEqualTo("[\"7:30- 8:15\",\"8:15- 9:00\",\"9:15-10:00\",\"10:00-10:45\",\"11:00-11:45\",\"11:45-12:30\",\"12:45-13:30\",\"13:30-14:15\",\"14:30-15:15\",\"15:15-16:00\",\"16:15-17:00\",\"17:00-17:45\",\"18:00-18:45\",\"18:45-19:30\",\"19:45-20:30\",\"20:30-21:15\"]");
-                }
+          () -> assertNotNull(cacheData), () -> assertTrue(cacheData.containsKey(key)), () -> {
+              var hourList = cacheData.get(key);
+              assertNotNull(hourList);
+              assertThat(hourList).isEqualTo(
+                "[\"7:30- 8:15\",\"8:15- 9:00\",\"9:15-10:00\",\"10:00-10:45\",\"11:00-11:45\",\"11:45-12:30\",\"12:45-13:30\",\"13:30-14:15\",\"14:30-15:15\",\"15:15-16:00\",\"16:15-17:00\",\"17:00-17:45\",\"18:00-18:45\",\"18:45-19:30\",\"19:45-20:30\",\"20:30-21:15\"]");
+          }
         );
     }
     
@@ -71,16 +70,21 @@ class TimetableCacheServiceTest extends TestConfig {
     public void shouldReturnGeneralGroupsMap () {
         //given
         var expectedMap = Map.of(
-                "11K2", "plany/o8.html",
-                "12K1", "plany/o25.html",
-                "11A1", "plany/o1.html",
-                "12K3", "plany/o27.html",
-                "12K2", "plany/o26.html"
+          "11K2",
+          "plany/o8.html",
+          "12K1",
+          "plany/o25.html",
+          "11A1",
+          "plany/o1.html",
+          "12K3",
+          "plany/o27.html",
+          "12K2",
+          "plany/o26.html"
         );
-
+        
         //when
         var result = cachedService.getGeneralGroupsMap();
-
+        
         //then
         assertThat(result).isEqualTo(expectedMap);
     }
@@ -94,15 +98,14 @@ class TimetableCacheServiceTest extends TestConfig {
         
         //when
         Map<Object, Object> cacheData = cacheInspector.getAllEntries("timetables"); // get all keys saved in cache
-       
+        
         //then
         assertAll(
-                () -> assertNotNull(cacheData),
-                () -> {
-                    assertTrue(cacheData.containsKey(key));
-                    var data = cacheData.get(key);
-                    assertThat(data).isEqualTo(expectedValue);
-                }
+          () -> assertNotNull(cacheData), () -> {
+              assertTrue(cacheData.containsKey(key));
+              var data = cacheData.get(key);
+              assertThat(data).isEqualTo(expectedValue);
+          }
         );
     }
     
