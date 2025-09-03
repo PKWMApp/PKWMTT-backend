@@ -13,15 +13,13 @@ public class SubjectDTO {
     private String classroom;
     private int rowId;
     private SubjectType type;
-
-
-    public void deleteTypeAndUnnecessaryCharactersFromName() {
-        if (name.contains(" "))
+    
+    
+    public void deleteTypeAndUnnecessaryCharactersFromName () {
+        if (name.contains(" ")) {
             this.name = name.substring(0, name.indexOf(' '));
-
-        name = name
-            .replaceAll("_", " ")
-            .replaceAll(Pattern.quote("("), "")
-            .replaceAll(Pattern.quote(")"), "");
+        }
+        
+        name = name.replaceAll("_", " ").replaceAll(Pattern.quote("("), "").replaceAll(Pattern.quote(")"), "");
     }
 }
