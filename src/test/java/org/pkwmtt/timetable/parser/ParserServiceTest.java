@@ -9,6 +9,7 @@ import org.pkwmtt.ValuesForTest;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import test.TestConfig;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Suite.SuiteClasses(TimetableParserService.class)
+@ActiveProfiles("test")
 class ParserServiceTest extends TestConfig {
     TimetableParserService parserService;
 

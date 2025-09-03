@@ -9,6 +9,7 @@ import org.pkwmtt.cache.CacheInspector;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import test.TestConfig;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 class TimetableCacheServiceTest extends TestConfig {
     @Autowired
     TimetableCacheService cachedService;

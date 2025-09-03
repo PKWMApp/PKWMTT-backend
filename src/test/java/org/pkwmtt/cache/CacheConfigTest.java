@@ -7,6 +7,7 @@ import org.pkwmtt.timetable.TimetableCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
+import org.springframework.test.context.ActiveProfiles;
 import test.TestConfig;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class CacheConfigTest extends TestConfig {
     
     @Autowired
