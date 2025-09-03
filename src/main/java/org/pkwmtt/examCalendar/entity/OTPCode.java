@@ -19,14 +19,20 @@ public class OTPCode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "otp_code_id")
     private Integer otpCodeId;
-
+    
     @Column(nullable = false)
     private String code;
-
+    
     @Column(nullable = false)
     private LocalDateTime expire;
-
+    
     @OneToOne
     @JoinColumn(name = "general_group_id", nullable = false)
     private GeneralGroup generalGroup;
+    
+    public OTPCode (String code, GeneralGroup generalGroup) {
+        this.code = code;
+        this.generalGroup = generalGroup;
+        this.expire = LocalDateTime.now().plusDays(1);
+    }
 }
