@@ -8,6 +8,8 @@ import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @DataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class ExamRepositoryTest {
 
     @Autowired
