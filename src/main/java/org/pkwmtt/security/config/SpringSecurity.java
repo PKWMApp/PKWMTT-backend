@@ -1,17 +1,12 @@
 package org.pkwmtt.security.config;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.pkwmtt.security.auth.provider.OTPAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -19,10 +14,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 //@EnableWebSecurity
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
 public class SpringSecurity {
-
-    private final OTPAuthenticationProvider otpAuthenticationProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,10 +29,5 @@ public class SpringSecurity {
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
         log.info("Configuring Success...");
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        return new ProviderManager(List.of(otpAuthenticationProvider));
     }
 }
