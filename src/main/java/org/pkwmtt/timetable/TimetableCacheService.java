@@ -3,7 +3,6 @@ package org.pkwmtt.timetable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
 import org.jsoup.Jsoup;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
@@ -18,16 +17,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
-
 @Service
 public class TimetableCacheService {
     private final TimetableParserService parser;
     private final ObjectMapper mapper;
     private final Cache cache;
     
-    @Getter
-    private static boolean cacheAvailable = true;
     
     @Value("${main.url:https://podzial.mech.pk.edu.pl/stacjonarne/html/}")
     private String mainUrl;
@@ -36,23 +31,6 @@ public class TimetableCacheService {
         this.parser = parser;
         this.mapper = mapper;
         cache = cacheManager.getCache("timetables");
-        
-        if (isNull(cache)) {
-            cacheAvailable = false;
-        }
-    }
-    
-    /**
-     * @return connection status
-     */
-    public static boolean isConnectionAvailable () {
-        try {
-            fetchData("https://podzial.mech.pk.edu.pl/stacjonarne/html/");
-            return true;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
     }
     
     /**

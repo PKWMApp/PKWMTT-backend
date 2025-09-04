@@ -1,11 +1,9 @@
 package org.pkwmtt.otp;
 
 
+import com.mysql.cj.exceptions.WrongArgumentException;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.exceptions.MailCouldNotBeSendException;
-import org.pkwmtt.exceptions.OTPCodeNotFoundException;
-import org.pkwmtt.exceptions.UserNotFoundException;
-import org.pkwmtt.exceptions.WrongOTPFormatException;
+import org.pkwmtt.exceptions.*;
 import org.pkwmtt.otp.dto.OTPRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +23,8 @@ public class OTPController {
     }
     
     @PostMapping("/codes/generate")
-    public ResponseEntity<Void> generateCodes (@RequestBody List<OTPRequest> request) throws MailCouldNotBeSendException {
+    public ResponseEntity<Void> generateCodes (@RequestBody List<OTPRequest> request)
+      throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedGeneralGroupDoesntExistsException {
         service.sendOTPCodes(request);
         return ResponseEntity.ok().build();
     }
