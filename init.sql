@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Aug 18, 2025 at 07:00 PM
+-- Generation Time: Aug 27, 2025 at 06:52 PM
 -- Wersja serwera: 9.3.0
 -- Wersja PHP: 8.2.27
 
@@ -39,11 +39,6 @@ CREATE TABLE `exams` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Tabela Truncate przed wstawieniem `exams`
---
-
-TRUNCATE TABLE `exams`;
---
 -- Zrzut danych tabeli `exams`
 --
 
@@ -68,11 +63,6 @@ CREATE TABLE `exams_groups` (
   `group_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Tabela Truncate przed wstawieniem `exams_groups`
---
-
-TRUNCATE TABLE `exams_groups`;
 --
 -- Zrzut danych tabeli `exams_groups`
 --
@@ -106,11 +96,6 @@ CREATE TABLE `exam_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Tabela Truncate przed wstawieniem `exam_type`
---
-
-TRUNCATE TABLE `exam_type`;
---
 -- Zrzut danych tabeli `exam_type`
 --
 
@@ -132,11 +117,6 @@ CREATE TABLE `general_group` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Tabela Truncate przed wstawieniem `general_group`
---
-
-TRUNCATE TABLE `general_group`;
---
 -- Zrzut danych tabeli `general_group`
 --
 
@@ -145,38 +125,6 @@ INSERT INTO `general_group` (`general_group_id`, `name`) VALUES
 (18, '12E'),
 (19, '13K'),
 (20, '14M');
-
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `groups`
---
-
-DROP TABLE IF EXISTS `groups`;
-CREATE TABLE `groups` (
-  `group_id` int NOT NULL,
-  `name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Tabela Truncate przed wstawieniem `groups`
---
-
-TRUNCATE TABLE `groups`;
---
--- Zrzut danych tabeli `groups`
---
-
-INSERT INTO `groups` (`group_id`, `name`) VALUES
-(9, '11A1'),
-(10, '11A2'),
-(12, '12E1'),
-(13, '12E2'),
-(14, '12E3'),
-(15, '13K1'),
-(16, '13K2'),
-(17, '13K3'),
-(18, '14M1');
 
 -- --------------------------------------------------------
 
@@ -193,11 +141,6 @@ CREATE TABLE `otp_codes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Tabela Truncate przed wstawieniem `otp_codes`
---
-
-TRUNCATE TABLE `otp_codes`;
---
 -- Zrzut danych tabeli `otp_codes`
 --
 
@@ -206,6 +149,33 @@ INSERT INTO `otp_codes` (`otp_code_id`, `code`, `expire`, `general_group_id`) VA
 (2, 'XYZ789', '2025-08-18 20:51:40', 18),
 (3, 'QWE456', '2025-08-18 21:51:40', 19),
 (4, 'JKL999', '2025-08-18 22:51:40', 20);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `student_groups`
+--
+
+DROP TABLE IF EXISTS `student_groups`;
+CREATE TABLE `student_groups` (
+  `group_id` int NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Zrzut danych tabeli `student_groups`
+--
+
+INSERT INTO `student_groups` (`group_id`, `name`) VALUES
+(9, '11A1'),
+(10, '11A2'),
+(12, '12E1'),
+(13, '12E2'),
+(14, '12E3'),
+(15, '13K1'),
+(16, '13K2'),
+(17, '13K3'),
+(18, '14M1');
 
 -- --------------------------------------------------------
 
@@ -222,11 +192,6 @@ CREATE TABLE `users` (
   `role` enum('ADMIN','REPRESENTATIVE') NOT NULL DEFAULT 'REPRESENTATIVE'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Tabela Truncate przed wstawieniem `users`
---
-
-TRUNCATE TABLE `users`;
 --
 -- Zrzut danych tabeli `users`
 --
@@ -269,17 +234,18 @@ ALTER TABLE `general_group`
   ADD PRIMARY KEY (`general_group_id`);
 
 --
--- Indeksy dla tabeli `groups`
---
-ALTER TABLE `groups`
-  ADD PRIMARY KEY (`group_id`);
-
---
 -- Indeksy dla tabeli `otp_codes`
 --
 ALTER TABLE `otp_codes`
   ADD PRIMARY KEY (`otp_code_id`),
   ADD KEY `general_group_id_idx` (`general_group_id`);
+
+--
+-- Indeksy dla tabeli `student_groups`
+--
+ALTER TABLE `student_groups`
+  ADD PRIMARY KEY (`group_id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indeksy dla tabeli `users`
@@ -317,16 +283,16 @@ ALTER TABLE `general_group`
   MODIFY `general_group_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT dla tabeli `groups`
---
-ALTER TABLE `groups`
-  MODIFY `group_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
 -- AUTO_INCREMENT dla tabeli `otp_codes`
 --
 ALTER TABLE `otp_codes`
   MODIFY `otp_code_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT dla tabeli `student_groups`
+--
+ALTER TABLE `student_groups`
+  MODIFY `group_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT dla tabeli `users`
@@ -349,7 +315,7 @@ ALTER TABLE `exams`
 --
 ALTER TABLE `exams_groups`
   ADD CONSTRAINT `exams_groups_ibfk_1` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`exam_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `exams_groups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `exams_groups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `student_groups` (`group_id`) ON DELETE CASCADE;
 
 --
 -- Ograniczenia dla tabeli `otp_codes`
