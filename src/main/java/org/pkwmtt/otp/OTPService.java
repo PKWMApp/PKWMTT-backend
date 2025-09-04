@@ -58,27 +58,27 @@ public class OTPService {
         requests.forEach(request -> {
             var code = generateNewCode();
             var mail = createMail(request, code);
+            var groupName = request.getGeneralGroupName();
+            var groupNameLength = groupName.length();
             
-            if (request.getGeneralGroupName().length() > 3) {
+            if (groupNameLength > 3 && Character.isDigit(groupName.charAt(groupNameLength - 1))) {
                 throw new WrongArgumentException(
                   "Wrong general group provided. Make sure you are not providing subgroup. (f.e 12K1 -> wrong, 12K -> good)");
             }
             
-            if (!generalGroupExists(request.getGeneralGroupName())) {
+            if (!generalGroupExists(groupName)) {
                 throw new SpecifiedGeneralGroupDoesntExistsException();
             }
             
             try {
                 emailService.send(mail);
             } catch (MessagingException e) {
-                throw new MailCouldNotBeSendException("Couldn't send mail for group: " + request.getGeneralGroupName());
+                throw new MailCouldNotBeSendException("Couldn't send mail for group: " + groupName);
             }
             
-            
-            var generalGroup = generalGroupRepository.findByName(request.getGeneralGroupName());
-            
+            var generalGroup = generalGroupRepository.findByName(groupName);
             if (generalGroup.isEmpty()) {
-                generalGroup = Optional.of(generalGroupRepository.save(new GeneralGroup(null, request.getGeneralGroupName())));
+                generalGroup = Optional.of(generalGroupRepository.save(new GeneralGroup(null, groupName)));
             }
             
             var user = User
