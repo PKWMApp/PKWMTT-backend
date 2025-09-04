@@ -26,8 +26,6 @@ public class TimetableCacheService {
     private final ObjectMapper mapper;
     private final Cache cache;
     
-    @Getter
-    private static boolean cacheAvailable = true;
     
     @Value("${main.url:https://podzial.mech.pk.edu.pl/stacjonarne/html/}")
     private String mainUrl;
@@ -36,10 +34,6 @@ public class TimetableCacheService {
         this.parser = parser;
         this.mapper = mapper;
         cache = cacheManager.getCache("timetables");
-        
-        if (isNull(cache)) {
-            cacheAvailable = false;
-        }
     }
     
     /**

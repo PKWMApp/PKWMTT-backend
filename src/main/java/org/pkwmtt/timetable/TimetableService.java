@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 public class TimetableService {
     private final TimetableCacheService cachedService;
     
-    @Getter
-    private static final boolean enabled = TimetableCacheService.isConnectionAvailable();
-    
     @Autowired
     TimetableService (TimetableCacheService cachedService) {
         this.cachedService = cachedService;
