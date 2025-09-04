@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@ActiveProfiles("test")
 class TimetableControllerTest extends TestConfig {
     
     @LocalServerPort

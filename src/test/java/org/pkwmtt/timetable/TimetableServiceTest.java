@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @SpringBootTest
-@ActiveProfiles("test")
 class TimetableServiceTest extends TestConfig {
     
     @Autowired

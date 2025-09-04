@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest
-@ActiveProfiles("test")
 class TimetableCacheServiceTest extends TestConfig {
     @Autowired
     TimetableCacheService cachedService;

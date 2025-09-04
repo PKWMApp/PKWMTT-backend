@@ -12,11 +12,13 @@ import org.pkwmtt.examCalendar.entity.StudentGroup;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
+import org.pkwmtt.timetable.TimetableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -30,6 +32,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,8 +56,12 @@ class ExamControllerTest {
 
     @Autowired
     private ObjectMapper mapper;
+
     @Autowired
     private GroupRepository groupRepository;
+
+    @MockitoBean
+    private TimetableService timetableService;
 
     @BeforeEach
     void setupBeforeEach() {
@@ -75,6 +82,9 @@ class ExamControllerTest {
         createExampleExamType("Project");
         ExamDto examDtoRequest = createExampleExamDto("Project");
         String json = mapper.writeValueAsString(examDtoRequest);
+
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                         .post("/pkwmtt/api/v1/exams")
@@ -142,6 +152,9 @@ class ExamControllerTest {
                 .generalGroups(Set.of("12K2"))
                 .subgroups(Set.of("L04"))
                 .build();
+
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
 //        when
         MvcResult result = assertPostRequest(status().isCreated(), requestData);
 
@@ -222,6 +235,9 @@ class ExamControllerTest {
 //                null subgroups
                 .build();
 
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
+
 //        when
         MvcResult result = assertPostRequest(status().isCreated(), requestData);
 //        then
@@ -245,6 +261,9 @@ class ExamControllerTest {
                 .generalGroups(Set.of("12K1", "12K2"))
                 .subgroups(Set.of("L04"))
                 .build();
+
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
 
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
@@ -364,6 +383,9 @@ class ExamControllerTest {
                 .subgroups(Set.of("L04"))
                 .build();
 
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
+
 //        when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
@@ -383,6 +405,9 @@ class ExamControllerTest {
         Exam exam = createExampleExam(examType);
         int id = examRepository.save(exam).getExamId();
         ExamDto examDto = createExampleExamDto(examType.getName());
+
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
 
 //        when
         assertPutRequest(status().isNoContent(), examDto, id);

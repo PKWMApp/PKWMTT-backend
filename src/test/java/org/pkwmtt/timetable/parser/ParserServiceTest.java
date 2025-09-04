@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Suite.SuiteClasses(TimetableParserService.class)
-@ActiveProfiles("test")
 class ParserServiceTest extends TestConfig {
     TimetableParserService parserService;
 
