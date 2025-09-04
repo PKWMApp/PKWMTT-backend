@@ -3,7 +3,6 @@ package org.pkwmtt.timetable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
 import org.jsoup.Jsoup;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.Objects.isNull;
 
 @Service
 public class TimetableCacheService {
@@ -34,19 +31,6 @@ public class TimetableCacheService {
         this.parser = parser;
         this.mapper = mapper;
         cache = cacheManager.getCache("timetables");
-    }
-    
-    /**
-     * @return connection status
-     */
-    public static boolean isConnectionAvailable () {
-        try {
-            fetchData("https://podzial.mech.pk.edu.pl/stacjonarne/html/");
-            return true;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
     }
     
     /**
