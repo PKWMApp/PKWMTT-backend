@@ -1,6 +1,5 @@
 package org.pkwmtt.examCalendar.mapper;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
@@ -11,16 +10,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * maps ExamDto to Exam entity. Couldn't be utility class, because needs ExamTypeRepository to validate exam types
  */
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class ExamDtoMapper {
-    private ExamDtoMapper examDtoMapper;
+    private ExamDtoMapper() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * @param examDto examDto object received from request

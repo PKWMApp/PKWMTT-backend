@@ -23,8 +23,7 @@ public class GlobalCorsConfig{
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/pkmwtt/api/**")
-//                        TODO: change host
-                        .allowedOrigins("http://localhost:5173")
+                        .allowedOrigins("https://pkwmapp.pl")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
 //                required for authorization and cookies, default false
