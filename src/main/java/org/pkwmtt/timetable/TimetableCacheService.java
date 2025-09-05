@@ -23,7 +23,6 @@ public class TimetableCacheService {
     private final ObjectMapper mapper;
     private final Cache cache;
     
-    
     @Value("${main.url:https://podzial.mech.pk.edu.pl/stacjonarne/html/}")
     private String mainUrl;
     
@@ -42,13 +41,13 @@ public class TimetableCacheService {
      */
     public TimetableDTO getGeneralGroupSchedule (String generalGroupName)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
-        var generalGroupList = getGeneralGroupsMap();
+        var generalGroupMap = getGeneralGroupsMap();
         
-        if (!generalGroupList.containsKey(generalGroupName)) {
+        if (!generalGroupMap.containsKey(generalGroupName)) {
             throw new SpecifiedGeneralGroupDoesntExistsException(generalGroupName);
         }
         
-        String groupUrl = generalGroupList.get(generalGroupName);
+        String groupUrl = generalGroupMap.get(generalGroupName);
         String url = mainUrl + groupUrl;
         String cacheKey = "timetable_" + generalGroupName;
         var html = fetchData(url);
@@ -74,10 +73,7 @@ public class TimetableCacheService {
     public Map<String, String> getGeneralGroupsMap () throws WebPageContentNotAvailableException {
         var url = mainUrl + "lista.html";
         var html = fetchData(url);
-        String json = cache.get(
-          "generalGroupMap",
-          () -> mapper.writeValueAsString(parser.parseGeneralGroups(html))
-        );
+        String json = cache.get("generalGroupMap", () -> mapper.writeValueAsString(parser.parseGeneralGroups(html)));
         
         return getMappedValue(
           json, "generalGroupList", cache, new TypeReference<>() {
@@ -93,10 +89,7 @@ public class TimetableCacheService {
      */
     public List<String> getListOfHours () throws WebPageContentNotAvailableException {
         String url = mainUrl + "plany/o25.html";
-        String json = cache.get(
-          "hourList",
-          () -> mapper.writeValueAsString(parser.parseHours(fetchData(url)))
-        );
+        String json = cache.get("hourList", () -> mapper.writeValueAsString(parser.parseHours(fetchData(url))));
         
         List<String> result = getMappedValue(
           json, "hourList", cache, new TypeReference<>() {

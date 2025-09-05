@@ -2,22 +2,17 @@ package org.pkwmtt.timetable;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pkwmtt.ValuesForTest;
 import org.pkwmtt.cache.CacheInspector;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import test.TestConfig;
 
-import java.util.List;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,9 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class TimetableCacheServiceTest extends TestConfig {
     @Autowired
     TimetableCacheService cachedService;
-    
-    @Autowired
-    TimetableService service;
     
     @Autowired
     CacheInspector cacheInspector;
@@ -111,11 +103,9 @@ class TimetableCacheServiceTest extends TestConfig {
     }
     
     @Test
-    @Disabled("Test shouldn't be random")
-    public void shouldReturnRandomGeneralGroupSchedule () {
+    public void shouldReturn12K1Schedule () {
         //given
-        List<String> generalGroupList = service.getGeneralGroupList();
-        var generalGroupName = generalGroupList.get((int) (Math.random() * generalGroupList.size())); // get random general group
+        var generalGroupName = "12K1"; // get random general group
         
         //when
         var result = cachedService.getGeneralGroupSchedule(generalGroupName);
@@ -126,12 +116,9 @@ class TimetableCacheServiceTest extends TestConfig {
     }
     
     @Test
-    @Disabled("Test shouldn't be random")
     public void shouldRandomGeneralGroupScheduleBePresentInCache () {
         //given
-        List<String> generalGroupList = service.getGeneralGroupList();
-        
-        String generalGroupName = generalGroupList.get((int) (Math.random() * generalGroupList.size())); // get random general group
+        String generalGroupName = "12K1"; // get random general group
         String key = "timetable_" + generalGroupName;
         
         cachedService.getGeneralGroupSchedule(generalGroupName); // call method to save data in cache
