@@ -219,8 +219,6 @@ class ExamServiceTest {
 
     //</editor-fold>
 
-//    TODO: test blank generalGroups in controller
-
     //<editor-fold desc="service available, groups don't match service">
 
     /**
@@ -382,6 +380,7 @@ class ExamServiceTest {
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
         when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04", "P04", "L04", "K05"));
 
+        //noinspection unchecked
         when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(new HashSet<>(studentGroups.subList(0, 3)));
         when(groupRepository.saveAll(any())).thenReturn(studentGroups.subList(3, 5));
         when(examRepository.save(any(Exam.class))).thenReturn(exam);
@@ -532,6 +531,7 @@ class ExamServiceTest {
         when(timetableService.getGeneralGroupList()).thenThrow(new WebPageContentNotAvailableException());
         when(timetableService.getAvailableSubGroups("12K2")).thenThrow(new JsonParseException("parsing subgroups failed"));
 
+        //noinspection unchecked
         when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(new HashSet<>(studentGroups));
         when(groupRepository.saveAll(anyList())).thenReturn(List.of());
         when(examRepository.save(any(Exam.class))).thenReturn(exam);
@@ -728,7 +728,6 @@ class ExamServiceTest {
                         .build()
                 ).collect(Collectors.toList());
     }
-
 
     private static Exam buildExamWithIdAndGroups(int id, List<StudentGroup> groups) {
         return Exam.builder()

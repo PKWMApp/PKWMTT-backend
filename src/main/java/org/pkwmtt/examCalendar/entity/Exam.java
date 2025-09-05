@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.exceptions.InvalidGroupIdentifierException;
 import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Builder(builderClassName = "Builder", buildMethodName = "build")
+@Builder(builderClassName = "Builder")
 @RequiredArgsConstructor
 @Table(name = "exams")
 @AllArgsConstructor
