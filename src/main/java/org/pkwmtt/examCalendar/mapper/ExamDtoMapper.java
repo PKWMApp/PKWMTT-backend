@@ -5,7 +5,6 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 /**
  * maps ExamDto to Exam entity. Couldn't be utility class, because needs ExamTypeRepository to validate exam types
  */
-@Component
 @Slf4j
 public class ExamDtoMapper {
     private ExamDtoMapper() {
