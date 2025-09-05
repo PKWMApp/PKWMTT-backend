@@ -18,8 +18,4 @@ public class StudentGroup {
 
     @Column(nullable = false, unique = true)
     private String name;
-
-//    FIXME: remove?
-//    @ManyToMany(mappedBy = "groups")
-//    private Set<Exam> exams = new HashSet<>();
 }
