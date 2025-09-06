@@ -25,7 +25,7 @@ public class OTPController {
     @PostMapping("/codes/generate")
     public ResponseEntity<Void> generateCodes (@RequestBody List<OTPRequest> request)
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedGeneralGroupDoesntExistsException {
-        service.sendOTPCodes(request);
+        service.sendOTPCodesForManyGroups(request);
         return ResponseEntity.ok().build();
     }
     

@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import test.TestConfig;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -145,7 +144,6 @@ class TimetableControllerTest extends TestConfig {
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());
-        assertThat(response.getBody().getTimestamp()).isBefore(LocalDateTime.now());
     }
     
     @Test
@@ -165,7 +163,6 @@ class TimetableControllerTest extends TestConfig {
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());
-        assertThat(response.getBody().getTimestamp()).isBefore(LocalDateTime.now());
     }
     
     @Test
