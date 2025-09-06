@@ -1,4 +1,4 @@
-package org.pkwmtt.config;
+package org.pkwmtt.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
