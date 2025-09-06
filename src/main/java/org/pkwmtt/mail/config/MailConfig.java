@@ -8,6 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
@@ -18,20 +19,23 @@ public class MailConfig {
     
     private String username;
     private String password;
+    private String host;
+    private int port;
     
     @PostConstruct
     private void assignAndValidateProperties () {
         username = environment.getProperty("spring.mail.username");
         password = environment.getProperty("spring.mail.password");
-        
+        host = environment.getProperty("spring.mail.host");
+        port = Integer.parseInt(Objects.requireNonNull(environment.getProperty("spring.mail.port")));
     }
     
     @Bean
     public JavaMailSender javaMailSender () {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
+        mailSender.setHost(host);
+        mailSender.setPort(port);
         mailSender.setUsername(username);
         mailSender.setPassword(password);
         
