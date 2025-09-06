@@ -34,7 +34,6 @@ public class EmailService {
         helper.setTo(mail.getRecipient());
         helper.setText(mail.getDescription(), true);
         helper.setSubject(mail.getTitle());
-        
         mailSender.send(message);
         
     }
