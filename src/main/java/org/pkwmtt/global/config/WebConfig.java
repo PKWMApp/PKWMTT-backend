@@ -1,5 +1,6 @@
 package org.pkwmtt.global.config;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.global.RequestInterceptor;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final Environment environment;
     
     @Override
-    public void addInterceptors (InterceptorRegistry registry) {
+    public void addInterceptors (@NonNull InterceptorRegistry registry) {
         String apiPrefix = environment.getProperty("apiPrefix", "");
         requestInterceptor.ifPresent(interceptor -> registry.addInterceptor(interceptor).addPathPatterns(apiPrefix + "/**"));
     }

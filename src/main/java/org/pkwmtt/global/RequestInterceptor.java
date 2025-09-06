@@ -2,6 +2,7 @@ package org.pkwmtt.global;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.InternalException;
@@ -21,7 +22,7 @@ public class RequestInterceptor implements HandlerInterceptor {
     private final ApiKeyService apiKeyService;
     
     @Override
-    public boolean preHandle (HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle (@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         
         
         String headerName = "x-api-key";
