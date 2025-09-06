@@ -18,7 +18,7 @@ import java.util.Set;
 
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/pkwmtt/api/v1/exams")
+@RequestMapping("${apiPrefix}/exams")
 @RestController
 public class ExamController {
 

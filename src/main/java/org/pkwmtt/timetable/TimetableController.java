@@ -14,7 +14,7 @@ import java.util.List;
 import static java.util.Objects.isNull;
 
 @RestController
-@RequestMapping("/pkmwtt/api/v1/timetables")
+@RequestMapping("${apiPrefix}/timetables")
 @RequiredArgsConstructor
 public class TimetableController {
     private final TimetableService service;

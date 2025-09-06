@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pkwmtt/api/v1/representatives")
+@RequestMapping("${apiPrefix}/representatives")
 @RequiredArgsConstructor
 public class OTPController {
     private final OTPService service;
