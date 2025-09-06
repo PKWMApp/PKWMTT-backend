@@ -3,6 +3,7 @@ package org.pkwmtt.global.config;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.global.RequestInterceptor;
+import org.pkwmtt.global.admin.AdminRequestInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -16,11 +17,15 @@ public class WebConfig implements WebMvcConfigurer {
     
     //During tests RequestInterceptor isn't required
     private final Optional<RequestInterceptor> requestInterceptor;
+    private final AdminRequestInterceptor adminRequestInterceptor;
     private final Environment environment;
     
     @Override
     public void addInterceptors (@NonNull InterceptorRegistry registry) {
         String apiPrefix = environment.getProperty("apiPrefix", "");
-        requestInterceptor.ifPresent(interceptor -> registry.addInterceptor(interceptor).addPathPatterns(apiPrefix + "/**"));
+        requestInterceptor.ifPresent(interceptor -> registry
+          .addInterceptor(interceptor)
+          .addPathPatterns(apiPrefix + "/**"));
+        registry.addInterceptor(adminRequestInterceptor).addPathPatterns("/admin");
     }
 }

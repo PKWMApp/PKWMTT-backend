@@ -1,5 +1,8 @@
 package org.pkwmtt.global.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.security.apiKey.ApiKeyService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +17,13 @@ public class AdminController {
     private final ApiKeyService service;
     
     @GetMapping("")
-    public String adminPanel(){
+    @Operation(summary = "Admin endpoint", parameters = {@Parameter(name = "X-ADMIN-KEY", in = ParameterIn.HEADER, required = true, description = "Admin access key")})
+    public String adminPanel () {
         return "ADMIN";
     }
     
     @GetMapping("/api/key/generate")
+    @Operation(summary = "Admin endpoint", parameters = {@Parameter(name = "X-ADMIN-KEY", in = ParameterIn.HEADER, required = true, description = "Admin access key")})
     public String generateApiKey (@RequestParam(name = "d") String description) {
         return service.generateApiKey(description);
     }
