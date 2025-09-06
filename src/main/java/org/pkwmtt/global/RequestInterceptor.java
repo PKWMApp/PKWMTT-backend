@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.InternalException;
+import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.exceptions.IncorrectApiKeyValue;
 import org.pkwmtt.exceptions.MissingHeaderException;
 import org.pkwmtt.security.apiKey.ApiKeyService;
@@ -33,7 +34,7 @@ public class RequestInterceptor implements HandlerInterceptor {
                 throw new MissingHeaderException(headerName);
             }
             
-            apiKeyService.validateApiKey(providedApiKey);
+            apiKeyService.validateApiKey(providedApiKey, Role.REPRESENTATIVE);
         } catch (IncorrectApiKeyValue | MissingHeaderException e) {
             throw new IncorrectApiKeyValue();
         } catch (Exception e) {

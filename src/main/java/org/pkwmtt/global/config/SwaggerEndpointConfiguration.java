@@ -51,23 +51,15 @@ public class SwaggerEndpointConfiguration {
     }
     
     private void addHeaderIfMissing (Operation operation, String headerName, String headerDescription, String summary, String description, String tag) {
-        
-        boolean alreadyExists = operation.getParameters() != null && operation
-          .getParameters()
-          .stream()
-          .anyMatch(p -> p.getName().equalsIgnoreCase(headerName) && "header".equalsIgnoreCase(p.getIn()));
-        
-        if (!alreadyExists) {
-            operation.setSummary(summary);
-            operation.setDescription(description);
-            operation.addTagsItem(tag);
-            operation.addParametersItem(new Parameter()
-                                          .name(headerName)
-                                          .in("header")
-                                          .required(true)
-                                          .description(headerDescription)
-                                          .schema(new StringSchema()));
-        }
+        operation.setSummary(summary);
+        operation.setDescription(description);
+        operation.addTagsItem(tag);
+        operation.addParametersItem(new Parameter()
+                                      .name(headerName)
+                                      .in("header")
+                                      .required(true)
+                                      .description(headerDescription)
+                                      .schema(new StringSchema()));
     }
     
     

@@ -1,10 +1,11 @@
-package org.pkwmtt.global.admin;
+package org.pkwmtt.security.admin;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.InternalException;
+import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.exceptions.IncorrectApiKeyValue;
 import org.pkwmtt.exceptions.MissingHeaderException;
 import org.pkwmtt.security.apiKey.ApiKeyService;
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class AdminRequestInterceptor implements HandlerInterceptor {
     private final ApiKeyService apiKeyService;
     
-    //TODO seperate api key storage for admin keys
     @Override
     public boolean preHandle (@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         String headerName = "X-ADMIN-KEY";
@@ -27,7 +27,7 @@ public class AdminRequestInterceptor implements HandlerInterceptor {
                 throw new MissingHeaderException(headerName);
             }
             
-            apiKeyService.validateApiKey(providedApiKey);
+            apiKeyService.validateApiKey(providedApiKey, Role.ADMIN);
         } catch (IncorrectApiKeyValue | MissingHeaderException e) {
             throw new IncorrectApiKeyValue();
         } catch (Exception e) {

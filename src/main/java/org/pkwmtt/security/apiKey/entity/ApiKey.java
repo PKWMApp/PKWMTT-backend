@@ -6,21 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "api_keys")
-@NoArgsConstructor
 @Getter
-public class ApiKey {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer key_id;
-    
-    @Column(nullable = false)
-    private String value;
-    
-    @Column(nullable = false)
-    private String description;
+@NoArgsConstructor
+public class ApiKey extends BaseApiKeyEntity {
     
     public ApiKey (String value, String description) {
-        this.value = value;
-        this.description = description;
+        super(value, description);
     }
+    
 }
