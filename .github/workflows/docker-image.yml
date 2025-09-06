@@ -42,6 +42,7 @@ jobs:
       SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
       EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
 
     steps:
       - name: Checkout code
