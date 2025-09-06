@@ -6,7 +6,7 @@
 
     <!-- Register built-in color/Highlight converters -->
     <conversionRule conversionWord="highlight"
-                    converterClass="org.pkwmtt.config.HighlightingCompositeLogConverter"/>
+                    converterClass="org.pkwmtt.global.config.HighlightingCompositeLogConverter"/>
 
     <!-- Console appender: logs INFO+ with colors -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
