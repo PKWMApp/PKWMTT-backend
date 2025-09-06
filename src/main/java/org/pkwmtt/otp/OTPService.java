@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OTPService {
-    private final OTPCodeRepository repository;
+    private final OTPCodeRepository otpRepository;
     private final UserRepository userRepository;
     private final GeneralGroupRepository generalGroupRepository;
     private final EmailService emailService;
@@ -49,11 +49,11 @@ public class OTPService {
                                                   .setEmail(userEmail)
                                                   .setRole(Role.REPRESENTATIVE)
                                                   .setGroup(generalGroup.getName()));
-        repository.deleteByCode(code);
+        otpRepository.deleteByCode(code);
         return token;
     }
     
-    public void sendOTPCodes (List<OTPRequest> requests)
+    public void sendOTPCodesForManyGroups (List<OTPRequest> requests)
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException {
         requests.forEach(request -> {
             var code = generateNewCode();
@@ -70,15 +70,20 @@ public class OTPService {
                 throw new SpecifiedGeneralGroupDoesntExistsException();
             }
             
+            var generalGroup = generalGroupRepository.findByName(groupName);
+            
+            if (generalGroup.isPresent()) {
+                if (otpRepository.existsOTPCodeByGeneralGroup(generalGroup.get())) {
+                    throw new RuntimeException("");
+                }
+            } else {
+                generalGroup = Optional.of(generalGroupRepository.save(new GeneralGroup(null, groupName)));
+            }
+            
             try {
                 emailService.send(mail);
             } catch (MessagingException e) {
                 throw new MailCouldNotBeSendException("Couldn't send mail for group: " + groupName);
-            }
-            
-            var generalGroup = generalGroupRepository.findByName(groupName);
-            if (generalGroup.isEmpty()) {
-                generalGroup = Optional.of(generalGroupRepository.save(new GeneralGroup(null, groupName)));
             }
             
             var user = User
@@ -91,14 +96,14 @@ public class OTPService {
             
             userRepository.save(user);
             
-            repository.save(new OTPCode(code, generalGroup.get()));
+            otpRepository.save(new OTPCode(code, generalGroup.get()));
         });
     }
     
     private GeneralGroup getGeneralGroupAssignedToCode (String code) throws OTPCodeNotFoundException, WrongOTPFormatException {
         this.validateCode(code);
         
-        Optional<OTPCode> result = repository.findByCode(code);
+        Optional<OTPCode> result = otpRepository.findByCode(code);
         
         if (result.isEmpty()) {
             throw new OTPCodeNotFoundException();
@@ -139,7 +144,7 @@ public class OTPService {
             for (int i = 0; i < 6; i++) {
                 code.append(availableCharacters.charAt(random.nextInt(availableCharacters.length())));
             }
-        } while (repository.findByCode(code.toString()).isPresent());
+        } while (otpRepository.findByCode(code.toString()).isPresent());
         
         return code.toString();
     }

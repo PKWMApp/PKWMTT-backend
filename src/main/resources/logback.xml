@@ -11,7 +11,7 @@
     <!-- Console appender: logs INFO+ with colors -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- enable ANSI codes for real terminals -->
-        <withJansi>true</withJansi>
+        <withJansi>false</withJansi>
         <encoder>
             <pattern>
                 %d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n

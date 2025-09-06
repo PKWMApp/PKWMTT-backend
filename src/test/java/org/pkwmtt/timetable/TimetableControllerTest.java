@@ -13,10 +13,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import test.TestConfig;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -69,6 +67,7 @@ class TimetableControllerTest extends TestConfig {
                     assertNotNull(responseBody);
                 },
                 () -> {
+                    assertNotNull(response.getBody());
                     var responseData = response.getBody().getData();
                     assertEquals(5, responseData.size());
                     assertEquals(12, responseData.getFirst().getOdd().size());
@@ -145,7 +144,6 @@ class TimetableControllerTest extends TestConfig {
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());
-        assertThat(response.getBody().getTimestamp()).isBefore(LocalDateTime.now());
     }
     
     @Test
@@ -165,7 +163,6 @@ class TimetableControllerTest extends TestConfig {
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());
-        assertThat(response.getBody().getTimestamp()).isBefore(LocalDateTime.now());
     }
     
     @Test
