@@ -13,7 +13,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import test.TestConfig;
 
 import java.time.LocalDateTime;
@@ -54,7 +53,7 @@ class TimetableControllerTest extends TestConfig {
     @Test
     public void testGetGeneralGroupScheduleFiltered_withOptionalParams () {
         //given
-        var url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01",
+        var url = String.format("http://localhost:%s/pkwmtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01",
                                    port
         );
         
@@ -69,6 +68,7 @@ class TimetableControllerTest extends TestConfig {
                     assertNotNull(responseBody);
                 },
                 () -> {
+                    assertNotNull(response.getBody());
                     var responseData = response.getBody().getData();
                     assertEquals(5, responseData.size());
                     assertEquals(12, responseData.getFirst().getOdd().size());
@@ -80,7 +80,7 @@ class TimetableControllerTest extends TestConfig {
     @Test
     public void testGetGeneralGroupScheduleFiltered_withoutParams () {
         //given
-        var url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/12K1", port);
+        var url = String.format("http://localhost:%s/pkwmtt/api/v1/timetables/12K1", port);
         
         //when
         ResponseEntity<TimetableDTO> response = restTemplate.getForEntity(url, TimetableDTO.class);
@@ -96,7 +96,7 @@ class TimetableControllerTest extends TestConfig {
     public void shouldReturnListOfGeneralGroups () {
         //given
         String url = String.format(
-          "http://localhost:%s/pkmwtt/api/v1/timetables/groups/general",
+          "http://localhost:%s/pkwmtt/api/v1/timetables/groups/general",
           port
         );
         
@@ -116,7 +116,7 @@ class TimetableControllerTest extends TestConfig {
     public void shouldReturnListOfSubgroupsForGeneralGroup () {
         //given
         String url = String.format(
-          "http://localhost:%s/pkmwtt/api/v1/timetables/groups/12K1",
+          "http://localhost:%s/pkwmtt/api/v1/timetables/groups/12K1",
           port
         );
         
@@ -132,7 +132,7 @@ class TimetableControllerTest extends TestConfig {
     public void shouldReturn_BadRequest_SpecifiedGeneralGroupDoesntExistsException () {
         //given
         String url = String.format(
-          "http://localhost:%s/pkmwtt/api/v1/timetables/groups/XXXX",
+          "http://localhost:%s/pkwmtt/api/v1/timetables/groups/XXXX",
           port
         );
         
@@ -152,7 +152,7 @@ class TimetableControllerTest extends TestConfig {
     public void shouldReturn_BadRequest_SpecifiedSubGroupDoesntExistsException () {
         //given
         String url = String.format(
-          "http://localhost:%s/pkmwtt/api/v1/timetables/12K1?sub=XXX",
+          "http://localhost:%s/pkwmtt/api/v1/timetables/12K1?sub=XXX",
           port
         );
         
@@ -171,7 +171,7 @@ class TimetableControllerTest extends TestConfig {
     @Test
     public void shouldReturn_ListOfHours () {
         //given
-        String url = String.format("http://localhost:%s/pkmwtt/api/v1/timetables/hours", port);
+        String url = String.format("http://localhost:%s/pkwmtt/api/v1/timetables/hours", port);
         
         //when
         ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);

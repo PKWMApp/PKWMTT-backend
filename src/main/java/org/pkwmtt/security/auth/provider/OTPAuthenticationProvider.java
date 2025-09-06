@@ -1,9 +1,8 @@
 package org.pkwmtt.security.auth.provider;
 
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.entity.*;
+import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.examCalendar.repository.UserRepository;
-import org.pkwmtt.examCalendar.repository.*;
 import org.pkwmtt.security.token.dto.UserDTO;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Stream;
-
+//TODO delete
 @Component
 @RequiredArgsConstructor
 public class OTPAuthenticationProvider implements AuthenticationProvider {

@@ -1,6 +1,5 @@
 package org.pkwmtt.examCalendar;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ import java.util.Set;
 
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/pkwmtt/api/v1/exams")
+@RequestMapping("${apiPrefix}/exams")
 @RestController
 public class ExamController {
 
