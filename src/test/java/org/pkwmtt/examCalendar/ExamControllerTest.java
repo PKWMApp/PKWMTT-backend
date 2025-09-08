@@ -622,7 +622,7 @@ class ExamControllerTest {
         //        when
         MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("11K2", "12A1"), Set.of("L04"));
         //        then
-        assertResponseMessage("Invalid group identifier: ambiguous superior group identifier for subgroups",result);
+        assertResponseMessage("Invalid group identifier: ambiguous general groups for subgroups",result);
     }
 
     @Test
@@ -636,7 +636,7 @@ class ExamControllerTest {
     @Test
     void getExamsWithInvalidSubgroup() throws Exception {
         //        when
-        MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("12K1,", "12K2"), Set.of("11K2"));
+        MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("12K1", "12K2"), Set.of("11K2"));
         //        then
         assertResponseMessage("Specified sub group [11K2] doesn't exists",result);
     }

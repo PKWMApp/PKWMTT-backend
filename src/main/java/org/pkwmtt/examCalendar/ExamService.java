@@ -41,6 +41,7 @@ public class ExamService {
 
         Exam exam = ExamDtoMapper.mapToNewExam(examDto, groups, examType);
         Set<Exam> existingExam = examRepository.findAllByTitle(exam.getTitle());
+
         if (existingExam.contains(exam))
             throw new ResourceAlreadyExistsException("Exam already exists");
         return examRepository.save(exam).getExamId();
@@ -79,31 +80,15 @@ public class ExamService {
     }
 
     public Set<Exam> getExamByGroups(Set<String> generalGroups, Set<String> subgroups) {
-//        verify generalGroups identifiers
-        verifyGeneralGroupsFormat(generalGroups);
-//        get exams for general groups
-        Set<Exam> exams = new HashSet<>(examRepository.findAllByGroups_NameIn(generalGroups));
-        exams = exams.stream()
-                .filter(exam -> exam.getGroups().stream()
-                        .allMatch(group -> group.getName().matches("^\\d.*")))
-                .collect(Collectors.toSet());
 
-//        convert general group identifiers. e.g. 12K2 to 12K
-        Set<String> superiorGroups = generalGroups.stream().map(g -> {
-            if (Character.isDigit(g.charAt(g.length() - 1)))
-                return g.substring(0, g.length() - 1);
-            return g;
-        }).collect(Collectors.toSet());
-//        check if subgroups are provided
-        if (subgroups != null && !subgroups.isEmpty()) {
-//            verify subgroups identifiers
-            verifySubgroupsFormat(subgroups);
-//            check if superior group identifies the groups unambiguously
-            if (superiorGroups.size() != 1)
-                throw new InvalidGroupIdentifierException("ambiguous superior group identifier for subgroups");
-            exams.addAll(examRepository.findAllBySubgroupsOfGeneralGroup(superiorGroups.iterator().next(), subgroups));
-        }
-        return exams;
+        String superiorGroup = trimLastDigit(generalGroups);
+        verifyGeneralGroupsFormat(generalGroups);
+
+        if(subgroups == null || subgroups.isEmpty())
+            return examRepository.findAllByGroups_NameIn(generalGroups);
+
+        verifySubgroupsFormat(subgroups);
+        return examRepository.findAllBySubgroupsOfSuperiorGroupAndGeneralGroup(superiorGroup, generalGroups, subgroups);
     }
 
     /**
@@ -183,6 +168,15 @@ public class ExamService {
         if (Character.isDigit(lastChar))
             superiorGroup = superiorGroup.substring(0, superiorGroup.length() - 1);
         return superiorGroup;
+    }
+
+    private static String trimLastDigit(Set<String> superiorGroups) {
+        Set<String> trimmedGroups = superiorGroups.stream()
+                .map(ExamService::trimLastDigit)
+                .collect(Collectors.toSet());
+        if(trimmedGroups.size() > 1)
+            throw new InvalidGroupIdentifierException("ambiguous general groups for subgroups");
+        return trimmedGroups.iterator().next();
     }
 
     /**

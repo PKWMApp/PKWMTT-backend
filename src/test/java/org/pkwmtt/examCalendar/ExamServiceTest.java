@@ -687,20 +687,20 @@ class ExamServiceTest {
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
-      verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-      verify(examRepository, times(1)).findAllBySubgroupsOfGeneralGroup("12K", subgroups);
+      verify(examRepository, never()).findAllByGroups_NameIn(any());
+      verify(examRepository, times(1)).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup("12K", Set.of("12K2"), subgroups);
     }
 
     @Test
-    void getExamsForGroupWithoutDigitAsFirstCharacter() {
+    void getExamsForGroupWithoutDigitAsLastCharacter() {
 //    given
         Set<String> generalGroups = Set.of("1Er");
         Set<String> subgroups = Set.of("L01", "K01", "P01");
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
-        verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, times(1)).findAllBySubgroupsOfGeneralGroup("1Er", subgroups);
+        verify(examRepository, never()).findAllByGroups_NameIn(any());
+        verify(examRepository, times(1)).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup("1Er", generalGroups, subgroups);
     }
 
     @Test
@@ -712,7 +712,7 @@ class ExamServiceTest {
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
         verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, never()).findAllBySubgroupsOfGeneralGroup(any(), any());
+        verify(examRepository, never()).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup(any(), any(), any());
     }
 
     @Test
@@ -724,7 +724,7 @@ class ExamServiceTest {
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
         verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, never()).findAllBySubgroupsOfGeneralGroup(any(), any());
+        verify(examRepository, never()).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup(any(), any(), any());
     }
 
     @Test
@@ -735,8 +735,8 @@ class ExamServiceTest {
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
-        verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, times(1)).findAllBySubgroupsOfGeneralGroup("12K", subgroups);
+        verify(examRepository, never()).findAllByGroups_NameIn(any());
+        verify(examRepository, times(1)).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup("12K", generalGroups, subgroups);
     }
 
     @Test
@@ -746,7 +746,7 @@ class ExamServiceTest {
         Set<String> subgroups = new HashSet<>( Set.of("12K1"));
 //    when then
         assertThrows(
-                SpecifiedGeneralGroupDoesntExistsException.class,
+                InvalidGroupIdentifierException.class,
                 () -> examService.getExamByGroups(generalGroups, subgroups)
         );
     }
@@ -771,7 +771,7 @@ class ExamServiceTest {
 //    when
         RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.getExamByGroups(generalGroups, subgroups));
 //    then
-        assertEquals("Invalid group identifier: ambiguous superior group identifier for subgroups", exception.getMessage());
+        assertEquals("Invalid group identifier: ambiguous general groups for subgroups", exception.getMessage());
     }
 
 

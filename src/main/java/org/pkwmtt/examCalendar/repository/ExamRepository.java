@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Set;
 
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
@@ -16,7 +15,7 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
      * @param groups set of generalGroups
      * @return list of exams for generalGroups
      */
-    List<Exam> findAllByGroups_NameIn(Set<String> groups);
+    Set<Exam> findAllByGroups_NameIn(Set<String> groups);
 
     /**
      * @param generalGroup superior group of subgroups e.g. 12K
@@ -27,7 +26,11 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
                 SELECT DISTINCT e FROM Exam e
                 JOIN e.groups g1
                 JOIN FETCH e.groups g2
-                WHERE g1.name = :general AND g2.name IN :sub
+                WHERE (g1.name = :superior AND g2.name IN :sub)
+                OR g2.name IN :general
             """)
-    Set<Exam> findAllBySubgroupsOfGeneralGroup(@Param("general") String generalGroup, @Param("sub") Set<String> subgroup);
+    Set<Exam> findAllBySubgroupsOfSuperiorGroupAndGeneralGroup(
+            @Param("superior") String superiorGroup,
+            @Param("general") Set<String> generalGroup,
+            @Param("sub") Set<String> subgroup);
 }
