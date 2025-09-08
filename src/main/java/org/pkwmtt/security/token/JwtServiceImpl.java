@@ -46,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
      *
      * @return secret key for JWT signing
      */
-    private SecretKey decodeSecretKey(){
+    SecretKey decodeSecretKey(){
         byte[] decodedKey = Base64.getDecoder().decode(jwtUtils.getSecret());
         return Keys.hmacShaKeyFor(decodedKey);
     }
@@ -109,7 +109,7 @@ public class JwtServiceImpl implements JwtService {
      * @param claimResolver function to extract the desired claim from Claims
      * @return the extracted claim of type T
      */
-    private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+    <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }

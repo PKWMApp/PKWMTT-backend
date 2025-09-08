@@ -22,10 +22,10 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtService jwtService;
+    JwtService jwtService;
 
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     /**
      * Filters incoming HTTP requests to validate JWT tokens.
