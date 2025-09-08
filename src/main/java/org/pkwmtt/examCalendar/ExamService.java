@@ -39,10 +39,9 @@ public class ExamService {
         ExamType examType = examTypeRepository.findByName(examDto.getExamType())
                 .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()));
 
-//        save exam in repository and return id of created exam
         Exam exam = ExamDtoMapper.mapToNewExam(examDto, groups, examType);
         Set<Exam> existingExam = examRepository.findAllByTitle(exam.getTitle());
-        if(existingExam.contains(exam))
+        if (existingExam.contains(exam))
             throw new ResourceAlreadyExistsException("Exam already exists");
         return examRepository.save(exam).getExamId();
     }
@@ -121,73 +120,69 @@ public class ExamService {
      * @param examDto containing groups for verification
      */
     private Set<StudentGroup> verifyAndUpdateExamGroups(ExamDto examDto) {
-        Set<String> generalGroupsFromRepository;
         Set<String> generalGroups = examDto.getGeneralGroups();
         Set<String> subgroups = examDto.getSubgroups();
-//        if timetable service is unavailable verify general groups using GroupRepository
-        try {
-            generalGroupsFromRepository = new HashSet<>(timetableService.getGeneralGroupList());
-        } catch (WebPageContentNotAvailableException e) {
-            generalGroupsFromRepository = verifyGroupsUsingRepository(generalGroups);
-        }
-//        verify generalGroups using timetable service
-        if (!generalGroupsFromRepository.containsAll(generalGroups)) {
-            generalGroups.removeAll(generalGroupsFromRepository);
-            throw new InvalidGroupIdentifierException(generalGroups);
-        }
-//        if there are no subgroups save exam for exercise groups or whole year e.g.
-//               12K2             - exercise group exam
-//               12K1, 12K2, 12K3 - whole year exam
-        if (subgroups == null || subgroups.isEmpty()) {
-            return saveNewStudentGroups(generalGroups);
-//         exams for subgroups e.g. L04 must have only superior group to avoid ambiguity
-        } else if (generalGroups.size() == 1) {
-//            if there are only one group change it from Set<String> to String
-            String superiorGroup = generalGroups.iterator().next();
-            Set<String> subGroupsFromTimetable;
-            try {
-                subGroupsFromTimetable = new HashSet<>(timetableService.getAvailableSubGroups(superiorGroup));
-            } catch (JsonProcessingException |
-                     SpecifiedGeneralGroupDoesntExistsException |
-                     WebPageContentNotAvailableException e) {
-                throw new ServiceNotAvailableException("Couldn't verify groups using timetable service");
-//                TODO: add verification with repository when timetable service is unavailable
-            }
-//              verify if subgroups for specific general group exists
-            if (!subGroupsFromTimetable.containsAll(subgroups)) {
-                subgroups.removeAll(subGroupsFromTimetable);
-                throw new InvalidGroupIdentifierException(subgroups);
-            }
-//              change superior group format e.g. 12K2 to 12K
-            if (Character.isDigit(superiorGroup.charAt(superiorGroup.length() - 1)))
-                superiorGroup = superiorGroup.substring(0, superiorGroup.length() - 1);
-//              save subgroups with superior group identifier
-            subgroups.add(superiorGroup);
-            return saveNewStudentGroups(subgroups);
-        }
-//          only one general group could be assigned to subgroups (when there are more than 1 general group and
-//          more than 0 subgroups)
-        else if (generalGroups.isEmpty())
+
+        if (generalGroups == null || generalGroups.isEmpty())
             throw new InvalidGroupIdentifierException("general group is missing");
-        else
+
+        verifyGeneralGroups(generalGroups);
+
+        if (subgroups == null || subgroups.isEmpty())
+            return saveNewStudentGroups(generalGroups);
+
+        if (generalGroups.size() > 1)
             throw new InvalidGroupIdentifierException("ambiguous general groups for subgroups");
+
+        String superiorGroup = generalGroups.iterator().next();
+        verifySubgroups(superiorGroup, subgroups);
+
+        subgroups.add(trimLastDigit(superiorGroup));
+        return saveNewStudentGroups(subgroups);
+    }
+
+    private void verifyGeneralGroups(Set<String> generalGroups) {
+        try {
+            Set<String> existingGeneralGroups = new HashSet<>(timetableService.getGeneralGroupList());
+            if (!existingGeneralGroups.containsAll(generalGroups))
+                throw new InvalidGroupIdentifierException(existingGeneralGroups, generalGroups);
+        } catch (WebPageContentNotAvailableException e) {
+            verifyGeneralGroupsUsingRepository(generalGroups);
+        }
     }
 
     /**
      * @param groups groups that would be verified using repository
-     * @return set of groups (String) when verification succeeded
      * @throws WebPageContentNotAvailableException when verification not succeeded
      */
-    private Set<String> verifyGroupsUsingRepository(Set<String> groups) throws WebPageContentNotAvailableException {
+    private void verifyGeneralGroupsUsingRepository(Set<String> groups) throws WebPageContentNotAvailableException {
         verifyGeneralGroupsFormat(groups);
         Set<String> groupsFromRepository = groupRepository.findAllByNameIn(groups).stream()
                 .map(StudentGroup::getName)
                 .collect(Collectors.toSet()
                 );
-        if (groupsFromRepository.containsAll(groups))
-            return groups;
-        else
+        if (!groupsFromRepository.containsAll(groups))
             throw new ServiceNotAvailableException("Couldn't verify groups using repository");
+    }
+
+    private void verifySubgroups(String superiorGroup, Set<String> subgroups) {
+        try {
+            Set<String> subGroupsFromTimetable = new HashSet<>(timetableService.getAvailableSubGroups(superiorGroup));
+            if (!subGroupsFromTimetable.containsAll(subgroups))
+                throw new InvalidGroupIdentifierException(subGroupsFromTimetable, subgroups);
+        } catch (JsonProcessingException |
+                 SpecifiedGeneralGroupDoesntExistsException |
+                 WebPageContentNotAvailableException e) {
+            throw new ServiceNotAvailableException("Couldn't verify groups using timetable service");
+//                TODO: add verification with repository when timetable service is unavailable
+        }
+    }
+
+    private static String trimLastDigit(String superiorGroup) {
+        char lastChar = superiorGroup.charAt(superiorGroup.length() - 1);
+        if (Character.isDigit(lastChar))
+            superiorGroup = superiorGroup.substring(0, superiorGroup.length() - 1);
+        return superiorGroup;
     }
 
     /**
@@ -220,7 +215,7 @@ public class ExamService {
         });
     }
 
-    private static void verifySubgroupsFormat(Set<String> subgroups) {
+    private static void verifySubgroupsFormat(Set<String> subgroups) throws SpecifiedSubGroupDoesntExistsException {
         subgroups.forEach(group -> {
             if (!group.matches("^[A-Z].*"))
                 throw new SpecifiedSubGroupDoesntExistsException(group);
