@@ -1,5 +1,15 @@
 version: "3.9"
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pkwmtt-backend
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
   db:
     image: mysql
     environment:
