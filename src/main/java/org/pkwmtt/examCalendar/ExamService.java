@@ -36,12 +36,15 @@ public class ExamService {
 
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
-//        check if exam type exists
         ExamType examType = examTypeRepository.findByName(examDto.getExamType())
                 .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()));
 
 //        save exam in repository and return id of created exam
-        return examRepository.save(ExamDtoMapper.mapToNewExam(examDto, groups, examType)).getExamId();
+        Exam exam = ExamDtoMapper.mapToNewExam(examDto, groups, examType);
+        Set<Exam> existingExam = examRepository.findAllByTitle(exam.getTitle());
+        if(existingExam.contains(exam))
+            throw new ResourceAlreadyExistsException("Exam already exists");
+        return examRepository.save(exam).getExamId();
     }
 
     /**
@@ -49,12 +52,11 @@ public class ExamService {
      * @param id      of exam that need to be modified
      */
     public void modifyExam(ExamDto examDto, int id) {
-//        check if exam which would be modified exists
+
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
 
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
-//      check if exam type exists
         ExamType examType = examTypeRepository.findByName(examDto.getExamType())
                 .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()));
 

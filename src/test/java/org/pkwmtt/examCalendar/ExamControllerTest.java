@@ -129,6 +129,24 @@ class ExamControllerTest {
     }
 
     @Test
+    @Transactional
+    void addExamTwice() throws Exception {
+//        given
+        createExampleExamType("Project");
+        ExamDto examDtoRequest = createExampleExamDto("Project");
+
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
+
+//        when
+        assertPostRequest(status().isCreated(), examDtoRequest);
+        MvcResult result = assertPostRequest(status().isConflict(), examDtoRequest);
+//        then
+        assertResponseMessage("Exam already exists", result);
+        assertEquals(1, examRepository.findAllByTitle(examDtoRequest.getTitle()).size());
+    }
+
+    @Test
     void addExamWithBlankExamTitle() throws Exception {
 //        given
         createExampleExamType("Project");
@@ -340,7 +358,7 @@ class ExamControllerTest {
 //        given
         createExampleExamType("Project");
         ExamDto requestData = ExamDto.builder()
-                .title("a".repeat(256)) // 256 znaków
+                .title("a".repeat(256))
                 .description("first exam")
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("Project")
@@ -361,7 +379,7 @@ class ExamControllerTest {
         createExampleExamType("Project");
         ExamDto requestData = ExamDto.builder()
                 .title("Math exam")
-                .description("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") // 256 znaków
+                .description("a".repeat(256))
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("Project")
                 .generalGroups(Set.of("12K2"))

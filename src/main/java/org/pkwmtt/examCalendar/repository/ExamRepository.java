@@ -10,6 +10,8 @@ import java.util.Set;
 
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
 
+    Set<Exam> findAllByTitle(String title);
+
     /**
      * @param groups set of generalGroups
      * @return list of exams for generalGroups

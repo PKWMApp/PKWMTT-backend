@@ -13,6 +13,7 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
+import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
@@ -217,6 +218,33 @@ class ExamServiceTest {
         assertEquals("Invalid group identifier: general group is missing", exception.getMessage());
     }
 
+    @Test
+    void addExamThatAlreadyExists() throws JsonProcessingException {
+        //        given
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamType examType = buildExampleExamType();
+        ExamDto examDto = buildExampleExamDto(Set.of("12K2"), Set.of("L04"), date.plusSeconds(34));
+        Set<StudentGroup> studentGroups = new HashSet<>(buildExampleStudentGroupList(Set.of("12K2", "L04")));
+        Exam exam = ExamDtoMapper.mapToNewExam(examDto, studentGroups, examType);
+
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K1", "12K2", "12K3")));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(new ArrayList<>(List.of("L04")));
+        when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(studentGroups);
+//
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(examRepository.findAllByTitle(examDto.getTitle())).thenReturn(Set.of(exam));
+//        when
+        RuntimeException exception = assertThrows(
+                ResourceAlreadyExistsException.class,
+                () -> examService.addExam(examDto)
+        );
+//        then
+        verify(examRepository, times(0)).save(exam);
+        assertEquals("Exam already exists", exception.getMessage());
+
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="service available, groups don't match service">
@@ -341,6 +369,46 @@ class ExamServiceTest {
         when(groupRepository.findAllByNameIn(generalGroups)).thenReturn(new HashSet<>(studentGroups));
         when(groupRepository.saveAll(any())).thenReturn(List.of());
         when(examRepository.save(any(Exam.class))).thenReturn(exam);
+//        when
+        int savedId = examService.addExam(examDto);
+//        then
+        verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(1)).findAllByNameIn(any());       //???
+        verify(groupRepository, times(1)).saveAll(List.of());
+
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        Exam savedExam = examCaptor.getValue();
+        assertExam(savedExam, date, savedId, generalGroups);
+    }
+
+    @Test
+    void addExamWithNonUniqueTitle() {
+        //        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of();
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        ExamType examType = buildExampleExamType();
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
+        Exam newExam =  buildExamWithIdAndGroups(1, studentGroups);
+        Exam existingExam = Exam.builder()
+                .title("title")
+                .description("description")
+                .examDate(date.plusHours(4))
+                .examType(examType)
+                .groups(new HashSet<>(studentGroups))
+                .build();
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
+
+        when(groupRepository.findAllByNameIn(generalGroups)).thenReturn(new HashSet<>(studentGroups));
+        when(groupRepository.saveAll(any())).thenReturn(List.of());
+        when(examRepository.findAllByTitle(any())).thenReturn(Set.of(existingExam));
+        when(examRepository.save(any(Exam.class))).thenReturn(newExam);
 //        when
         int savedId = examService.addExam(examDto);
 //        then
@@ -551,18 +619,7 @@ class ExamServiceTest {
 
     //</editor-fold>
 
-    /************************************************************************************/
 //modify exam
-    @Test
-    void shouldModifyExamWhenIdExists() {
-
-    }
-
-    @Test
-    void shouldThrowWhenExamIdNotExists() {
-        //        given
-
-    }
 
     /************************************************************************************/
 //delete exam
