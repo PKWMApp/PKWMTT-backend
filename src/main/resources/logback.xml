@@ -6,12 +6,12 @@
 
     <!-- Register built-in color/Highlight converters -->
     <conversionRule conversionWord="highlight"
-                    converterClass="org.pkwmtt.config.HighlightingCompositeLogConverter"/>
+                    converterClass="org.pkwmtt.global.config.HighlightingCompositeLogConverter"/>
 
     <!-- Console appender: logs INFO+ with colors -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- enable ANSI codes for real terminals -->
-        <withJansi>true</withJansi>
+        <withJansi>false</withJansi>
         <encoder>
             <pattern>
                 %d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n

@@ -2,12 +2,12 @@ package org.pkwmtt.timetable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
+import org.pkwmtt.timetable.dto.SubjectDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 public class TimetableService {
     private final TimetableCacheService cachedService;
     
-    @Getter
-    private static final boolean enabled = TimetableCacheService.isConnectionAvailable();
-    
     @Autowired
     TimetableService (TimetableCacheService cachedService) {
         this.cachedService = cachedService;
@@ -40,8 +37,7 @@ public class TimetableService {
      * @throws JsonProcessingException if timetable conversion to JSON fails
      */
     public List<String> getAvailableSubGroups (String generalGroupName)
-      throws JsonProcessingException, SpecifiedGeneralGroupDoesntExistsException,
-             WebPageContentNotAvailableException {
+      throws JsonProcessingException, SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException {
         
         generalGroupName = generalGroupName.toUpperCase();
         TimetableDTO timetable = cachedService.getGeneralGroupSchedule(generalGroupName);
@@ -80,8 +76,7 @@ public class TimetableService {
      * @throws WebPageContentNotAvailableException if source data can't be retrieved
      */
     public TimetableDTO getFilteredGeneralGroupSchedule (String generalGroupName, List<String> sub)
-      throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException,
-             JsonProcessingException {
+      throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException, JsonProcessingException {
         
         generalGroupName = generalGroupName.toUpperCase();
         
@@ -93,9 +88,7 @@ public class TimetableService {
             }
         }
         
-        List<DayOfWeekDTO> schedule = cachedService
-          .getGeneralGroupSchedule(generalGroupName)
-          .getData();
+        List<DayOfWeekDTO> schedule = cachedService.getGeneralGroupSchedule(generalGroupName).getData();
         
         
         for (var day : schedule) {
@@ -111,12 +104,24 @@ public class TimetableService {
      * @return List of general group's names
      */
     public List<String> getGeneralGroupList () throws WebPageContentNotAvailableException {
-        return cachedService
-          .getGeneralGroupsMap()
-          .keySet()
-          .stream()
-          .sorted()
-          .collect(Collectors.toList());
+        return cachedService.getGeneralGroupsMap().keySet().stream().sorted().collect(Collectors.toList());
+    }
+    
+    public List<String> getListOfSubjects (String generalGroupName) {
+        var subjectSet = new HashSet<String>();
+        var schedule = cachedService.getGeneralGroupSchedule(generalGroupName);
+        
+        schedule.getData().forEach(day -> {
+            day.getEven().forEach(subject -> addToSet(subjectSet, subject));
+            day.getOdd().forEach(subject -> addToSet(subjectSet, subject));
+        });
+        
+        return subjectSet.stream().toList();
+    }
+    
+    private void addToSet (Set<String> subjectSet, SubjectDTO subject) {
+        subject.deleteTypeAndUnnecessaryCharactersFromName();
+        subjectSet.add(subject.getName());
     }
     
 }

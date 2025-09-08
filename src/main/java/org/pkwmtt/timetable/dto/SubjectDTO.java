@@ -2,7 +2,7 @@ package org.pkwmtt.timetable.dto;
 
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.pkwmtt.enums.SubjectType;
+import org.pkwmtt.examCalendar.enums.SubjectType;
 
 import java.util.regex.Pattern;
 
@@ -13,15 +13,13 @@ public class SubjectDTO {
     private String classroom;
     private int rowId;
     private SubjectType type;
-
-
-    public void deleteTypeAndUnnecessaryCharactersFromName() {
-        if (name.contains(" "))
+    
+    
+    public void deleteTypeAndUnnecessaryCharactersFromName () {
+        if (name.contains(" ")) {
             this.name = name.substring(0, name.indexOf(' '));
-
-        name = name
-            .replaceAll("_", " ")
-            .replaceAll(Pattern.quote("("), "")
-            .replaceAll(Pattern.quote(")"), "");
+        }
+        
+        name = name.replaceAll("_", " ").replaceAll(Pattern.quote("("), "").replaceAll(Pattern.quote(")"), "");
     }
 }

@@ -3,7 +3,6 @@ package org.pkwmtt.timetable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
 import org.jsoup.Jsoup;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
@@ -18,16 +17,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
-
 @Service
 public class TimetableCacheService {
     private final TimetableParserService parser;
     private final ObjectMapper mapper;
     private final Cache cache;
-    
-    @Getter
-    private static boolean cacheAvailable = true;
     
     @Value("${main.url:https://podzial.mech.pk.edu.pl/stacjonarne/html/}")
     private String mainUrl;
@@ -36,23 +30,6 @@ public class TimetableCacheService {
         this.parser = parser;
         this.mapper = mapper;
         cache = cacheManager.getCache("timetables");
-        
-        if (isNull(cache)) {
-            cacheAvailable = false;
-        }
-    }
-    
-    /**
-     * @return connection status
-     */
-    public static boolean isConnectionAvailable () {
-        try {
-            fetchData("https://podzial.mech.pk.edu.pl/stacjonarne/html/");
-            return true;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
     }
     
     /**
@@ -64,13 +41,13 @@ public class TimetableCacheService {
      */
     public TimetableDTO getGeneralGroupSchedule (String generalGroupName)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
-        var generalGroupList = getGeneralGroupsMap();
+        var generalGroupMap = getGeneralGroupsMap();
         
-        if (!generalGroupList.containsKey(generalGroupName)) {
+        if (!generalGroupMap.containsKey(generalGroupName)) {
             throw new SpecifiedGeneralGroupDoesntExistsException(generalGroupName);
         }
         
-        String groupUrl = generalGroupList.get(generalGroupName);
+        String groupUrl = generalGroupMap.get(generalGroupName);
         String url = mainUrl + groupUrl;
         String cacheKey = "timetable_" + generalGroupName;
         var html = fetchData(url);
@@ -96,10 +73,7 @@ public class TimetableCacheService {
     public Map<String, String> getGeneralGroupsMap () throws WebPageContentNotAvailableException {
         var url = mainUrl + "lista.html";
         var html = fetchData(url);
-        String json = cache.get(
-          "generalGroupMap",
-          () -> mapper.writeValueAsString(parser.parseGeneralGroups(html))
-        );
+        String json = cache.get("generalGroupMap", () -> mapper.writeValueAsString(parser.parseGeneralGroups(html)));
         
         return getMappedValue(
           json, "generalGroupList", cache, new TypeReference<>() {
@@ -115,10 +89,7 @@ public class TimetableCacheService {
      */
     public List<String> getListOfHours () throws WebPageContentNotAvailableException {
         String url = mainUrl + "plany/o25.html";
-        String json = cache.get(
-          "hourList",
-          () -> mapper.writeValueAsString(parser.parseHours(fetchData(url)))
-        );
+        String json = cache.get("hourList", () -> mapper.writeValueAsString(parser.parseHours(fetchData(url))));
         
         List<String> result = getMappedValue(
           json, "hourList", cache, new TypeReference<>() {

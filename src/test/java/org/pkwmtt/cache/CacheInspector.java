@@ -6,6 +6,7 @@ import org.pkwmtt.timetable.TimetableCacheService;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import static java.util.Objects.isNull;
 
 @Component
 @RequiredArgsConstructor
+@ActiveProfiles("test")
 @SuppressWarnings("unused")
 public class CacheInspector {
     
