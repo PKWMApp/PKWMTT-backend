@@ -1,5 +1,13 @@
 version: "3.9"
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pkwmtt-backend
+    ports:
+      - "8080:8080"
+    restart: always
   db:
     image: mysql
     environment:
