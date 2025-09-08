@@ -29,7 +29,7 @@ class JwtServiceImplTest {
         String secretBase64 = Base64.getEncoder().encodeToString(keyBytes);
 
         when(jwtUtils.getSecret()).thenReturn(secretBase64);
-        when(jwtUtils.getExpirationMs()).thenReturn(1000 * 60 * 60L); // 1h
+        when(jwtUtils.getExpirationMs()).thenReturn(1000L * 60 * 60 * 24 * 30 * 6);
 
         jwtService = new JwtServiceImpl(jwtUtils);
     }
