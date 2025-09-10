@@ -140,14 +140,14 @@ public class ExamService {
      * @param groups groups that would be verified using repository
      * @throws WebPageContentNotAvailableException when verification not succeeded
      */
-    private void verifyGeneralGroupsUsingRepository(Set<String> groups) throws WebPageContentNotAvailableException {
+    private void verifyGeneralGroupsUsingRepository(Set<String> groups){
         verifyGeneralGroupsFormat(groups);
         Set<String> groupsFromRepository = groupRepository.findAllByNameIn(groups).stream()
                 .map(StudentGroup::getName)
                 .collect(Collectors.toSet()
                 );
         if (!groupsFromRepository.containsAll(groups))
-            throw new ServiceNotAvailableException("Couldn't verify groups using repository");
+            throw new ServiceNotAvailableException("Timetable service unavailable, couldn't verify groups using repository");
     }
 
     private void verifySubgroups(String superiorGroup, Set<String> subgroups) {
@@ -158,9 +158,21 @@ public class ExamService {
         } catch (JsonProcessingException |
                  SpecifiedGeneralGroupDoesntExistsException |
                  WebPageContentNotAvailableException e) {
-            throw new ServiceNotAvailableException("Couldn't verify groups using timetable service");
-//                TODO: add verification with repository when timetable service is unavailable
+            verifySubgroupsUsingRepository(superiorGroup,  subgroups);
         }
+    }
+
+    private void verifySubgroupsUsingRepository(String superiorGroup, Set<String> groups){
+        verifySubgroupsFormat(groups);
+        groups.add(trimLastDigit(superiorGroup));
+        if(examRepository.findCommonExamIdsForGroups(groups, groups.size()).isEmpty())
+            throw new ServiceNotAvailableException("Timetable service unavailable, couldn't verify groups using repository");
+        Set<String> groupsFromRepository = groupRepository.findAllByNameIn(groups).stream()
+                .map(StudentGroup::getName)
+                .collect(Collectors.toSet()
+                );
+        if (!groupsFromRepository.containsAll(groups))
+            throw new ServiceNotAvailableException("Timetable service unavailable, couldn't verify groups using repository");
     }
 
     private static String trimLastDigit(String superiorGroup) {

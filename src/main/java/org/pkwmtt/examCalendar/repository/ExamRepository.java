@@ -33,4 +33,13 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
             @Param("superior") String superiorGroup,
             @Param("general") Set<String> generalGroup,
             @Param("sub") Set<String> subgroup);
+
+    @Query(value = """
+            SELECT exam_id FROM exams_groups
+            INNER JOIN student_groups ON exams_groups.group_id = student_groups.group_id
+            WHERE student_groups.name IN (:groups)
+            GROUP BY exam_id
+            HAVING COUNT(DISTINCT exams_groups.group_id) = :expectedSize
+            """, nativeQuery = true)
+    Set<Integer> findCommonExamIdsForGroups(@Param("groups") Set<String> groups, @Param("expectedSize") int expectedSize);
 }

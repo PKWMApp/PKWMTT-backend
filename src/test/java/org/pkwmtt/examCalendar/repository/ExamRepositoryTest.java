@@ -37,6 +37,13 @@ class ExamRepositoryTest {
     @Autowired
     private GroupRepository groupRepository;
 
+    private Integer ex1Id;
+    private Integer ex2Id;
+    private Integer ex3Id;
+    private Integer ex4Id;
+    private Integer ex5Id;
+    private Integer ex6Id;
+
     @BeforeAll
     void setUp() {
         ExamType examType = ExamType.builder()
@@ -122,12 +129,12 @@ class ExamRepositoryTest {
                 .groups(Set.of(g12A1, g12A2))
                 .build();
 
-        examRepository.save(smallGroupExam1);
-        examRepository.save(smallGroupExam2);
-        examRepository.save(smallGroupExam3);
-        examRepository.save(generalGroupExam1);
-        examRepository.save(generalGroupExam2);
-        examRepository.save(generalGroupExam3);
+        ex1Id = examRepository.save(smallGroupExam1).getExamId();
+        ex2Id = examRepository.save(smallGroupExam2).getExamId();
+        ex3Id = examRepository.save(smallGroupExam3).getExamId();
+        ex4Id = examRepository.save(generalGroupExam1).getExamId();
+        ex5Id = examRepository.save(generalGroupExam2).getExamId();
+        ex6Id = examRepository.save(generalGroupExam3).getExamId();
     }
 
     @Test
@@ -201,4 +208,50 @@ class ExamRepositoryTest {
         Set<Exam> exams = examRepository.findAllBySubgroupsOfSuperiorGroupAndGeneralGroup("12B", Set.of("12B1"), Set.of("L04", "L05"));
         assertTrue(exams.isEmpty());
     }
+
+//    findCommonExamIdsForGroups
+
+    @Test
+    void shouldReturnWhenThereAreMoreGroupsInRepositoryThanArguments() {
+//        when
+        Set<Integer> ids = examRepository.findCommonExamIdsForGroups(Set.of("12K", "L04"), 2);
+//        then
+        assertEquals(2, ids.size());
+        assertTrue(ids.contains(ex1Id));
+        assertTrue(ids.contains(ex2Id));
+    }
+
+    @Test
+    void shouldReturnOnlyWhenAllGroupsMatch() {
+//        when
+        Set<Integer> ids = examRepository.findCommonExamIdsForGroups(Set.of("12K", "L04", "L05"), 3);
+//        then
+        assertEquals(1, ids.size());
+        assertTrue(ids.contains(ex2Id));
+    }
+
+    @Test
+    void shouldReturnEmptySetWhenArgumentListIsEmpty() {
+//        when
+        Set<Integer> ids = examRepository.findCommonExamIdsForGroups(Set.of(), 0);
+//        then
+        assertTrue(ids.isEmpty());
+    }
+
+    @Test
+    void shouldReturnEmptySetWhenThereAreMoreArgumentsThanGroupsInRepository() {
+//        when
+        Set<Integer> ids = examRepository.findCommonExamIdsForGroups(Set.of("12K", "L04", "L05","L06"), 4);
+//        then
+        assertTrue(ids.isEmpty());
+    }
+
+    @Test
+    void shouldReturnEmptySetWhenSubgroupNotMatchSuperiorGroup() {
+//        when
+        Set<Integer> ids = examRepository.findCommonExamIdsForGroups(Set.of("L04","G12A"), 2);
+//        then
+        assertTrue(ids.isEmpty());
+    }
+
 }

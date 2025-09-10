@@ -2,7 +2,6 @@ package org.pkwmtt.examCalendar;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -493,7 +492,7 @@ class ExamServiceTest {
 //        when
         RuntimeException exception = assertThrows(ServiceNotAvailableException.class, () -> examService.addExam(examDto));
 //        then
-        assertEquals("Couldn't verify groups using repository", exception.getMessage());
+        assertEquals("Timetable service unavailable, couldn't verify groups using repository", exception.getMessage());
         verify(timetableService, times(1)).getGeneralGroupList();
         verify(groupRepository, times(1)).findAllByNameIn(generalGroups);
     }
@@ -524,7 +523,7 @@ class ExamServiceTest {
 //        when
         RuntimeException exception = assertThrows(ServiceNotAvailableException.class, () -> examService.addExam(examDto));
 //        then
-        assertEquals("Couldn't verify groups using timetable service", exception.getMessage());
+        assertEquals("Timetable service unavailable, couldn't verify groups using repository", exception.getMessage());
         verify(timetableService, times(1)).getGeneralGroupList();
         verify(groupRepository, times(1)).findAllByNameIn(generalGroups);
     }
@@ -582,12 +581,11 @@ class ExamServiceTest {
      * groupRepository      - contain provided groups
      */
     @Test
-    @Disabled("Not supported yet")
     void addExamWhenServiceIsUnavailableAndRepositoryContainsGroups() throws JsonProcessingException {
         //        given
         Set<String> generalGroups = Set.of("12K2");
         Set<String> subgroups = Set.of("L04", "K04", "P04", "K05");
-        Set<String> combinedGroups = Set.of("12K2", "L04", "K04", "P04", "K05");
+        Set<String> combinedGroups = Set.of("12K", "12K2", "L04", "K04", "P04", "K05");
 
         LocalDateTime date = LocalDateTime.now().plusDays(1);
         ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
@@ -601,20 +599,23 @@ class ExamServiceTest {
 
         //noinspection unchecked
         when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(new HashSet<>(studentGroups));
+
         when(groupRepository.saveAll(anyList())).thenReturn(List.of());
         when(examRepository.save(any(Exam.class))).thenReturn(exam);
+        //noinspection unchecked
+        when(examRepository.findCommonExamIdsForGroups(any(Set.class), any(Integer.class))).thenReturn(Set.of(1));
 //        when
         int savedId = examService.addExam(examDto);
 //        then
         verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
         verify(timetableService, times(1)).getGeneralGroupList();
-        verify(groupRepository, times(2)).findAllByNameIn(any());
+        verify(groupRepository, times(3)).findAllByNameIn(any());
         verify(groupRepository, times(1)).saveAll(any());
 
         ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
         verify(examRepository, times(1)).save(examCaptor.capture());
         Exam savedExam = examCaptor.getValue();
-        assertExam(savedExam, date, savedId, generalGroups);
+        assertExam(savedExam, date, savedId, combinedGroups);
     }
 
     //</editor-fold>
