@@ -3,6 +3,7 @@ package org.pkwmtt.security.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,7 +23,14 @@ public class SpringSecurity {
         http
           .cors(withDefaults())
           .csrf(AbstractHttpConfigurer::disable)
-          .authorizeHttpRequests(auth -> auth.requestMatchers("/**").permitAll().anyRequest().authenticated())
+          .authorizeHttpRequests(auth -> auth
+                  .requestMatchers(HttpMethod.POST , "/pkwmtt/api/v1/exams").authenticated()
+                  .requestMatchers(HttpMethod.PUT , "/pkwmtt/api/v1/exams").authenticated()
+                  .requestMatchers(HttpMethod.DELETE , "/pkwmtt/api/v1/exams").authenticated()
+                  .requestMatchers(HttpMethod.GET , "/pkwmtt/api/v1/exams").permitAll()
+                  .requestMatchers("/**").permitAll()
+                  .anyRequest().authenticated()
+          )
           .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
         log.info("Configuring Success...");
         return http.build();
