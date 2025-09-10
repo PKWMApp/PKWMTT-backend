@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.pkwmtt</groupId>
     <artifactId>PKWMTT-backend</artifactId>
-    <version>0.1.0-ALPHA</version>
+    <version>1.0.0</version>
     <name>PKWMTT-backend</name>
     <description>PKWM App (Server) – timetable, exam calendar and ECTS calculator for students of Mechanical Engineering
         @ Cracow University of Technology
