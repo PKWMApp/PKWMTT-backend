@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * maps ExamDto to Exam entity. Couldn't be utility class, because needs ExamTypeRepository to validate exam types
+ * Utility class for mapping Exam entity to ExamDto and ExamDto to Exam entity
  */
 @Slf4j
 public class ExamDtoMapper {
@@ -51,10 +51,18 @@ public class ExamDtoMapper {
                 .build();
     }
 
+    /**
+     * @param exams Set of Exams that would be mapped
+     * @return List of ExamDtos
+     */
     public static List<ExamDto> mapToExamDto(Set<Exam> exams) {
         return exams.stream().map(ExamDtoMapper::mapToExamDto).collect(Collectors.toList());
     }
 
+    /**
+     * @param exam single exam that would be mapped
+     * @return ExamDto
+     */
     public static ExamDto mapToExamDto(Exam exam) {
         Set<String> groups = exam.getGroups().stream().map(StudentGroup::getName).collect(Collectors.toSet());
         Set<String> generalGroups = groups.stream().filter(group -> Character.isDigit(group.charAt(0))).collect(Collectors.toSet());
