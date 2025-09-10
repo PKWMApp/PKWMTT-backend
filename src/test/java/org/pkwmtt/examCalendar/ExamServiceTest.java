@@ -2,7 +2,6 @@ package org.pkwmtt.examCalendar;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -13,6 +12,7 @@ import org.pkwmtt.examCalendar.dto.ExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
+import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
@@ -217,6 +217,33 @@ class ExamServiceTest {
         assertEquals("Invalid group identifier: general group is missing", exception.getMessage());
     }
 
+    @Test
+    void addExamThatAlreadyExists() throws JsonProcessingException {
+        //        given
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamType examType = buildExampleExamType();
+        ExamDto examDto = buildExampleExamDto(Set.of("12K2"), Set.of("L04"), date.plusSeconds(34));
+        Set<StudentGroup> studentGroups = new HashSet<>(buildExampleStudentGroupList(Set.of("12K2", "L04")));
+        Exam exam = ExamDtoMapper.mapToNewExam(examDto, studentGroups, examType);
+
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K1", "12K2", "12K3")));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(new ArrayList<>(List.of("L04")));
+        when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(studentGroups);
+//
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(examRepository.findAllByTitle(examDto.getTitle())).thenReturn(Set.of(exam));
+//        when
+        RuntimeException exception = assertThrows(
+                ResourceAlreadyExistsException.class,
+                () -> examService.addExam(examDto)
+        );
+//        then
+        verify(examRepository, times(0)).save(exam);
+        assertEquals("Exam already exists", exception.getMessage());
+
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="service available, groups don't match service">
@@ -355,6 +382,46 @@ class ExamServiceTest {
         assertExam(savedExam, date, savedId, generalGroups);
     }
 
+    @Test
+    void addExamWithNonUniqueTitle() {
+        //        given
+        Set<String> generalGroups = Set.of("12K2");
+        Set<String> subgroups = Set.of();
+
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
+        ExamType examType = buildExampleExamType();
+        List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
+        Exam newExam =  buildExamWithIdAndGroups(1, studentGroups);
+        Exam existingExam = Exam.builder()
+                .title("title")
+                .description("description")
+                .examDate(date.plusHours(4))
+                .examType(examType)
+                .groups(new HashSet<>(studentGroups))
+                .build();
+
+        when(examTypeRepository.findByName(examDto.getExamType())).thenReturn(Optional.of(examType));
+        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
+
+        when(groupRepository.findAllByNameIn(generalGroups)).thenReturn(new HashSet<>(studentGroups));
+        when(groupRepository.saveAll(any())).thenReturn(List.of());
+        when(examRepository.findAllByTitle(any())).thenReturn(Set.of(existingExam));
+        when(examRepository.save(any(Exam.class))).thenReturn(newExam);
+//        when
+        int savedId = examService.addExam(examDto);
+//        then
+        verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
+        verify(timetableService, times(1)).getGeneralGroupList();
+        verify(groupRepository, times(1)).findAllByNameIn(any());       //???
+        verify(groupRepository, times(1)).saveAll(List.of());
+
+        ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
+        verify(examRepository, times(1)).save(examCaptor.capture());
+        Exam savedExam = examCaptor.getValue();
+        assertExam(savedExam, date, savedId, generalGroups);
+    }
+
     /**
      * test specification
      * generalGroup         - 1 item
@@ -425,7 +492,7 @@ class ExamServiceTest {
 //        when
         RuntimeException exception = assertThrows(ServiceNotAvailableException.class, () -> examService.addExam(examDto));
 //        then
-        assertEquals("Couldn't verify groups using repository", exception.getMessage());
+        assertEquals("Timetable service unavailable, couldn't verify groups using repository", exception.getMessage());
         verify(timetableService, times(1)).getGeneralGroupList();
         verify(groupRepository, times(1)).findAllByNameIn(generalGroups);
     }
@@ -456,7 +523,7 @@ class ExamServiceTest {
 //        when
         RuntimeException exception = assertThrows(ServiceNotAvailableException.class, () -> examService.addExam(examDto));
 //        then
-        assertEquals("Couldn't verify groups using timetable service", exception.getMessage());
+        assertEquals("Timetable service unavailable, couldn't verify groups using repository", exception.getMessage());
         verify(timetableService, times(1)).getGeneralGroupList();
         verify(groupRepository, times(1)).findAllByNameIn(generalGroups);
     }
@@ -514,12 +581,11 @@ class ExamServiceTest {
      * groupRepository      - contain provided groups
      */
     @Test
-    @Disabled("Not supported yet")
     void addExamWhenServiceIsUnavailableAndRepositoryContainsGroups() throws JsonProcessingException {
         //        given
         Set<String> generalGroups = Set.of("12K2");
         Set<String> subgroups = Set.of("L04", "K04", "P04", "K05");
-        Set<String> combinedGroups = Set.of("12K2", "L04", "K04", "P04", "K05");
+        Set<String> combinedGroups = Set.of("12K", "12K2", "L04", "K04", "P04", "K05");
 
         LocalDateTime date = LocalDateTime.now().plusDays(1);
         ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
@@ -533,8 +599,11 @@ class ExamServiceTest {
 
         //noinspection unchecked
         when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(new HashSet<>(studentGroups));
+
         when(groupRepository.saveAll(anyList())).thenReturn(List.of());
         when(examRepository.save(any(Exam.class))).thenReturn(exam);
+        //noinspection unchecked
+        when(examRepository.findCommonExamIdsForGroups(any(Set.class), any(Integer.class))).thenReturn(Set.of(1));
 //        when
         int savedId = examService.addExam(examDto);
 //        then
@@ -546,23 +615,12 @@ class ExamServiceTest {
         ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);
         verify(examRepository, times(1)).save(examCaptor.capture());
         Exam savedExam = examCaptor.getValue();
-        assertExam(savedExam, date, savedId, generalGroups);
+        assertExam(savedExam, date, savedId, combinedGroups);
     }
 
     //</editor-fold>
 
-    /************************************************************************************/
 //modify exam
-    @Test
-    void shouldModifyExamWhenIdExists() {
-
-    }
-
-    @Test
-    void shouldThrowWhenExamIdNotExists() {
-        //        given
-
-    }
 
     /************************************************************************************/
 //delete exam
@@ -630,20 +688,20 @@ class ExamServiceTest {
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
-      verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-      verify(examRepository, times(1)).findAllBySubgroupsOfGeneralGroup("12K", subgroups);
+      verify(examRepository, never()).findAllByGroups_NameIn(any());
+      verify(examRepository, times(1)).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup("12K", Set.of("12K2"), subgroups);
     }
 
     @Test
-    void getExamsForGroupWithoutDigitAsFirstCharacter() {
+    void getExamsForGroupWithoutDigitAsLastCharacter() {
 //    given
         Set<String> generalGroups = Set.of("1Er");
         Set<String> subgroups = Set.of("L01", "K01", "P01");
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
-        verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, times(1)).findAllBySubgroupsOfGeneralGroup("1Er", subgroups);
+        verify(examRepository, never()).findAllByGroups_NameIn(any());
+        verify(examRepository, times(1)).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup("1Er", generalGroups, subgroups);
     }
 
     @Test
@@ -655,7 +713,7 @@ class ExamServiceTest {
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
         verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, never()).findAllBySubgroupsOfGeneralGroup(any(), any());
+        verify(examRepository, never()).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup(any(), any(), any());
     }
 
     @Test
@@ -667,7 +725,7 @@ class ExamServiceTest {
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
         verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, never()).findAllBySubgroupsOfGeneralGroup(any(), any());
+        verify(examRepository, never()).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup(any(), any(), any());
     }
 
     @Test
@@ -678,8 +736,8 @@ class ExamServiceTest {
 //    when
         examService.getExamByGroups(generalGroups, subgroups);
 //    then
-        verify(examRepository, times(1)).findAllByGroups_NameIn(generalGroups);
-        verify(examRepository, times(1)).findAllBySubgroupsOfGeneralGroup("12K", subgroups);
+        verify(examRepository, never()).findAllByGroups_NameIn(any());
+        verify(examRepository, times(1)).findAllBySubgroupsOfSuperiorGroupAndGeneralGroup("12K", generalGroups, subgroups);
     }
 
     @Test
@@ -689,7 +747,7 @@ class ExamServiceTest {
         Set<String> subgroups = new HashSet<>( Set.of("12K1"));
 //    when then
         assertThrows(
-                SpecifiedGeneralGroupDoesntExistsException.class,
+                InvalidGroupIdentifierException.class,
                 () -> examService.getExamByGroups(generalGroups, subgroups)
         );
     }
@@ -714,7 +772,7 @@ class ExamServiceTest {
 //    when
         RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.getExamByGroups(generalGroups, subgroups));
 //    then
-        assertEquals("Invalid group identifier: ambiguous superior group identifier for subgroups", exception.getMessage());
+        assertEquals("Invalid group identifier: ambiguous general groups for subgroups", exception.getMessage());
     }
 
 
