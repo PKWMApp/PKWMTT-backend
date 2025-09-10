@@ -27,7 +27,6 @@ public class SpringSecurity {
                   .requestMatchers(HttpMethod.POST , "/pkwmtt/api/v1/exams").authenticated()
                   .requestMatchers(HttpMethod.PUT , "/pkwmtt/api/v1/exams").authenticated()
                   .requestMatchers(HttpMethod.DELETE , "/pkwmtt/api/v1/exams").authenticated()
-                  .requestMatchers(HttpMethod.GET , "/pkwmtt/api/v1/exams").permitAll()
                   .requestMatchers("/**").permitAll()
                   .anyRequest().authenticated()
           )
