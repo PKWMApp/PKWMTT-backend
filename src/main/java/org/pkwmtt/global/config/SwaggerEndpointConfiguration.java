@@ -1,21 +1,35 @@
 package org.pkwmtt.global.config;
 
 
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class SwaggerEndpointConfiguration {
     
     private final Environment environment;
+    
+    @Value("${swagger.url:http://localhost:8080}")
+    String url;
+    
+    @Bean
+    public OpenAPI setOpenApiProtocol () {
+        return new OpenAPI().servers(List.of(new Server().url(url)));
+    }
+    
     
     //Add text field for api key to every request that need authentication with it
     @Bean
