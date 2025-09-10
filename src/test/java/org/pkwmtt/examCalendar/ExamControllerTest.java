@@ -19,7 +19,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -126,6 +125,24 @@ class ExamControllerTest {
         );
 
         assertEquals(examDtoRequest.getExamType(), examResponse.getExamType().getName());
+    }
+
+    @Test
+    @Transactional
+    void addExamTwice() throws Exception {
+//        given
+        createExampleExamType("Project");
+        ExamDto examDtoRequest = createExampleExamDto("Project");
+
+        when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1","12K2","12K3"));
+        when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04","L04","P04"));
+
+//        when
+        assertPostRequest(status().isCreated(), examDtoRequest);
+        MvcResult result = assertPostRequest(status().isConflict(), examDtoRequest);
+//        then
+        assertResponseMessage("Exam already exists", result);
+        assertEquals(1, examRepository.findAllByTitle(examDtoRequest.getTitle()).size());
     }
 
     @Test
@@ -340,7 +357,7 @@ class ExamControllerTest {
 //        given
         createExampleExamType("Project");
         ExamDto requestData = ExamDto.builder()
-                .title("a".repeat(256)) // 256 znaków
+                .title("a".repeat(256))
                 .description("first exam")
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("Project")
@@ -361,7 +378,7 @@ class ExamControllerTest {
         createExampleExamType("Project");
         ExamDto requestData = ExamDto.builder()
                 .title("Math exam")
-                .description("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") // 256 znaków
+                .description("a".repeat(256))
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("Project")
                 .generalGroups(Set.of("12K2"))
@@ -604,7 +621,7 @@ class ExamControllerTest {
         //        when
         MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("11K2", "12A1"), Set.of("L04"));
         //        then
-        assertResponseMessage("Invalid group identifier: ambiguous superior group identifier for subgroups",result);
+        assertResponseMessage("Invalid group identifier: ambiguous general groups for subgroups",result);
     }
 
     @Test
@@ -618,7 +635,7 @@ class ExamControllerTest {
     @Test
     void getExamsWithInvalidSubgroup() throws Exception {
         //        when
-        MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("12K1,", "12K2"), Set.of("11K2"));
+        MvcResult result = assertGetByGroupsRequest(status().isBadRequest(), Set.of("12K1", "12K2"), Set.of("11K2"));
         //        then
         assertResponseMessage("Specified sub group [11K2] doesn't exists",result);
     }

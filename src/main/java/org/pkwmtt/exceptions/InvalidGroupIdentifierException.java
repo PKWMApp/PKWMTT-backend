@@ -10,4 +10,13 @@ public class InvalidGroupIdentifierException extends RuntimeException {
     public InvalidGroupIdentifierException(Set<String> groupIdentifiers) {
         super("Invalid group identifiers: " + groupIdentifiers.toString());
     }
+
+    public InvalidGroupIdentifierException(Set<String> all, Set<String> provided) {
+        super("Invalid group identifiers: " + extractInvalidGroups(all, provided));
+    }
+
+    private static String extractInvalidGroups(Set<String> all, Set<String> provided) {
+        provided.removeAll(all);
+        return provided.toString();
+    }
 }
