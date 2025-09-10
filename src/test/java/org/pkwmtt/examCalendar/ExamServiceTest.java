@@ -609,7 +609,7 @@ class ExamServiceTest {
 //        then
         verify(examTypeRepository, times(1)).findByName(examDto.getExamType());
         verify(timetableService, times(1)).getGeneralGroupList();
-        verify(groupRepository, times(3)).findAllByNameIn(any());
+        verify(groupRepository, times(2)).findAllByNameIn(any());
         verify(groupRepository, times(1)).saveAll(any());
 
         ArgumentCaptor<Exam> examCaptor = ArgumentCaptor.forClass(Exam.class);

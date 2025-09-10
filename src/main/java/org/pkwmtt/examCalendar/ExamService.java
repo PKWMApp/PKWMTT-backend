@@ -180,22 +180,14 @@ public class ExamService {
         }
     }
 
-//    TODO:
     /**
      * @param superiorGroup of provided subgroups
      * @param groups subgroups for verification
      * @throws ServiceNotAvailableException when verification not succeeded
      */
     private void verifySubgroupsUsingRepository(String superiorGroup, Set<String> groups) throws ServiceNotAvailableException {
-        verifySubgroupsFormat(groups);
         groups.add(trimLastDigit(superiorGroup));
         if(examRepository.findCommonExamIdsForGroups(groups, groups.size()).isEmpty())
-            throw new ServiceNotAvailableException("Timetable service unavailable, couldn't verify groups using repository");
-        Set<String> groupsFromRepository = groupRepository.findAllByNameIn(groups).stream()
-                .map(StudentGroup::getName)
-                .collect(Collectors.toSet()
-                );
-        if (!groupsFromRepository.containsAll(groups))
             throw new ServiceNotAvailableException("Timetable service unavailable, couldn't verify groups using repository");
     }
 
