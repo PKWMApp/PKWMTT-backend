@@ -39,7 +39,7 @@ public class ExamService {
      */
     public int addExam(ExamDto examDto) {
 
-        verifyGroupPermissions(examDto.getGeneralGroups());
+        verifyGroupPermissionsForNewResource(examDto.getGeneralGroups());
 
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
@@ -62,6 +62,8 @@ public class ExamService {
 
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
 
+        verifyGroupPermissionsForModifiedResource(examDto.getGeneralGroups(), id);
+
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
         ExamType examType = examTypeRepository.findByName(examDto.getExamType())
@@ -75,6 +77,7 @@ public class ExamService {
      */
     public void deleteExam(int id) {
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
+        verifyGroupPermissionsForExistingResource(id);
         examRepository.deleteById(id);
     }
 
@@ -270,14 +273,47 @@ public class ExamService {
     }
 
     /**
-     * verifies if user had authorities to perform action for specific groups
-     * @param groups set of provided groups
+     * verifies if user has authorities to add new resource
+     * @param newGroups set of provided groups
      */
-    private void verifyGroupPermissions(Set<String> groups){
+    private void verifyGroupPermissionsForNewResource(Set<String> newGroups){
+        String userGroup = getUserGroup();
+        if(!trimLastDigit(newGroups).equals(userGroup))
+            throw new AccessDeniedException("You don't have permission to access this group");
+    }
+
+    /**
+     * verifies if user has authorities to modify existing resource
+     * @param examId id of existing resource
+     */
+    private void verifyGroupPermissionsForExistingResource(Integer examId){
+        String userGroup = getUserGroup();
+        Set<String> generalGroupsOfExam = examRepository.findGroupsByExamId(examId)
+                .stream()
+                .filter(group -> group.matches("^\\d.*"))
+                .collect(Collectors.toSet());
+        if(!trimLastDigit(generalGroupsOfExam).equals(userGroup))
+            throw new AccessDeniedException("You don't have permission to access this group");
+    }
+
+    /**
+     * verifies if user had authorities to replace existing resource with new one
+     * @param newGroups set of groups of new resource
+     * @param examId id of existing resource
+     */
+    private void verifyGroupPermissionsForModifiedResource(Set<String> newGroups, Integer examId){
+        verifyGroupPermissionsForNewResource(newGroups);
+        verifyGroupPermissionsForExistingResource(examId);
+    }
+
+    /**
+     * @return superior group identifier (e.g. 12K) of currently authenticated user
+     * @throws AccessDeniedException when user doesn't have assigned group
+     */
+    private String getUserGroup() throws AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String) authentication.getPrincipal();
-        String userGroup = userRepository.findGroupByUserEmail(userEmail).orElseThrow(() -> new AccessDeniedException("There are no group assigned to user"));
-        if(!trimLastDigit(groups).equals(userGroup))
-            throw new AccessDeniedException("You don't have permission to access this group");
+        return userRepository.findGroupByUserEmail(userEmail)
+                .orElseThrow(() -> new AccessDeniedException("There are no group assigned to user"));
     }
 }
