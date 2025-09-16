@@ -11,15 +11,16 @@ import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
-import org.pkwmtt.examCalendar.repository.UserRepository;
 import org.pkwmtt.exceptions.*;
+import org.pkwmtt.security.token.JwtAuthenticationToken;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +31,6 @@ public class ExamService {
     private final ExamRepository examRepository;
     private final ExamTypeRepository examTypeRepository;
     private final GroupRepository groupRepository;
-    private final UserRepository userRepository;
     private final TimetableService timetableService;
 
     /**
@@ -311,9 +311,10 @@ public class ExamService {
      * @throws AccessDeniedException when user doesn't have assigned group
      */
     private String getUserGroup() throws AccessDeniedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = (String) authentication.getPrincipal();
-        return userRepository.findGroupByUserEmail(userEmail)
-                .orElseThrow(() -> new AccessDeniedException("There are no group assigned to user"));
+        JwtAuthenticationToken authentication = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String group = authentication.getExamGroup();
+        if(group == null)
+            throw  new AccessDeniedException("You doesn't have access to any group");
+        return group;
     }
 }
