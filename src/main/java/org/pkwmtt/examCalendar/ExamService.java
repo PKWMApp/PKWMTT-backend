@@ -11,8 +11,12 @@ import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
+import org.pkwmtt.examCalendar.repository.UserRepository;
 import org.pkwmtt.exceptions.*;
 import org.pkwmtt.timetable.TimetableService;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,6 +30,7 @@ public class ExamService {
     private final ExamRepository examRepository;
     private final ExamTypeRepository examTypeRepository;
     private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
     private final TimetableService timetableService;
 
     /**
@@ -33,6 +38,8 @@ public class ExamService {
      * @return id of exam added to database
      */
     public int addExam(ExamDto examDto) {
+
+        verifyGroupPermissions(examDto.getGeneralGroups());
 
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
@@ -260,5 +267,17 @@ public class ExamService {
             if (!group.matches("^[A-Z].*"))
                 throw new SpecifiedSubGroupDoesntExistsException(group);
         });
+    }
+
+    /**
+     * verifies if user had authorities to perform action for specific groups
+     * @param groups set of provided groups
+     */
+    private void verifyGroupPermissions(Set<String> groups){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String) authentication.getPrincipal();
+        String userGroup = userRepository.findGroupByUserEmail(userEmail).orElseThrow(() -> new AccessDeniedException("There are no group assigned to user"));
+        if(!trimLastDigit(groups).equals(userGroup))
+            throw new AccessDeniedException("You don't have permission to access this group");
     }
 }
