@@ -220,6 +220,8 @@ public class ExamService {
      * @throws InvalidGroupIdentifierException when not all provided groups belong to the same year of study
      */
     private static String trimLastDigit(Set<String> superiorGroups) throws InvalidGroupIdentifierException {
+        if(superiorGroups == null || superiorGroups.isEmpty())
+            throw new InvalidGroupIdentifierException("general group is missing");
         Set<String> trimmedGroups = superiorGroups.stream()
                 .map(ExamService::trimLastDigit)
                 .collect(Collectors.toSet());
