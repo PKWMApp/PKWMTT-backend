@@ -2,6 +2,7 @@ package org.pkwmtt.examCalendar;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -17,7 +18,9 @@ import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.exceptions.*;
+import org.pkwmtt.security.token.JwtAuthenticationToken;
 import org.pkwmtt.timetable.TimetableService;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -45,6 +48,17 @@ class ExamServiceTest {
 
     @InjectMocks
     private ExamService examService;
+
+    @BeforeEach
+    void setupSecurityContextHolder(){
+        JwtAuthenticationToken token = new JwtAuthenticationToken(
+                "user@example.com",
+                Collections.emptyList(),
+                "12K"
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(token);
+    }
 
     //<editor-fold desc="repository don't contain groups, service available">
 
@@ -213,7 +227,10 @@ class ExamServiceTest {
         Set<String> subgroups = Set.of("K04");
         LocalDateTime date = LocalDateTime.now().plusDays(1);
         ExamDto examDto = buildExampleExamDto(generalGroups, subgroups, date);
-        RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.addExam(examDto));
+        RuntimeException exception = assertThrows(
+                InvalidGroupIdentifierException.class,
+                () -> examService.addExam(examDto)
+        );
         assertEquals("Invalid group identifier: general group is missing", exception.getMessage());
     }
 
@@ -228,6 +245,7 @@ class ExamServiceTest {
 
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(List.of("12K1", "12K2", "12K3")));
         when(timetableService.getAvailableSubGroups("12K2")).thenReturn(new ArrayList<>(List.of("L04")));
+        //noinspection unchecked
         when(groupRepository.findAllByNameIn(any(Set.class))).thenReturn(studentGroups);
 //
 
@@ -629,6 +647,7 @@ class ExamServiceTest {
 //        given
         int examId = 1;
         when(examRepository.findById(examId)).thenReturn(Optional.of(mock(Exam.class)));
+        when(examRepository.findGroupsByExamId(examId)).thenReturn(Set.of("12K2"));
 //        when
         examService.deleteExam(examId);
 //        then

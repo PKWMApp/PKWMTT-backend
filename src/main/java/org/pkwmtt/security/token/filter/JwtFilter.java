@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.examCalendar.repository.UserRepository;
+import org.pkwmtt.security.token.JwtAuthenticationToken;
 import org.pkwmtt.security.token.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -65,10 +66,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
 
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
+                        new JwtAuthenticationToken(
                                 user.getEmail(),
-                                null,
-                                authorities
+                                authorities,
+                                jwtService.extractClaim(token, claims -> claims.get("group", String.class))
                         );
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

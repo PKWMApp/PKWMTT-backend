@@ -16,4 +16,7 @@ public interface OTPCodeRepository extends JpaRepository<OTPCode, Integer> {
     boolean existsOTPCodeByGeneralGroup (GeneralGroup generalGroup);
     
     boolean existsOTPCodeByCode (String code);
+    
+    @Transactional
+    void deleteByGeneralGroup (GeneralGroup generalGroup);
 }

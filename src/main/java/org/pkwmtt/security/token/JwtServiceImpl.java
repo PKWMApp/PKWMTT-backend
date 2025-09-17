@@ -109,7 +109,7 @@ public class JwtServiceImpl implements JwtService {
      * @param claimResolver function to extract the desired claim from Claims
      * @return the extracted claim of type T
      */
-    <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }
