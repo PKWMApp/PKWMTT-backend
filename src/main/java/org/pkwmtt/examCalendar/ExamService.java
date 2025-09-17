@@ -12,10 +12,15 @@ import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.exceptions.*;
+import org.pkwmtt.security.token.JwtAuthenticationToken;
 import org.pkwmtt.timetable.TimetableService;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +38,8 @@ public class ExamService {
      * @return id of exam added to database
      */
     public int addExam(ExamDto examDto) {
+
+        verifyGroupPermissionsForNewResource(examDto.getGeneralGroups());
 
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
@@ -55,6 +62,8 @@ public class ExamService {
 
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
 
+        verifyGroupPermissionsForModifiedResource(examDto.getGeneralGroups(), id);
+
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
 
         ExamType examType = examTypeRepository.findByName(examDto.getExamType())
@@ -68,6 +77,7 @@ public class ExamService {
      */
     public void deleteExam(int id) {
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
+        verifyGroupPermissionsForExistingResource(id);
         examRepository.deleteById(id);
     }
 
@@ -210,6 +220,8 @@ public class ExamService {
      * @throws InvalidGroupIdentifierException when not all provided groups belong to the same year of study
      */
     private static String trimLastDigit(Set<String> superiorGroups) throws InvalidGroupIdentifierException {
+        if(superiorGroups == null || superiorGroups.isEmpty())
+            throw new InvalidGroupIdentifierException("general group is missing");
         Set<String> trimmedGroups = superiorGroups.stream()
                 .map(ExamService::trimLastDigit)
                 .collect(Collectors.toSet());
@@ -260,5 +272,51 @@ public class ExamService {
             if (!group.matches("^[A-Z].*"))
                 throw new SpecifiedSubGroupDoesntExistsException(group);
         });
+    }
+
+    /**
+     * verifies if user has authorities to add new resource
+     * @param newGroups set of provided groups
+     */
+    private void verifyGroupPermissionsForNewResource(Set<String> newGroups){
+        String userGroup = getUserGroup();
+        if(!trimLastDigit(newGroups).equals(userGroup))
+            throw new AccessDeniedException("You don't have permission to access this group");
+    }
+
+    /**
+     * verifies if user has authorities to modify existing resource
+     * @param examId id of existing resource
+     */
+    private void verifyGroupPermissionsForExistingResource(Integer examId){
+        String userGroup = getUserGroup();
+        Set<String> generalGroupsOfExam = examRepository.findGroupsByExamId(examId)
+                .stream()
+                .filter(group -> group.matches("^\\d.*"))
+                .collect(Collectors.toSet());
+        if(!trimLastDigit(generalGroupsOfExam).equals(userGroup))
+            throw new AccessDeniedException("You don't have permission to access this group");
+    }
+
+    /**
+     * verifies if user had authorities to replace existing resource with new one
+     * @param newGroups set of groups of new resource
+     * @param examId id of existing resource
+     */
+    private void verifyGroupPermissionsForModifiedResource(Set<String> newGroups, Integer examId){
+        verifyGroupPermissionsForNewResource(newGroups);
+        verifyGroupPermissionsForExistingResource(examId);
+    }
+
+    /**
+     * @return superior group identifier (e.g. 12K) of currently authenticated user
+     * @throws AccessDeniedException when user doesn't have assigned group
+     */
+    private String getUserGroup() throws AccessDeniedException {
+        JwtAuthenticationToken authentication = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String group = authentication.getExamGroup();
+        if(group == null)
+            throw  new AccessDeniedException("You doesn't have access to any group");
+        return group;
     }
 }

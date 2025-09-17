@@ -11,6 +11,8 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
 
     Set<Exam> findAllByTitle(String title);
 
+    @Query("SELECT g.name FROM Exam e LEFT JOIN e.groups g WHERE e.examId = :id")
+    Set<String> findGroupsByExamId(@Param("id") Integer examId);
 
     /**
      * @param groups set of generalGroups
