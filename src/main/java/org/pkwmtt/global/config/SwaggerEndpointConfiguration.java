@@ -40,7 +40,7 @@ public class SwaggerEndpointConfiguration {
                              .pathsToMatch(apiPrefix + "/**", "/admin/**").addOpenApiCustomizer(openApi -> {
               Paths paths = openApi.getPaths();
               
-              paths.forEach((path, pathItem) -> pathItem.readOperations().forEach(operation -> {
+              paths.forEach((path, pathItem) -> pathItem.readOperationsMap().forEach(((httpMethod, operation) -> {
                   if (path.startsWith("/admin")) {
                       addHeaderIfMissing(
                         operation,
@@ -48,7 +48,8 @@ public class SwaggerEndpointConfiguration {
                         "Admin API key",
                         "Admin-only endpoint",
                         "Requires X-ADMIN-KEY header",
-                        "admin"
+                        "admin",
+                        true
                       );
                   } else if (path.startsWith(apiPrefix)) {
                       addHeaderIfMissing(
@@ -57,21 +58,26 @@ public class SwaggerEndpointConfiguration {
                         "Your API key",
                         "Public API endpoint",
                         "Requires X-API-KEY header",
-                        "public"
+                        "public",
+                        true
                       );
                   }
-              }));
+//                  if (path.contains("exams") && (httpMethod.equals(PathItem.HttpMethod.POST) || httpMethod.equals(
+//                    PathItem.HttpMethod.PUT) || httpMethod.equals(PathItem.HttpMethod.DELETE))) {
+//                      operation.addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
+//                  }
+              })));
           }).build();
     }
     
-    private void addHeaderIfMissing (Operation operation, String headerName, String headerDescription, String summary, String description, String tag) {
+    private void addHeaderIfMissing (Operation operation, String headerName, String headerDescription, String summary, String description, String tag, boolean required) {
         operation.setSummary(summary);
         operation.setDescription(description);
         operation.addTagsItem(tag);
         operation.addParametersItem(new Parameter()
                                       .name(headerName)
                                       .in("header")
-                                      .required(true)
+                                      .required(required)
                                       .description(headerDescription)
                                       .schema(new StringSchema()));
     }
