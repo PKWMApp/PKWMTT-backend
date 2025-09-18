@@ -73,7 +73,10 @@ public class TimetableCacheService {
     public Map<String, String> getGeneralGroupsMap () throws WebPageContentNotAvailableException {
         var url = mainUrl + "lista.html";
         var html = fetchData(url);
-        String json = cache.get("generalGroupMap", () -> mapper.writeValueAsString(parser.parseGeneralGroups(html)));
+        String json = cache.get(
+          "generalGroupMap",
+          () -> mapper.writeValueAsString(parser.parseGeneralGroups(html))
+        );
         
         return getMappedValue(
           json, "generalGroupList", cache, new TypeReference<>() {
@@ -88,6 +91,30 @@ public class TimetableCacheService {
      * @throws WebPageContentNotAvailableException if hour definition page can't be loaded
      */
     public List<String> getListOfHours () throws WebPageContentNotAvailableException {
+        
+        //Hard coded values for hours, caused by inconsistent timetable hours range
+        return List.of(
+          "7:30-8:15",
+          "8:15-9:00",
+          "9:15-10:00",
+          "10:00-10:45",
+          "11:00-11:45",
+          "11:45-12:30",
+          "12:45-13:30",
+          "13:30-14:15",
+          "14:30-15:15",
+          "15:15-16:00",
+          "16:15-17:00",
+          "17:00-17:45",
+          "18:00-18:45",
+          "18:45-19:30",
+          "19:45-20:30",
+          "20:30-21:15"
+        );
+    }
+    
+    @SuppressWarnings("unused")
+    private List<String> fetchListOfHours () {
         String url = mainUrl + "plany/o25.html";
         String json = cache.get("hourList", () -> mapper.writeValueAsString(parser.parseHours(fetchData(url))));
         
@@ -97,9 +124,8 @@ public class TimetableCacheService {
         );
         
         //Delete useless spaces
-        result = result.stream().map(item -> item.replaceAll(" ", "")).toList();
+        return result.stream().map(item -> item.replaceAll(" ", "")).toList();
         
-        return result;
     }
     
     /**
