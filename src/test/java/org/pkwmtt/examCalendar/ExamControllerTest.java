@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.pkwmtt.examCalendar.dto.ExamDto;
+import org.pkwmtt.examCalendar.dto.RequestExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
@@ -106,8 +107,8 @@ class ExamControllerTest {
     void addExamWithCorrectData () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto examDtoRequest = createExampleExamDto("Project");
-        String json = mapper.writeValueAsString(examDtoRequest);
+        RequestExamDto requestExamDtoRequest = createExampleExamDto("Project");
+        String json = mapper.writeValueAsString(requestExamDtoRequest);
 
         when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1", "12K2", "12K3"));
         when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04", "L04", "P04"));
@@ -139,17 +140,17 @@ class ExamControllerTest {
         responseSubgroups.removeAll(responseGeneralGroups);
 
         assertEquals(responseGeneralGroups, Set.of("12K"));
-        assertEquals(responseSubgroups, examDtoRequest.getSubgroups());
+        assertEquals(responseSubgroups, requestExamDtoRequest.getSubgroups());
 
-        assertEquals(examDtoRequest.getTitle(), examResponse.getTitle());
-        assertEquals(examDtoRequest.getDescription(), examResponse.getDescription());
+        assertEquals(requestExamDtoRequest.getTitle(), examResponse.getTitle());
+        assertEquals(requestExamDtoRequest.getDescription(), examResponse.getDescription());
         //        compare dates with minutes level precision
         assertEquals(
-          examDtoRequest.getDate().truncatedTo(ChronoUnit.MINUTES),
+          requestExamDtoRequest.getDate().truncatedTo(ChronoUnit.MINUTES),
           examResponse.getExamDate().truncatedTo(ChronoUnit.MINUTES)
         );
 
-        assertEquals(examDtoRequest.getExamType(), examResponse.getExamType().getName());
+        assertEquals(requestExamDtoRequest.getExamType(), examResponse.getExamType().getName());
     }
 
     @Test
@@ -157,24 +158,24 @@ class ExamControllerTest {
     void addExamTwice () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto examDtoRequest = createExampleExamDto("Project");
+        RequestExamDto requestExamDtoRequest = createExampleExamDto("Project");
 
         when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1", "12K2", "12K3"));
         when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04", "L04", "P04"));
 
         //        when
-        assertPostRequest(status().isCreated(), examDtoRequest);
-        MvcResult result = assertPostRequest(status().isConflict(), examDtoRequest);
+        assertPostRequest(status().isCreated(), requestExamDtoRequest);
+        MvcResult result = assertPostRequest(status().isConflict(), requestExamDtoRequest);
         //        then
         assertResponseMessage("Exam already exists", result);
-        assertEquals(1, examRepository.findAllByTitle(examDtoRequest.getTitle()).size());
+        assertEquals(1, examRepository.findAllByTitle(requestExamDtoRequest.getTitle()).size());
     }
 
     @Test
     void addExamWithBlankExamTitle () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .description("first exam")
           .date(LocalDateTime.now().plusDays(1))
@@ -193,7 +194,7 @@ class ExamControllerTest {
     void addExamWithBlankExamDescription () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .date(LocalDateTime.now().plusDays(1))
@@ -218,7 +219,7 @@ class ExamControllerTest {
     void addExamWithBlankDate () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -237,7 +238,7 @@ class ExamControllerTest {
     void addExamWithBlankExamGroups () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -256,7 +257,7 @@ class ExamControllerTest {
     void addExamWithBlankGeneralGroups () throws Exception {
         //      given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -277,7 +278,7 @@ class ExamControllerTest {
     void addExamWithBlankSubgroups () throws Exception {
         //      given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -304,7 +305,7 @@ class ExamControllerTest {
     void addExamWithMultipleGeneralGroupsAndSubgroups () throws Exception {
         //      given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -326,7 +327,7 @@ class ExamControllerTest {
     @Test
     void addExamWithNullExamTypes () throws Exception {
         //        given
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -348,7 +349,7 @@ class ExamControllerTest {
     void addExamWithNotFutureDate () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -368,7 +369,7 @@ class ExamControllerTest {
     void addExamWithEmptyStringExamTitle () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("")
           .description("first exam")
@@ -389,7 +390,7 @@ class ExamControllerTest {
     void addExamWithTooLongExamTitle () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("a".repeat(256))
           .description("first exam")
@@ -410,7 +411,7 @@ class ExamControllerTest {
     void addExamWithTooLongDescription () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("a".repeat(256))
@@ -431,7 +432,7 @@ class ExamControllerTest {
     void addExamWithNonExistingExamType () throws Exception {
         //        given
         createExampleExamType("Project");
-        ExamDto requestData = ExamDto
+        RequestExamDto requestData = RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -463,13 +464,13 @@ class ExamControllerTest {
         ExamType examType = createExampleExamType("Exam");
         Exam exam = createExampleExam(examType);
         int id = examRepository.save(exam).getExamId();
-        ExamDto examDto = createExampleExamDto(examType.getName(), date);
+        RequestExamDto requestExamDto = createExampleExamDto(examType.getName(), date);
 
         when(timetableService.getGeneralGroupList()).thenReturn(List.of("12K1", "12K2", "12K3"));
         when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04", "L04", "P04"));
 
         //        when
-        assertPutRequest(status().isNoContent(), examDto, id);
+        assertPutRequest(status().isNoContent(), requestExamDto, id);
 
         //        then
         Exam responseExam = examRepository.findById(id).orElseThrow();
@@ -498,12 +499,12 @@ class ExamControllerTest {
         ExamType examType = createExampleExamType("Exam");
         Exam exam = createExampleExam(examType);
         int id = examRepository.save(exam).getExamId();
-        ExamDto examDto = createExampleExamDto(examType.getName());
+        RequestExamDto requestExamDto = createExampleExamDto(examType.getName());
 
         int invalidId = Integer.MAX_VALUE - 10;
         assertNotEquals(invalidId, id);
         //        when
-        MvcResult result = assertPutRequest(status().isNotFound(), examDto, invalidId);
+        MvcResult result = assertPutRequest(status().isNotFound(), requestExamDto, invalidId);
 
         //        then
         assertResponseMessage("No such element with id: " + (invalidId), result);
@@ -548,6 +549,7 @@ class ExamControllerTest {
     //    <editor-fold desc="getExamById">
 
     @Test
+    @Disabled("Endpoint are disabled")
     void getExamByIdWithCorrectId () throws Exception {
         //        given
         ExamType examType = createExampleExamType("Exam");
@@ -573,6 +575,7 @@ class ExamControllerTest {
     }
 
     @Test
+    @Disabled("Endpoint are disabled")
     void getNonExistingExamById () throws Exception {
         //        given
         ExamType examType = createExampleExamType("Exam");
@@ -604,6 +607,12 @@ class ExamControllerTest {
         //        then
         JsonNode responseArray = mapper.readTree(result.getResponse().getContentAsString());
         assertEquals(2, responseArray.size());
+
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("examId").asInt() == exam1.getExamId()));
+        assertTrue(responseArray.valueStream().anyMatch(e -> e.get("examId").asInt() == exam2.getExamId()));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("examId").asInt() == exam3.getExamId()));
+        assertTrue(responseArray.valueStream().noneMatch(e -> e.get("examId").asInt() == exam4.getExamId()));
+
         assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam1.getTitle())));
         assertTrue(responseArray.valueStream().anyMatch(e -> e.get("title").asText().equals(exam2.getTitle())));
         assertTrue(responseArray.valueStream().noneMatch(e -> e.get("title").asText().equals(exam3.getTitle())));
@@ -798,10 +807,10 @@ class ExamControllerTest {
 
     /**
      * @param examTypeName name of type of exam as String
-     * @return created ExamDto
+     * @return created RequestExamDto
      */
-    private ExamDto createExampleExamDto (String examTypeName) {
-        return ExamDto
+    private RequestExamDto createExampleExamDto (String examTypeName) {
+        return RequestExamDto
           .builder()
           .title("Math exam")
           .description("first exam")
@@ -815,10 +824,10 @@ class ExamControllerTest {
     /**
      * @param examTypeName name of type of exam as String
      * @param date .
-     * @return created ExamDto
+     * @return created RequestExamDto
      */
-    private ExamDto createExampleExamDto (String examTypeName, LocalDateTime date) {
-        return ExamDto
+    private RequestExamDto createExampleExamDto (String examTypeName, LocalDateTime date) {
+        return RequestExamDto
                 .builder()
                 .title("Math exam")
                 .description("first exam")
