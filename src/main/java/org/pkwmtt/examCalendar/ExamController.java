@@ -3,7 +3,8 @@ package org.pkwmtt.examCalendar;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.dto.ExamDto;
+import org.pkwmtt.examCalendar.dto.RequestExamDto;
+import org.pkwmtt.examCalendar.dto.ResponseExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.mapper.ExamDtoMapper;
@@ -25,12 +26,12 @@ public class ExamController {
     private final ExamService examService;
 
     /**
-     * @param examDto details of exam
+     * @param requestExamDto details of exam
      * @return 201 created with URI to GET method which returns created resource
      */
     @PostMapping("")
-    public ResponseEntity<Void> addExam(@RequestBody @Valid ExamDto examDto){
-        int id = examService.addExam(examDto);
+    public ResponseEntity<Void> addExam(@RequestBody @Valid RequestExamDto requestExamDto){
+        int id = examService.addExam(requestExamDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -41,12 +42,12 @@ public class ExamController {
 
     /**
      * @param id of exam or test
-     * @param examDto new details of exam or test
+     * @param requestExamDto new details of exam or test
      * @return 204 no content
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid ExamDto examDto) {
-        examService.modifyExam(examDto, id);
+    public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid RequestExamDto requestExamDto) {
+        examService.modifyExam(requestExamDto, id);
         return ResponseEntity.noContent().build();
     }
 
@@ -64,7 +65,7 @@ public class ExamController {
      * @param id of exam or test
      * @return 200 ok with single exam or test details
      */
-    @GetMapping("/{id}")
+//    @GetMapping("/{id}")
     public ResponseEntity<Exam> getExam(@PathVariable int id) {
         return ResponseEntity.ok(examService.getExamById(id));
     }
@@ -73,10 +74,10 @@ public class ExamController {
      * when subgroups isn't null all generalGroups must be form the same year of study. e.g. 12K2, 12K1 is from 12K
      * @param generalGroups set of general groups e.g. 12K2
      * @param subgroups set of subgroups of general group e.g. L04
-     * @return List of ExamDto for specific groups
+     * @return List of RequestExamDto for specific groups
      */
     @GetMapping("/by-groups")
-    public ResponseEntity<List<ExamDto>> getExams(
+    public ResponseEntity<List<ResponseExamDto>> getExams(
             @RequestParam Set<String> generalGroups,
             @RequestParam(required = false) Set<String> subgroups
     ){

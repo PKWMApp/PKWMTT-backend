@@ -3,7 +3,7 @@ package org.pkwmtt.examCalendar;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.dto.ExamDto;
+import org.pkwmtt.examCalendar.dto.RequestExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
 import org.pkwmtt.examCalendar.entity.StudentGroup;
@@ -34,19 +34,19 @@ public class ExamService {
     private final TimetableService timetableService;
 
     /**
-     * @param examDto details of exam
+     * @param requestExamDto details of exam
      * @return id of exam added to database
      */
-    public int addExam(ExamDto examDto) {
+    public int addExam(RequestExamDto requestExamDto) {
 
-        verifyGroupPermissionsForNewResource(examDto.getGeneralGroups());
+        verifyGroupPermissionsForNewResource(requestExamDto.getGeneralGroups());
 
-        Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
+        Set<StudentGroup> groups = verifyAndUpdateExamGroups(requestExamDto);
 
-        ExamType examType = examTypeRepository.findByName(examDto.getExamType())
-                .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()));
+        ExamType examType = examTypeRepository.findByName(requestExamDto.getExamType())
+                .orElseThrow(() -> new ExamTypeNotExistsException(requestExamDto.getExamType()));
 
-        Exam exam = ExamDtoMapper.mapToNewExam(examDto, groups, examType);
+        Exam exam = ExamDtoMapper.mapToNewExam(requestExamDto, groups, examType);
         Set<Exam> existingExam = examRepository.findAllByTitle(exam.getTitle());
 
         if (existingExam.contains(exam))
@@ -55,21 +55,21 @@ public class ExamService {
     }
 
     /**
-     * @param examDto new details of exam that overwrite old ones
+     * @param requestExamDto new details of exam that overwrite old ones
      * @param id      of exam that need to be modified
      */
-    public void modifyExam(ExamDto examDto, int id) {
+    public void modifyExam(RequestExamDto requestExamDto, int id) {
 
         examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
 
-        verifyGroupPermissionsForModifiedResource(examDto.getGeneralGroups(), id);
+        verifyGroupPermissionsForModifiedResource(requestExamDto.getGeneralGroups(), id);
 
-        Set<StudentGroup> groups = verifyAndUpdateExamGroups(examDto);
+        Set<StudentGroup> groups = verifyAndUpdateExamGroups(requestExamDto);
 
-        ExamType examType = examTypeRepository.findByName(examDto.getExamType())
-                .orElseThrow(() -> new ExamTypeNotExistsException(examDto.getExamType()));
+        ExamType examType = examTypeRepository.findByName(requestExamDto.getExamType())
+                .orElseThrow(() -> new ExamTypeNotExistsException(requestExamDto.getExamType()));
 
-        examRepository.save(ExamDtoMapper.mapToExistingExam(examDto, groups, examType, id));
+        examRepository.save(ExamDtoMapper.mapToExistingExam(requestExamDto, groups, examType, id));
     }
 
     /**
@@ -119,13 +119,13 @@ public class ExamService {
     /**
      * verify if groups exists and updates database when it exists, but repository doesn't contain it.
      * When timetable service is unavailable verifies groups using groupsRepository
-     * @param examDto containing groups for verification
+     * @param requestExamDto containing groups for verification
      * @return single set of all kinds of provided groups as StudentGroup entities
      * that are in database and could be safely attach to Exam entity
      */
-    private Set<StudentGroup> verifyAndUpdateExamGroups(ExamDto examDto) {
-        Set<String> generalGroups = examDto.getGeneralGroups();
-        Set<String> subgroups = examDto.getSubgroups();
+    private Set<StudentGroup> verifyAndUpdateExamGroups(RequestExamDto requestExamDto) {
+        Set<String> generalGroups = requestExamDto.getGeneralGroups();
+        Set<String> subgroups = requestExamDto.getSubgroups();
 
         if (generalGroups == null || generalGroups.isEmpty())
             throw new InvalidGroupIdentifierException("general group is missing");

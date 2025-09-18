@@ -11,18 +11,18 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExamDtoTest {
+class RequestExamDtoTest {
 
     private final Validator validator;
 
-    public ExamDtoTest() {
+    public RequestExamDtoTest() {
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Test
     void shouldSuccessWithCompleteData() {
 //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("Math exam")
                 .description("First exam")
                 .date(LocalDateTime.now().plusDays(1))
@@ -31,13 +31,13 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
 //        when, then
-        assertTrue(validator.validate(examDto).isEmpty());
+        assertTrue(validator.validate(requestExamDto).isEmpty());
     }
 
     @Test
     void shouldSuccessWithEmptyDescription() {
 //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("Math exam")
                 .description("")
                 .date(LocalDateTime.now().plusDays(1))
@@ -46,13 +46,13 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
 //        when, then
-        assertTrue(validator.validate(examDto).isEmpty());
+        assertTrue(validator.validate(requestExamDto).isEmpty());
     }
 
     @Test
     void shouldSuccessWithBlankDescription() {
 //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("Math exam")
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("exam")
@@ -60,13 +60,13 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
 //        when, then
-        assertTrue(validator.validate(examDto).isEmpty());
+        assertTrue(validator.validate(requestExamDto).isEmpty());
     }
 
     @Test
     void shouldSuccessWithBlankSubgroups() {
 //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("Math exam")
                 .description("First exam")
                 .date(LocalDateTime.now().plusDays(1))
@@ -74,13 +74,13 @@ class ExamDtoTest {
                 .generalGroups(Set.of("12K2"))
                 .build();
 //        when, then
-        assertTrue(validator.validate(examDto).isEmpty());
+        assertTrue(validator.validate(requestExamDto).isEmpty());
     }
 
     @Test
     void shouldSuccessWithEmptySubgroups() {
 //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("Math exam")
                 .description("First exam")
                 .date(LocalDateTime.now().plusDays(1))
@@ -89,7 +89,7 @@ class ExamDtoTest {
                 .subgroups(Set.of(""))
                 .build();
 //        when, then
-        assertTrue(validator.validate(examDto).isEmpty());
+        assertTrue(validator.validate(requestExamDto).isEmpty());
     }
 
 
@@ -97,7 +97,7 @@ class ExamDtoTest {
     @Test
     void shouldFailWithEmptyTitle() {
         //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("")
                 .description("First exam")
                 .date(LocalDateTime.now().plusDays(1))
@@ -106,16 +106,16 @@ class ExamDtoTest {
                 .subgroups(Set.of(""))
                 .build();
 //        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+        Set<ConstraintViolation<RequestExamDto>> violations = validator.validate(requestExamDto);
 //        then
-        assertFalse(validator.validate(examDto).isEmpty());
+        assertFalse(validator.validate(requestExamDto).isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("title")));
     }
 
     @Test
     void shouldFailWithBlankTitle() {
         //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .description("First exam")
                 .date(LocalDateTime.now().plusDays(1))
                 .examType("exam")
@@ -123,16 +123,16 @@ class ExamDtoTest {
                 .subgroups(Set.of(""))
                 .build();
 //        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+        Set<ConstraintViolation<RequestExamDto>> violations = validator.validate(requestExamDto);
 //        then
-        assertFalse(validator.validate(examDto).isEmpty());
+        assertFalse(validator.validate(requestExamDto).isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("title")));
     }
 
     @Test
     void shouldFailWithEmptyGeneralGroups() {
         //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("Math exam")
                 .description("First exam")
                 .date(LocalDateTime.now().plusDays(1))
@@ -141,16 +141,16 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
 //        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+        Set<ConstraintViolation<RequestExamDto>> violations = validator.validate(requestExamDto);
 //        then
-        assertFalse(validator.validate(examDto).isEmpty());
+        assertFalse(validator.validate(requestExamDto).isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("generalGroups")));
     }
 
     @Test
     void shouldFailWithBlankGeneralGroups() {
         //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
                 .title("Math exam")
                 .description("First exam")
                 .date(LocalDateTime.now().plusDays(1))
@@ -158,9 +158,9 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
 //        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+        Set<ConstraintViolation<RequestExamDto>> violations = validator.validate(requestExamDto);
 //        then
-        assertFalse(validator.validate(examDto).isEmpty());
+        assertFalse(validator.validate(requestExamDto).isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("generalGroups")));
     }
 
@@ -169,7 +169,7 @@ class ExamDtoTest {
     @Test
     void ShouldFailWithTooLongTitle() {
         //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
 //                256 characters
                 .title("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 .description("First exam")
@@ -179,16 +179,16 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
 //        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+        Set<ConstraintViolation<RequestExamDto>> violations = validator.validate(requestExamDto);
 //        then
-        assertFalse(validator.validate(examDto).isEmpty());
+        assertFalse(validator.validate(requestExamDto).isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("title")));
     }
 
     @Test
     void toLongDescription() {
         //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
 //                256 characters
                 .title("Math exam")
                 .description("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
@@ -198,16 +198,16 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
 //        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+        Set<ConstraintViolation<RequestExamDto>> violations = validator.validate(requestExamDto);
 //        then
-        assertFalse(validator.validate(examDto).isEmpty());
+        assertFalse(validator.validate(requestExamDto).isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }
 
     @Test
     void dateNotInFuture() {
         //        given
-        ExamDto examDto = ExamDto.builder()
+        RequestExamDto requestExamDto = RequestExamDto.builder()
 //                256 characters
                 .title("Math exam")
                 .description("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
@@ -217,9 +217,9 @@ class ExamDtoTest {
                 .subgroups(Set.of("L04"))
                 .build();
         //        when
-        Set<ConstraintViolation<ExamDto>> violations = validator.validate(examDto);
+        Set<ConstraintViolation<RequestExamDto>> violations = validator.validate(requestExamDto);
 //        then
-        assertFalse(validator.validate(examDto).isEmpty());
+        assertFalse(validator.validate(requestExamDto).isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("date")));
     }
 
