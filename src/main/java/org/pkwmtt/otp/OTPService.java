@@ -54,34 +54,35 @@ public class OTPService {
     }
     
     public void sendOTPCodesForManyGroups (List<OTPRequest> requests)
-      throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException {
+      throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException, IllegalArgumentException {
         requests.forEach(request -> {
             var code = generateNewCode();
             var mail = createMail(request, code);
             var groupName = request.getGeneralGroupName();
             var groupNameLength = groupName.length();
             
-            if (groupNameLength > 3 && Character.isDigit(groupName.charAt(groupNameLength - 1))) {
+            if (groupNameLength > 3 && Character.isDigit(groupName.charAt(groupNameLength - 1))) { //Check general group name
                 throw new WrongArgumentException(
                   "Wrong general group provided. Make sure you are not providing subgroup. (f.e 12K1 -> wrong, 12K -> good)");
             }
             
-            if (!generalGroupExists(groupName)) {
+            if (!generalGroupExists(groupName)) { // Check if general group with provided name exists
                 throw new SpecifiedGeneralGroupDoesntExistsException();
             }
             
             var generalGroup = generalGroupRepository.findByName(groupName);
             
-            if (generalGroup.isPresent()) {
-                if (otpRepository.existsOTPCodeByGeneralGroup(generalGroup.get())) {
-                    throw new RuntimeException("");
+            if (generalGroup.isPresent()) { //Check if general group is already saved in database
+                if (otpRepository.existsOTPCodeByGeneralGroup(generalGroup.get())) { //Check if provided general group has assigned code
+                    otpRepository.deleteByGeneralGroup(generalGroup.get()); // Delete existing code
                 }
             } else {
+                //Save general group to database
                 generalGroup = Optional.of(generalGroupRepository.save(new GeneralGroup(null, groupName)));
             }
             
             try {
-                emailService.send(mail);
+                emailService.send(mail); //Send email
             } catch (MessagingException e) {
                 throw new MailCouldNotBeSendException("Couldn't send mail for group: " + groupName);
             }
@@ -94,13 +95,17 @@ public class OTPService {
               .isActive(true)
               .build();
             
-            userRepository.save(user);
+            userRepository
+              .findByGeneralGroup(generalGroup.get())
+              .ifPresent(value -> userRepository.deleteUserByEmail(value.getEmail()));
             
+            userRepository.save(user);
             otpRepository.save(new OTPCode(code, generalGroup.get()));
         });
     }
     
-    private GeneralGroup getGeneralGroupAssignedToCode (String code) throws OTPCodeNotFoundException, WrongOTPFormatException {
+    private GeneralGroup getGeneralGroupAssignedToCode (String code)
+      throws OTPCodeNotFoundException, WrongOTPFormatException {
         this.validateCode(code);
         
         Optional<OTPCode> result = otpRepository.findByCode(code);
