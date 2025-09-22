@@ -25,7 +25,6 @@ public class RequestInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle (@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         
-        
         String headerName = "X-API-KEY";
         try {
             String providedApiKey = request.getHeader(headerName);

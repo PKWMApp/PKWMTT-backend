@@ -25,7 +25,8 @@ public class WebConfig implements WebMvcConfigurer {
         String apiPrefix = environment.getProperty("apiPrefix", "");
         requestInterceptor.ifPresent(interceptor -> registry
           .addInterceptor(interceptor)
-          .addPathPatterns(apiPrefix + "/**"));
+          .addPathPatterns(apiPrefix + "/**")
+          .excludePathPatterns(apiPrefix + "/apk/download"));
         registry.addInterceptor(adminRequestInterceptor).addPathPatterns("/admin");
     }
 }

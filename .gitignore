@@ -4,7 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 logs/*
-
+uploads/*.*
+uploads/apk/*.*
 ### STS ###
 .apt_generated
 .classpath
