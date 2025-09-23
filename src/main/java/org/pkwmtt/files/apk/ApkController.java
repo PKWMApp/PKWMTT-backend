@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @RequestMapping("${apiPrefix}/apk")
@@ -20,22 +19,16 @@ public class ApkController {
     private final ApkService apkService;
     
     @GetMapping("/download")
-    public ResponseEntity<UrlResource> download () {
-        try {
-            return ResponseEntity
-              .ok()
-              .contentType(MediaType.parseMediaType("application/vnd.android.package-archive"))
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PKWM_App.apk")
-              .body(apkService.getApkResource());
-        } catch (FileNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public ResponseEntity<UrlResource> download () throws IOException {
+        return ResponseEntity
+          .ok()
+          .contentType(MediaType.parseMediaType("application/vnd.android.package-archive"))
+          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PKWM_App.apk")
+          .body(apkService.getApkResource());
     }
     
     @GetMapping("/version")
-    public String getApkVersion () {
-        return "3.0.0";
+    public String getApkVersion () throws IOException {
+        return apkService.getApkVersion();
     }
 }

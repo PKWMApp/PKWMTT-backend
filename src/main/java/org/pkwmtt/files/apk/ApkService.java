@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @Service
@@ -23,12 +25,23 @@ public class ApkService {
     
     private final FileService fileService;
     
-    public UrlResource getApkResource () throws IOException {
-        Path filePath = findApkByExtensionInUploads().orElseThrow(FileNotFoundException::new);
+    public UrlResource getApkResource () throws IOException, IllegalArgumentException {
+        Path filePath = findNewestApkByExtensionInUploads().orElseThrow(FileNotFoundException::new);
         return fileService.getResourceByFileName(filePath.getFileName().toString());
     }
     
-    private Optional<Path> findApkByExtensionInUploads () throws IOException {
+    public String getApkVersion () throws IOException {
+        Path filePath = findNewestApkByExtensionInUploads().orElseThrow(IOException::new);
+        String fileName = filePath.getFileName().toString();
+        Pattern pattern = Pattern.compile("\\d+(?:\\.\\d+){1,2}");
+        Matcher matcher = pattern.matcher(fileName);
+        if (!matcher.find()) {
+            return null;
+        }
+        return matcher.group();
+    }
+    
+    private Optional<Path> findNewestApkByExtensionInUploads () throws IOException, IllegalArgumentException {
         Path dirPath = Paths.get(FILES_DIR);
         
         if (!Files.exists(dirPath) || !Files.isDirectory(dirPath)) {
@@ -45,7 +58,7 @@ public class ApkService {
                   try {
                       return Files.getLastModifiedTime(file).toMillis();
                   } catch (IOException e) {
-                      throw new RuntimeException(e); //TODO handle
+                      throw new RuntimeException("Couldn't locate last modified file");
                   }
               }));
         }
