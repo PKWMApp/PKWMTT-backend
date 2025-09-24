@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -40,12 +41,12 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-    public String generateToken(Integer id) {
+    public String generateToken(UUID uuid) {
         return Jwts.builder()
-                .subject(id)
-                .claim("MODERATOR")
+                .subject(uuid.toString())
+                .claim("role", "MODERATOR")
                 .issuedAt(new Date())
-                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
+                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getModeratorExpirationMs())))
                 .signWith(decodeSecretKey())
                 .compact();
     }
