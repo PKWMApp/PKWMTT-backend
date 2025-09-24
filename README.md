@@ -81,8 +81,9 @@ This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE)
 
 For questions, suggestions, or collaboration:
 
-- GitHub Issues: [Submit here](https://github.com/PKTTTeam/PKWMTT-backend/issues)
-- Team: [@PKTTTeam](https://github.com/PKTTTeam)
+- GitHub Issues: [Submit here](https://github.com/PKWMApp/PKWMTT-backend/issues)
+- Team: [@PKWMApp](https://github.com/PKWMApp
+  )
 
 ---
 
