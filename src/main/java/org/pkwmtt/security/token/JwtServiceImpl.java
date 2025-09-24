@@ -41,6 +41,7 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
+    @Override
     public String generateToken(UUID uuid) {
         return Jwts.builder()
                 .subject(uuid.toString())
@@ -75,6 +76,18 @@ public class JwtServiceImpl implements JwtService {
             final String userEmail = getSubject(token);
             return userEmail != null
                     && userEmail.equals(user.getEmail())
+                    && !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean validateToken(String token, String uuid) {
+        try {
+            final String userid = getSubject(token);
+            return userid != null
+                    && userid.equals(uuid)
                     && !isTokenExpired(token);
         } catch (JwtException | IllegalArgumentException e) {
             return false;
