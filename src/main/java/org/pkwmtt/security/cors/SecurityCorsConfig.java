@@ -15,22 +15,22 @@ import java.util.List;
  */
 @Configuration
 public class SecurityCorsConfig {
-
+    
     /**
      * @return UrlBasedCorsConfigurationSource with CORS configuration for spring security
      * added to SecurityFilterChain by .cors(withDefaults())
      */
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource () {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://pkwmapp.pl"));
+        config.setAllowedOrigins(List.of("https://pkwmapp.pl", "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);   //???
-
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/pkmwtt/api/**", config);
-
+        
         return source;
     }
 }
