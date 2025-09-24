@@ -72,7 +72,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Boolean validateToken(String token, User user) {
         try {
-            final String userEmail = getUserEmailFromToken(token);
+            final String userEmail = getSubject(token);
             return userEmail != null
                     && userEmail.equals(user.getEmail())
                     && !isTokenExpired(token);
@@ -88,7 +88,7 @@ public class JwtServiceImpl implements JwtService {
      * @return user email from token
      */
     @Override
-    public String getUserEmailFromToken(String token) {
+    public String getSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 

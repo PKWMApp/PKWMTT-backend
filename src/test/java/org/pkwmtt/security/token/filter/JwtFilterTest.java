@@ -47,7 +47,7 @@ class JwtFilterTest {
         when(mockUser.getRole()).thenReturn(Role.valueOf("ADMIN"));
         when(mockUser.getEmail()).thenReturn("user@example.com");
 
-        when(jwtService.getUserEmailFromToken("validToken")).thenReturn("user@example.com");
+        when(jwtService.getSubject("validToken")).thenReturn("user@example.com");
         when(jwtService.validateToken(eq("validToken"), any(User.class))).thenReturn(true);
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
