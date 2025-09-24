@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Czas generowania: 06 Wrz 2025, 23:16
--- Wersja serwera: 10.4.27-MariaDB
--- Wersja PHP: 8.0.25
+-- Host: db
+-- Generation Time: Wrz 24, 2025 at 02:15 PM
+-- Wersja serwera: 9.3.0
+-- Wersja PHP: 8.2.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Baza danych: `pktt`
 --
-CREATE DATABASE IF NOT EXISTS `pktt` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `pktt` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `pktt`;
 
 -- --------------------------------------------------------
@@ -31,9 +31,9 @@ USE `pktt`;
 
 DROP TABLE IF EXISTS `admin_keys`;
 CREATE TABLE IF NOT EXISTS `admin_keys` (
-  `key_id` int(11) NOT NULL AUTO_INCREMENT,
-  `value` varchar(255) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `key_id` int NOT NULL AUTO_INCREMENT,
+  `value` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`key_id`),
   UNIQUE KEY `unique_value` (`value`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -53,9 +53,9 @@ INSERT INTO `admin_keys` (`key_id`, `value`, `description`) VALUES
 
 DROP TABLE IF EXISTS `api_keys`;
 CREATE TABLE IF NOT EXISTS `api_keys` (
-  `key_id` int(11) NOT NULL AUTO_INCREMENT,
-  `value` varchar(255) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `key_id` int NOT NULL AUTO_INCREMENT,
+  `value` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`key_id`),
   UNIQUE KEY `unique_value` (`value`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -75,11 +75,11 @@ INSERT INTO `api_keys` (`key_id`, `value`, `description`) VALUES
 
 DROP TABLE IF EXISTS `exams`;
 CREATE TABLE IF NOT EXISTS `exams` (
-  `exam_id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `exam_id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `exam_date` datetime NOT NULL,
-  `exam_type_id` int(11) NOT NULL,
+  `exam_type_id` int NOT NULL,
   PRIMARY KEY (`exam_id`),
   KEY `exam_type_id_idx` (`exam_type_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -104,9 +104,9 @@ INSERT INTO `exams` (`exam_id`, `title`, `description`, `exam_date`, `exam_type_
 
 DROP TABLE IF EXISTS `exams_groups`;
 CREATE TABLE IF NOT EXISTS `exams_groups` (
-  `exam_group_id` int(11) NOT NULL AUTO_INCREMENT,
-  `exam_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
+  `exam_group_id` int NOT NULL AUTO_INCREMENT,
+  `exam_id` int NOT NULL,
+  `group_id` int NOT NULL,
   PRIMARY KEY (`exam_group_id`),
   KEY `exam_id_idx` (`exam_id`),
   KEY `group_id_idx` (`group_id`)
@@ -140,8 +140,8 @@ INSERT INTO `exams_groups` (`exam_group_id`, `exam_id`, `group_id`) VALUES
 
 DROP TABLE IF EXISTS `exam_type`;
 CREATE TABLE IF NOT EXISTS `exam_type` (
-  `exam_type_id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `exam_type_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`exam_type_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -162,8 +162,8 @@ INSERT INTO `exam_type` (`exam_type_id`, `name`) VALUES
 
 DROP TABLE IF EXISTS `general_group`;
 CREATE TABLE IF NOT EXISTS `general_group` (
-  `general_group_id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `general_group_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`general_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -180,15 +180,29 @@ INSERT INTO `general_group` (`general_group_id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktura tabeli dla tabeli `moderators`
+--
+
+DROP TABLE IF EXISTS `moderators`;
+CREATE TABLE IF NOT EXISTS `moderators` (
+  `moderator_id` int NOT NULL AUTO_INCREMENT,
+  `password` varchar(255) NOT NULL,
+  `role` varchar(50) NOT NULL,
+  PRIMARY KEY (`moderator_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktura tabeli dla tabeli `otp_codes`
 --
 
 DROP TABLE IF EXISTS `otp_codes`;
 CREATE TABLE IF NOT EXISTS `otp_codes` (
-  `otp_code_id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) NOT NULL,
-  `expire` timestamp NOT NULL DEFAULT current_timestamp(),
-  `general_group_id` int(11) NOT NULL,
+  `otp_code_id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `expire` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `general_group_id` int NOT NULL,
   PRIMARY KEY (`otp_code_id`),
   KEY `general_group_id_idx` (`general_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -211,8 +225,8 @@ INSERT INTO `otp_codes` (`otp_code_id`, `code`, `expire`, `general_group_id`) VA
 
 DROP TABLE IF EXISTS `student_groups`;
 CREATE TABLE IF NOT EXISTS `student_groups` (
-  `group_id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `group_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`group_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -240,11 +254,11 @@ INSERT INTO `student_groups` (`group_id`, `name`) VALUES
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `general_group_id` int(11) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `role` enum('ADMIN','REPRESENTATIVE') NOT NULL DEFAULT 'REPRESENTATIVE',
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `general_group_id` int NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `role` enum('ADMIN','REPRESENTATIVE') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'REPRESENTATIVE',
   PRIMARY KEY (`user_id`),
   KEY `general_group_id_idx` (`general_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
