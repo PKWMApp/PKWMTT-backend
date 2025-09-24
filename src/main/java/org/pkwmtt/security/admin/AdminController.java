@@ -3,6 +3,7 @@ package org.pkwmtt.security.admin;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.security.apiKey.ApiKeyService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class AdminController {
     private final ApiKeyService service;
+    private final AdminService adminService;
     
     @GetMapping("")
     public String adminPanel () {
@@ -26,6 +28,11 @@ public class AdminController {
     @GetMapping("/api/keys")
     public Map<String, String> getMapOfPublicApiKeys () {
         return service.getMapOfPublicApiKeys();
+    }
+
+    @PostMapping("/add-moderator")
+    public ResponseEntity<String> addModerator(){
+        return ResponseEntity.ok(adminService.addModerator());
     }
     
     

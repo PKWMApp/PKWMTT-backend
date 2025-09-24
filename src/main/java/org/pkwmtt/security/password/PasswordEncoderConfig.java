@@ -1,4 +1,4 @@
-package org.pkwmtt.security.config;
+package org.pkwmtt.security.password;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,4 +12,5 @@ public class PasswordEncoderConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
