@@ -24,6 +24,7 @@ public class ApkController {
           .ok()
           .contentType(MediaType.parseMediaType("application/vnd.android.package-archive"))
           .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PKWM_App.apk")
+          .header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://pkwmapp.pl", "http://localhost:3000")
           .body(apkService.getApkResource());
     }
     
