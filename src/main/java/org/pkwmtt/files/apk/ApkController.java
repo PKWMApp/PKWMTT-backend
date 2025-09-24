@@ -1,7 +1,9 @@
 package org.pkwmtt.files.apk;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequestMapping("${apiPrefix}/apk")
 @RestController
@@ -19,12 +22,21 @@ public class ApkController {
     private final ApkService apkService;
     
     @GetMapping("/download")
-    public ResponseEntity<UrlResource> download () throws IOException {
-        return ResponseEntity
-          .ok()
-          .contentType(MediaType.parseMediaType("application/vnd.android.package-archive"))
-          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PKWM_App.apk")
-          .body(apkService.getApkResource());
+    public ResponseEntity<UrlResource> download (HttpServletRequest request) throws IOException {
+        String origin = request.getHeader("Origin");
+        List<String> allowedOrigins = List.of("https://pkwmapp.pl", "http://localhost:3000");
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.android.package-archive"));
+        headers.setContentDisposition(ContentDisposition.attachment().filename("PKWM_App.apk").build());
+        
+        if (allowedOrigins.contains(origin)) {
+            headers.set("Access-Control-Allow-Origin", origin);
+        }
+        
+        return ResponseEntity.ok()
+                             .headers(headers)
+                             .body(apkService.getApkResource());
     }
     
     @GetMapping("/version")
