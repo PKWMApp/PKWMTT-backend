@@ -23,20 +23,22 @@ public class ApkController {
     
     @GetMapping("/download")
     public ResponseEntity<UrlResource> download (HttpServletRequest request) throws IOException {
-        String origin = request.getHeader("Origin");
-        List<String> allowedOrigins = List.of("https://pkwmapp.pl", "http://localhost:3000");
-        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/vnd.android.package-archive"));
         headers.setContentDisposition(ContentDisposition.attachment().filename("PKWM_App.apk").build());
         
+        
+        String origin = request.getHeader("Origin");
+        
+        if (origin == null || origin.isBlank()) {
+            return ResponseEntity.ok().headers(headers).body(apkService.getApkResource());
+        }
+        
+        List<String> allowedOrigins = List.of("https://pkwmapp.pl", "http://localhost:3000");
         if (allowedOrigins.contains(origin)) {
             headers.set("Access-Control-Allow-Origin", origin);
         }
-        
-        return ResponseEntity.ok()
-                             .headers(headers)
-                             .body(apkService.getApkResource());
+        return ResponseEntity.ok().headers(headers).body(apkService.getApkResource());
     }
     
     @GetMapping("/version")
