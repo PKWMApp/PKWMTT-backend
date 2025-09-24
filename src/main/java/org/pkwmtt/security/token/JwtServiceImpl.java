@@ -40,6 +40,16 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
+    public String generateToken(Integer id) {
+        return Jwts.builder()
+                .subject(id)
+                .claim("MODERATOR")
+                .issuedAt(new Date())
+                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
+                .signWith(decodeSecretKey())
+                .compact();
+    }
+
     /**
      * Decode a secret key for signing JWT.
      * The key is decoded from Base64 stored in JwtUtils configuration.

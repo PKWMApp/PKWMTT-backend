@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Wrz 24, 2025 at 02:15 PM
+-- Generation Time: Wrz 24, 2025 at 02:41 PM
 -- Wersja serwera: 9.3.0
 -- Wersja PHP: 8.2.27
 
@@ -185,7 +185,7 @@ INSERT INTO `general_group` (`general_group_id`, `name`) VALUES
 
 DROP TABLE IF EXISTS `moderators`;
 CREATE TABLE IF NOT EXISTS `moderators` (
-  `moderator_id` int NOT NULL AUTO_INCREMENT,
+  `moderator_id` varchar(36) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` varchar(50) NOT NULL,
   PRIMARY KEY (`moderator_id`)
