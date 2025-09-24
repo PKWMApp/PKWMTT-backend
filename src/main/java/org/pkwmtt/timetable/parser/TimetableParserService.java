@@ -37,6 +37,7 @@ public class TimetableParserService {
             .replaceAll(Pattern.quote("<a"), "<span")
             .replaceAll(Pattern.quote("</a>"), "</span>")
             .replaceAll(Pattern.quote("J ang"), "J_ang")
+            .replaceAll(Pattern.quote("J niemiecki"), "J_niemiecki")
             .replaceAll(Pattern.quote("WF hala ("), "WF_hala_(")
             .replaceAll(Pattern.quote("&nbsp;"), "");
 
