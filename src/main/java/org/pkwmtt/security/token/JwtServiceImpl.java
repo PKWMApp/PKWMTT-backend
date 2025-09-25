@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -40,6 +41,17 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
+    @Override
+    public String generateToken(UUID uuid) {
+        return Jwts.builder()
+                .subject(uuid.toString())
+                .claim("role", "MODERATOR")
+                .issuedAt(new Date())
+                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getModeratorExpirationMs())))
+                .signWith(decodeSecretKey())
+                .compact();
+    }
+
     /**
      * Decode a secret key for signing JWT.
      * The key is decoded from Base64 stored in JwtUtils configuration.
@@ -61,9 +73,21 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Boolean validateToken(String token, User user) {
         try {
-            final String userEmail = getUserEmailFromToken(token);
+            final String userEmail = getSubject(token);
             return userEmail != null
                     && userEmail.equals(user.getEmail())
+                    && !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean validateToken(String token, String uuid) {
+        try {
+            final String userid = getSubject(token);
+            return userid != null
+                    && userid.equals(uuid)
                     && !isTokenExpired(token);
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -77,7 +101,7 @@ public class JwtServiceImpl implements JwtService {
      * @return user email from token
      */
     @Override
-    public String getUserEmailFromToken(String token) {
+    public String getSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 

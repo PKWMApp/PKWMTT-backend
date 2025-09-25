@@ -12,6 +12,8 @@ public class JwtUtils {
     // to start without a real secret, e.g., for local development or tests.
     private final String secret;
     private final long expirationMs = 1000L * 60 * 60 * 24 * 30 * 6;
+    private final long moderatorExpirationMs = 1000L * 60 * 60 * 2;
+
 
     public JwtUtils(Environment environment) {
         // Get the secret key from environment variables, or fallback to "TEST_SECRET"

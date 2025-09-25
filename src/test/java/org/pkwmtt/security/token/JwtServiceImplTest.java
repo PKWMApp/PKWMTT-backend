@@ -54,7 +54,7 @@ class JwtServiceImplTest {
                 .setRole(Role.ADMIN);
 
         String token = jwtService.generateToken(user);
-        String email = jwtService.getUserEmailFromToken(token);
+        String email = jwtService.getSubject(token);
         assertEquals("user@example.com", email);
     }
 
@@ -134,6 +134,6 @@ class JwtServiceImplTest {
     @Test
     void getUserEmailFromToken_shouldThrowExceptionForInvalidToken() {
         String invalidToken = "invalid.token.value";
-        assertThrows(JwtException.class, () -> jwtService.getUserEmailFromToken(invalidToken));
+        assertThrows(JwtException.class, () -> jwtService.getSubject(invalidToken));
     }
 }
