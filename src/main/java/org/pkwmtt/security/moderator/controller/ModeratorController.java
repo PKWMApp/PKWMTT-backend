@@ -2,9 +2,10 @@ package org.pkwmtt.security.moderator.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.User;
-import org.pkwmtt.security.moderator.dto.AuthDto;
+import org.pkwmtt.otp.OTPService;
+import org.pkwmtt.otp.dto.OTPRequest;
 import org.pkwmtt.security.moderator.ModeratorService;
-import org.pkwmtt.security.moderator.dto.UserDto;
+import org.pkwmtt.security.moderator.dto.AuthDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class ModeratorController {
 
     private final ModeratorService moderatorService;
+    private final OTPService otpService;
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate (@RequestBody AuthDto auth) {
@@ -23,14 +25,14 @@ public class ModeratorController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Void> addUser (@RequestBody UserDto userDto) {
-        moderatorService.addUser(userDto);
+    public ResponseEntity<Void> addUser (@RequestBody OTPRequest otpRequest) {
+        otpService.sendOtpCode(otpRequest);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/multiple-users")
-    public ResponseEntity<Void> addMultipleUser (@RequestBody List<UserDto> userDto) {
-        moderatorService.addUser(userDto);
+    public ResponseEntity<Void> addMultipleUser (@RequestBody List<OTPRequest> otpRequests) {
+        otpService.sendOTPCodesForManyGroups(otpRequests);
         return ResponseEntity.noContent().build();
     }
 

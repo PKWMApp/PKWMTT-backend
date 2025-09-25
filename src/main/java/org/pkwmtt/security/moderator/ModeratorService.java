@@ -2,25 +2,15 @@ package org.pkwmtt.security.moderator;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.entity.GeneralGroup;
 import org.pkwmtt.examCalendar.entity.User;
-import org.pkwmtt.examCalendar.enums.Role;
-import org.pkwmtt.examCalendar.repository.GeneralGroupRepository;
 import org.pkwmtt.examCalendar.repository.UserRepository;
-import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
-import org.pkwmtt.otp.OTPService;
-import org.pkwmtt.otp.dto.OTPRequest;
-import org.pkwmtt.security.moderator.dto.UserDto;
 import org.pkwmtt.security.token.JwtService;
-import org.pkwmtt.timetable.TimetableService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,9 +22,6 @@ public class ModeratorService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
-    private final TimetableService timetableService;
-    private final GeneralGroupRepository generalGroupRepository;
-    private final OTPService otpService;
 
     public String generateTokenForModerator(String password) {
         return moderatorRepository.findAll()
@@ -47,41 +34,5 @@ public class ModeratorService {
 
     public List<User> getUsers() {
         return userRepository.findAll();
-    }
-
-    public void addUser(List<UserDto> userDtos) {
-        userDtos.forEach(this::addUser);
-    }
-
-    public void addUser(UserDto userDto) {
-        User user = User.builder()
-                .email(userDto.getEmail())
-                .generalGroup(checkGeneralGroup(userDto.getGeneralGroup()))
-                .isActive(false)
-                .role(Role.REPRESENTATIVE)
-                .build();
-        userRepository.save(user);
-
-        otpService.sendOtpCode(new OTPRequest(userDto.getEmail(), userDto.getGeneralGroup()));
-    }
-
-    private GeneralGroup checkGeneralGroup(String name) {
-        Set<String> generalGroups = timetableService.getGeneralGroupList().stream().map(item -> {
-            var lastIndex = item.length() - 1;
-            if (Character.isDigit(item.charAt(lastIndex))) {
-                return item.substring(0, lastIndex);
-            }
-            return item;
-        }).collect(Collectors.toSet());
-
-        if (!generalGroups.contains(name))
-            throw new SpecifiedGeneralGroupDoesntExistsException(name);
-
-        return generalGroupRepository.findByName(name)
-                .orElseGet(() -> generalGroupRepository.save(
-                        GeneralGroup.builder()
-                                .name(name)
-                                .build()
-                ));
     }
 }
