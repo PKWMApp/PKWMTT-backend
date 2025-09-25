@@ -13,7 +13,7 @@ import java.util.UUID;
 public class Moderator {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID moderatorId;
     private String password;
     private String role;
 

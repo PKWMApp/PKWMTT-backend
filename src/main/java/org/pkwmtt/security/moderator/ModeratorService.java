@@ -7,6 +7,8 @@ import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.examCalendar.repository.GeneralGroupRepository;
 import org.pkwmtt.examCalendar.repository.UserRepository;
+import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
+import org.pkwmtt.security.moderator.dto.UserDto;
 import org.pkwmtt.security.token.JwtService;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.http.HttpStatus;
@@ -34,14 +36,18 @@ public class ModeratorService {
     public String generateTokenForModerator(String password) {
         return moderatorRepository.findAll()
                 .stream()
-                .filter(m -> passwordEncoder.matches(m.getPassword(), password))
+                .filter(m -> passwordEncoder.matches(password, m.getPassword()))
                 .findFirst()
-                .map(m -> jwtService.generateToken(m.getId()))
+                .map(m -> jwtService.generateToken(m.getModeratorId()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
     }
 
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    public void addUser(List<UserDto> userDtos) {
+        userDtos.forEach(this::addUser);
     }
 
     public void addUser(UserDto userDto) {
@@ -64,7 +70,7 @@ public class ModeratorService {
         }).collect(Collectors.toSet());
 
         if (!generalGroups.contains(name))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No group exists");        //TODO: change exception type
+            throw new SpecifiedGeneralGroupDoesntExistsException(name);
 
         return generalGroupRepository.findByName(name)
                 .orElseGet(() -> generalGroupRepository.save(

@@ -1,4 +1,4 @@
-package org.pkwmtt.security.moderator;
+package org.pkwmtt.security.moderator.dto;
 
 import lombok.Getter;
 
