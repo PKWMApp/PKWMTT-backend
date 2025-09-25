@@ -27,6 +27,6 @@ public class WebConfig implements WebMvcConfigurer {
           .addInterceptor(interceptor)
           .addPathPatterns(apiPrefix + "/**")
           .excludePathPatterns(apiPrefix + "/apk/download"));
-        registry.addInterceptor(adminRequestInterceptor).addPathPatterns("/admin");
+        registry.addInterceptor(adminRequestInterceptor).addPathPatterns("/admin/**");
     }
 }
