@@ -8,6 +8,8 @@ import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.examCalendar.repository.GeneralGroupRepository;
 import org.pkwmtt.examCalendar.repository.UserRepository;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
+import org.pkwmtt.otp.OTPService;
+import org.pkwmtt.otp.dto.OTPRequest;
 import org.pkwmtt.security.moderator.dto.UserDto;
 import org.pkwmtt.security.token.JwtService;
 import org.pkwmtt.timetable.TimetableService;
@@ -32,6 +34,7 @@ public class ModeratorService {
     private final UserRepository userRepository;
     private final TimetableService timetableService;
     private final GeneralGroupRepository generalGroupRepository;
+    private final OTPService otpService;
 
     public String generateTokenForModerator(String password) {
         return moderatorRepository.findAll()
@@ -58,6 +61,8 @@ public class ModeratorService {
                 .role(Role.REPRESENTATIVE)
                 .build();
         userRepository.save(user);
+
+        otpService.sendOtpCode(new OTPRequest(userDto.getEmail(), userDto.getGeneralGroup()));
     }
 
     private GeneralGroup checkGeneralGroup(String name) {
