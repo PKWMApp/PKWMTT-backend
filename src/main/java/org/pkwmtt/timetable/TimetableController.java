@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
+import org.pkwmtt.timetable.dto.CustomSubjectFilterDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -29,13 +31,26 @@ public class TimetableController {
      * @throws WebPageContentNotAvailableException .
      */
     @GetMapping("/{generalGroupName}")
-    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule (@PathVariable String generalGroupName, @RequestParam(required = false, name = "sub") List<String> subgroups)
+    public ResponseEntity<TimetableDTO> getGeneralGroupSchedule (@PathVariable String generalGroupName,
+                                                                 @RequestParam(required = false, name = "sub") List<String> subgroups,
+                                                                 @RequestBody(required = false) List<CustomSubjectFilterDTO> customSubjects)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException, SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
+        var areSubgroupsProvided = !(isNull(subgroups) || subgroups.isEmpty());
+        var areCustomSubjectsProvided = !(isNull(customSubjects) || customSubjects.isEmpty());
         
-        if (isNull(subgroups) || subgroups.isEmpty()) {
-            return ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
+        if (areSubgroupsProvided) {
+            if (!areCustomSubjectsProvided) {
+                customSubjects = new ArrayList<>();
+            }
+            
+            return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
+              generalGroupName,
+              subgroups,
+              customSubjects
+            ));
+            
         }
-        return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(generalGroupName, subgroups));
+        return ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
     }
     
     /**
