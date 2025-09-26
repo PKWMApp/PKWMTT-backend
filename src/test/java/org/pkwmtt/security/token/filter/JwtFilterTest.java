@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,10 +48,10 @@ class JwtFilterTest {
         when(mockUser.getRole()).thenReturn(Role.valueOf("ADMIN"));
         when(mockUser.getEmail()).thenReturn("user@example.com");
 
-        when(jwtService.getUserEmailFromToken("validToken")).thenReturn("user@example.com");
+        when(jwtService.getSubject("validToken")).thenReturn("user@example.com");
         when(jwtService.validateToken(eq("validToken"), any(User.class))).thenReturn(true);
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
-
+        when(jwtService.extractClaim(any(String.class), any(Function.class))).thenReturn("ADMIN");
         jwtFilter.doFilterInternal(request, response, filterChain);
 
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());

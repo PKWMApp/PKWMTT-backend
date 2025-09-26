@@ -37,7 +37,7 @@ public class SwaggerEndpointConfiguration {
         String apiPrefix = environment.getProperty("apiPrefix", "");
         
         return GroupedOpenApi.builder().group("all") // single group
-                             .pathsToMatch(apiPrefix + "/**", "/admin/**").addOpenApiCustomizer(openApi -> {
+                             .pathsToMatch("/**").addOpenApiCustomizer(openApi -> {
               Paths paths = openApi.getPaths();
               
               paths.forEach((path, pathItem) -> pathItem.readOperationsMap().forEach(((httpMethod, operation) -> {
@@ -62,10 +62,6 @@ public class SwaggerEndpointConfiguration {
                         true
                       );
                   }
-//                  if (path.contains("exams") && (httpMethod.equals(PathItem.HttpMethod.POST) || httpMethod.equals(
-//                    PathItem.HttpMethod.PUT) || httpMethod.equals(PathItem.HttpMethod.DELETE))) {
-//                      operation.addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
-//                  }
               })));
           }).build();
     }
