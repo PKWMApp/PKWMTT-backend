@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.timetable.enums.TypeOfWeek;
+import org.pkwmtt.timetable.objects.CustomSubjectDetails;
 import org.springframework.data.util.Pair;
 
 import java.util.ArrayList;
@@ -28,15 +29,18 @@ public class DayOfWeekDTO {
         even = new ArrayList<>();
     }
     
-    
-    public void add (SubjectDTO subjectDTO, boolean isNotOdd) {
-        if (isNotOdd) {
-            even.add(subjectDTO);
-        } else {
-            odd.add(subjectDTO);
+    /**
+     * Add subject by week Type
+     *
+     * @param subjectDTO - subject
+     * @param typeOfWeek - type of week
+     */
+    public void add (SubjectDTO subjectDTO, TypeOfWeek typeOfWeek) {
+        switch (typeOfWeek) {
+            case EVEN -> this.even.add(subjectDTO);
+            case ODD -> this.odd.add(subjectDTO);
         }
     }
-    
     
     public void deleteSubjectTypesFromNames () {
         even.forEach(SubjectDTO::deleteTypeAndUnnecessaryCharactersFromName);
@@ -61,7 +65,7 @@ public class DayOfWeekDTO {
         
     }
     
-    public void filterByGroup (String group, List<CustomSubject> customSubjects) { //K04 | Mech K05 13K3
+    public void filterByGroup (String group, List<CustomSubjectDetails> customSubjects) {
         var groupCharAndTargetNumber = getGroupCharAndTargetNumber(group);
         
         // Apply the filter to both odd- and even-week lists
@@ -108,14 +112,19 @@ public class DayOfWeekDTO {
         return list.stream().filter(item -> hasOnlyTargetGroup(item.getName(), groupName, targetNumber)).toList();
     }
     
-    /*
-        Student: Jacek, 13K1 K04
-        Mechatroniki 13K3 K05
+    /**
+     * Filter by subgroup char and number
+     *
+     * @param list           list of subjects for specific day
+     * @param groupName      - name of subgroup
+     * @param targetNumber   - number fo subgroup
+     * @param customSubjects - custom subjects added by user
+     * @return modified list of subjects
      */
-    private List<SubjectDTO> filter (List<SubjectDTO> list, //Lista przedmiotów dla pon odd
-                                     String groupName,// K
-                                     String targetNumber, // 4
-                                     List<CustomSubject> customSubjects) { // Mech K 5 13K3
+    private List<SubjectDTO> filter (List<SubjectDTO> list,
+                                     String groupName,
+                                     String targetNumber,
+                                     List<CustomSubjectDetails> customSubjects) {
         
         
         list = list
@@ -124,32 +133,13 @@ public class DayOfWeekDTO {
           .collect(Collectors.toList());
         
         for (var customSubject : customSubjects) {
-            list.add(customSubject.getSubject());
+            list.add(customSubject.getSubject().setCustom(true));
         }
         
         list.sort(Comparator.comparingInt(SubjectDTO::getRowId));
         
         return list;
     }
- /*
-            try {
-                CustomSubjectFilterDTO customSubjectMatchingName = customSubjects
-                  .stream()
-                  .filter(subject -> item.getName().contains(subject.getName()))
-                  .toList()
-                  .getFirst();
-                
-                String customGroupName = String.valueOf(customSubjectMatchingName.getSubGroup().charAt(0)); //K
-                String customTargetNumber = String.valueOf(customSubjectMatchingName.getSubGroup().charAt(2)); //5
-                
-                return hasOnlyTargetGroup(item.getName(), customGroupName, customTargetNumber);
-                
-            } catch (NoSuchElementException e) {
-                return hasOnlyTargetGroup(item.getName(), groupName, targetNumber);
-            }
-        }).toList();
-    
-  */
     
     /**
      * Checks if the given element string contains no other codes for the same group.*

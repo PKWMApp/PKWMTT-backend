@@ -12,7 +12,6 @@ import test.TestConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,8 +47,6 @@ class TimetableServiceTest extends TestConfig {
     public void shouldReturnAvailableSubGroups () throws JsonProcessingException {
         //given
         var generalGroupName = "12K1";
-        var regex = "^[A-Z]\\d{2}$";
-        var pattern = Pattern.compile(regex);
         var expectedResult = List.of("K01", "K04", "L01", "L02", "L04", "P01", "P04");
         
         //when
@@ -58,13 +55,6 @@ class TimetableServiceTest extends TestConfig {
         //then
         assertThat(result).isEqualTo(expectedResult);
         
-        //I don't know why it is in test. I think it is for debug?
-        //        result.forEach(item -> {
-        //            Matcher matcher = pattern.matcher(item);
-        //            if (!matcher.find()) {
-        //                fail("Wrong subgroup format");
-        //            }
-        //        });
     }
     
     
@@ -110,4 +100,6 @@ class TimetableServiceTest extends TestConfig {
           () -> assertEquals(expectedResult, result)
         );
     }
+    
+    
 }

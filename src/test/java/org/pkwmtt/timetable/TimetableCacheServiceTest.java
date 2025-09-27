@@ -40,7 +40,7 @@ class TimetableCacheServiceTest extends TestConfig {
     }
     
     @Test
-    @Disabled("hard coded values")
+    @Disabled("Values for hours are hard coded in endpoint for now")
     public void shouldHourListBePresentInCache () {
         //given
         var key = "hourList";

@@ -32,8 +32,24 @@ public class TimetableController {
      */
     @GetMapping("/{generalGroupName}")
     public ResponseEntity<TimetableDTO> getGeneralGroupSchedule (@PathVariable String generalGroupName,
-                                                                 @RequestParam(required = false, name = "sub") List<String> subgroups,
-                                                                 @RequestBody(required = false) List<CustomSubjectFilterDTO> customSubjects)
+                                                                 @RequestParam(required = false, name = "sub") List<String> subgroups)
+      throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException, SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
+        var areSubgroupsProvided = !(isNull(subgroups) || subgroups.isEmpty());
+        
+        return
+          areSubgroupsProvided ?
+            ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
+              generalGroupName,
+              subgroups,
+              new ArrayList<>()
+            ))
+            : ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
+    }
+    
+    @PostMapping(value = "/{generalGroupName}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<TimetableDTO> getGeneralGroupScheduleWithCustomSubjects (@PathVariable String generalGroupName,
+                                                                                   @RequestParam(required = false, name = "sub") List<String> subgroups,
+                                                                                   @RequestBody(required = false) List<CustomSubjectFilterDTO> customSubjects)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException, SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
         var areSubgroupsProvided = !(isNull(subgroups) || subgroups.isEmpty());
         var areCustomSubjectsProvided = !(isNull(customSubjects) || customSubjects.isEmpty());

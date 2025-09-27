@@ -13,7 +13,7 @@ public class SubjectDTO {
     private String classroom;
     private int rowId;
     private SubjectType type;
-    
+    private Boolean custom = false;
     
     public void deleteTypeAndUnnecessaryCharactersFromName () {
         if (name.contains(" ")) {
