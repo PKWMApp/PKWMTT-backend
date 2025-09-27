@@ -4,15 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.pkwmtt.ValuesForTest;
+import org.pkwmtt.examCalendar.enums.SubjectType;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
+import org.pkwmtt.timetable.dto.CustomSubjectFilterDTO;
+import org.pkwmtt.timetable.dto.SubjectDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import test.TestConfig;
 
 import java.util.Arrays;
@@ -22,7 +23,6 @@ import java.util.regex.Pattern;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -33,27 +33,28 @@ class TimetableControllerTest extends TestConfig {
     
     @Autowired
     private TestRestTemplate restTemplate;
-
+    
     @BeforeEach
-    public void initWireMock() {
+    public void initWireMock () {
         EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/plany/o25.html"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "text/*")
-                        .withBody(ValuesForTest.timetableHTML)));
-
+                                            .willReturn(aResponse()
+                                                          .withStatus(200)
+                                                          .withHeader("Content-Type", "text/*")
+                                                          .withBody(ValuesForTest.timetableHTML)));
+        
         EXTERNAL_SERVICE_API_MOCK.stubFor(get(urlPathMatching("/lista.html"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "text/*")
-                        .withBody(ValuesForTest.listHTML)));
+                                            .willReturn(aResponse()
+                                                          .withStatus(200)
+                                                          .withHeader("Content-Type", "text/*")
+                                                          .withBody(ValuesForTest.listHTML)));
     }
     
     @Test
     public void testGetGeneralGroupScheduleFiltered_withOptionalParams () {
         //given
-        var url = String.format("http://localhost:%s/pkwmtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01",
-                                   port
+        var url = String.format(
+          "http://localhost:%s/pkwmtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01",
+          port
         );
         
         //when
@@ -61,18 +62,75 @@ class TimetableControllerTest extends TestConfig {
         
         //then
         assertAll(
-                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
-                () -> {
-                    var responseBody = response.getBody();
-                    assertNotNull(responseBody);
-                },
-                () -> {
-                    assertNotNull(response.getBody());
-                    var responseData = response.getBody().getData();
-                    assertEquals(5, responseData.size());
-                    assertEquals(12, responseData.getFirst().getOdd().size());
-                    assertEquals(6, responseData.getFirst().getEven().size());
-                }
+          () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+          () -> {
+              var responseBody = response.getBody();
+              assertNotNull(responseBody);
+          },
+          () -> {
+              assertNotNull(response.getBody());
+              var responseData = response.getBody().getData();
+              assertEquals(5, responseData.size());
+              assertEquals(12, responseData.getFirst().getOdd().size());
+              assertEquals(6, responseData.getFirst().getEven().size());
+          }
+        );
+    }
+    
+    @Test
+    public void testGetGeneralGroupScheduleFiltered_withOptionalParamsAndCustomSubjectsForSameGeneralGroup () {
+        //given
+        var url = String.format(
+          "http://localhost:%s/pkwmtt/api/v1/timetables/12K1?sub=K01&sub=L01&sub=P01",
+          port
+        );
+        List<CustomSubjectFilterDTO> payload = List.of(new CustomSubjectFilterDTO("PKM", "12K1", "K04"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        var expectedObject = new SubjectDTO()
+          .setName("PKM")
+          .setType(SubjectType.COMPUTER_LABORATORY)
+          .setClassroom("A227")
+          .setRowId(8)
+          .setCustom(true);
+        
+        //when
+        
+        HttpEntity<List<CustomSubjectFilterDTO>> request = new HttpEntity<>(payload, headers);
+        ResponseEntity<TimetableDTO> response = restTemplate.postForEntity(
+          url,
+          request,
+          TimetableDTO.class
+        );
+        //then
+        assertAll(
+          () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+          () -> {
+              var responseBody = response.getBody();
+              assertNotNull(responseBody);
+          },
+          () -> {
+              assertNotNull(response.getBody());
+              var responseData = response.getBody().getData();
+              var subject_Monday_Nr10_Odd_Row8 = responseData
+                .getFirst()
+                .getOdd()
+                .stream()
+                .filter(item -> item.getRowId() == 8).toList().getFirst();
+              var subject_Monday_Nr11_Odd_Row9 = responseData
+                .getFirst()
+                .getOdd()
+                .stream()
+                .filter(item -> item.getRowId() == 9).toList().getFirst();
+              assertEquals(subject_Monday_Nr10_Odd_Row8, expectedObject);
+              assertEquals(subject_Monday_Nr11_Odd_Row9, expectedObject.setRowId(9));
+              var subject_Thursday_Nr3_Odd_Row2List = responseData
+                .get(3)
+                .getOdd()
+                .stream()
+                .filter(item -> item.getRowId() == 2).toList();
+              assertEquals(0, subject_Thursday_Nr3_Odd_Row2List.size());
+          }
         );
     }
     
@@ -181,7 +239,11 @@ class TimetableControllerTest extends TestConfig {
         Pattern pattern = Pattern.compile(regex);
         Arrays.stream(response.getBody()).toList().forEach(item -> {
             Matcher matcher = pattern.matcher(item);
-            if(!matcher.find()) fail("Wrong hour format");
+            if (!matcher.find()) {
+                fail("Wrong hour format");
+            }
         });
     }
+    
+    
 }
