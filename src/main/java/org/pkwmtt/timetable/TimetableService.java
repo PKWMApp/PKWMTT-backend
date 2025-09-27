@@ -6,9 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
-import org.pkwmtt.timetable.dto.*;
+import org.pkwmtt.timetable.dto.CustomSubjectFilterDTO;
+import org.pkwmtt.timetable.dto.DayOfWeekDTO;
+import org.pkwmtt.timetable.dto.SubjectDTO;
+import org.pkwmtt.timetable.dto.TimetableDTO;
 import org.pkwmtt.timetable.enums.TypeOfWeek;
 import org.pkwmtt.timetable.objects.CustomSubjectDetails;
+import org.pkwmtt.timetable.parser.TimetableParserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -191,23 +195,34 @@ public class TimetableService {
         for (CustomSubjectDetails customSubjectDetail : customSubjectsDetails) {
             customSubjectDetail.getSubject().deleteTypeAndUnnecessaryCharactersFromName();
             
-            day.setEven(day
-                          .getEven()
-                          .stream()
-                          .filter(
-                            subject -> !subject
-                              .getName()
-                              .contains(customSubjectDetail.getSubject().getName()))
-                          .toList());
+            day.setEven(
+              day
+                .getEven()
+                .stream()
+                .filter(
+                  subject -> !(subject
+                    .getName()
+                    .contains(customSubjectDetail.getSubject().getName())
+                    && subjectsAreSameType(subject, customSubjectDetail))
+                ).toList());
             
             day.setOdd(day
                          .getOdd()
                          .stream()
                          .filter(
-                           subject -> !subject.getName().contains(customSubjectDetail.getSubject().getName()))
-                         .toList());
+                           subject -> !(subject.getName().contains(customSubjectDetail.getSubject().getName())
+                             && subjectsAreSameType(subject, customSubjectDetail))
+                         ).toList());
             
         }
+    }
+    
+    private boolean subjectsAreSameType (SubjectDTO subject, CustomSubjectDetails customSubjectDetails) {
+        var subjectType = TimetableParserService.extractSubjectTypeFromName(subject.getName());
+        var customSubjectType = TimetableParserService.extractSubjectTypeFromName(
+          customSubjectDetails.getSubGroup());
+        return subjectType.equals(customSubjectType);
+        
     }
     
     private void checkSubGroupAvailability (String generalGroupName, List<String> subgroup)

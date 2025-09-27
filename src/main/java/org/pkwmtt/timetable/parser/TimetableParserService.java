@@ -161,7 +161,7 @@ public class TimetableParserService {
      * @param name subject name
      * @return subject type or empty string if there isn't any specified
      */
-    private SubjectType extractSubjectTypeFromName (String name) {
+    public static SubjectType extractSubjectTypeFromName (String name) {
         name = name.trim();
         if (name.endsWith("W")) {
             return SubjectType.LECTURE;
