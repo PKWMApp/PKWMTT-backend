@@ -6,12 +6,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WebPageContentNotAvailableException;
+import org.pkwmtt.timetable.dto.CustomSubjectFilterDTO;
 import org.pkwmtt.timetable.dto.DayOfWeekDTO;
 import org.pkwmtt.timetable.dto.SubjectDTO;
 import org.pkwmtt.timetable.dto.TimetableDTO;
+import org.pkwmtt.timetable.enums.TypeOfWeek;
+import org.pkwmtt.timetable.objects.CustomSubjectDetails;
+import org.pkwmtt.timetable.parser.TimetableParserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,28 +76,94 @@ public class TimetableService {
      * Retrieves timetable and filters entries based on subgroups parameters
      *
      * @param generalGroupName name of the general group
-     * @param sub              subgroups list
+     * @param subgroup         subgroups list
      * @return filtered timetable
      * @throws WebPageContentNotAvailableException if source data can't be retrieved
      */
-    public TimetableDTO getFilteredGeneralGroupSchedule (String generalGroupName, List<String> sub)
+    public TimetableDTO getFilteredGeneralGroupSchedule (String generalGroupName,
+                                                         List<String> subgroup,
+                                                         List<CustomSubjectFilterDTO> customSubjectFilters)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException, JsonProcessingException {
-        
+        //Uppercase name to assure match
         generalGroupName = generalGroupName.toUpperCase();
         
-        //Check if specified subgroup is available for this generalGroup
-        var subgroups = getAvailableSubGroups(generalGroupName);
-        for (var group : sub) {
-            if (!subgroups.contains(group)) {
-                throw new SpecifiedSubGroupDoesntExistsException(group);
-            }
-        }
+        //Check if specified subgroup is available for general group or else throw
+        checkSubGroupAvailability(generalGroupName, subgroup);
         
+        //Get user's schedule
         List<DayOfWeekDTO> schedule = cachedService.getGeneralGroupSchedule(generalGroupName).getData();
         
+        //Get schedule to extract customSubject details
+        List<CustomSubjectDetails> customSubjects =
+          createListOfCustomSchedulesDetails(generalGroupName, customSubjectFilters, schedule);
         
-        for (var day : schedule) {
-            sub.forEach(day::filterByGroup);
+        return filterSchedule(schedule, subgroup, generalGroupName, customSubjects);
+    }
+    
+    private List<CustomSubjectDetails> createListOfCustomSchedulesDetails (String generalGroupName,
+                                                                           List<CustomSubjectFilterDTO> customSubjectFilters,
+                                                                           List<DayOfWeekDTO> schedule) {
+        List<CustomSubjectDetails> customSubjectsDetails = new ArrayList<>();
+        customSubjectFilters.forEach(customFilter -> {
+            
+            //Get schedule for specified filter
+            List<DayOfWeekDTO> customSubjectSchedule = customFilter
+              .getGeneralGroup()
+              .equals(generalGroupName) ? schedule : cachedService
+              .getGeneralGroupSchedule(customFilter.getGeneralGroup())
+              .getData();
+            
+            //Add detail like classroom and rowId
+            //Go by days: Monday, Tuesday etc...
+            for (int i = 0; i < customSubjectSchedule.size(); i++) {
+                //Find subjects matching filters
+                customSubjectsDetails.addAll(
+                  searchDayOfWeekAndAddCustomSubjectsDetails(
+                    customSubjectSchedule.get(i).getEven(), customFilter, i,
+                    TypeOfWeek.EVEN
+                  ));
+                
+                customSubjectsDetails.addAll(
+                  searchDayOfWeekAndAddCustomSubjectsDetails(
+                    customSubjectSchedule.get(i).getOdd(), customFilter, i,
+                    TypeOfWeek.ODD
+                  ));
+            }
+        });
+        return customSubjectsDetails;
+    }
+    
+    private List<CustomSubjectDetails> searchDayOfWeekAndAddCustomSubjectsDetails (List<SubjectDTO> day,
+                                                                                   CustomSubjectFilterDTO customFilter,
+                                                                                   int dayIndex,
+                                                                                   TypeOfWeek typeOfWeek) {
+        var matches = day.stream()
+          //Filter by matching name and subgroup from customFilter
+          .filter(item -> (item.getName().contains(customFilter.getName()) && item
+            .getName()
+            .contains(customFilter.getSubGroup()))).toList();
+        
+        if (!matches.isEmpty()) {
+            return matches
+              .stream()
+              .map((item) -> new CustomSubjectDetails(item, customFilter.getSubGroup(), dayIndex, typeOfWeek))
+              .toList();
+        }
+        return new ArrayList<>();
+    }
+    
+    private TimetableDTO filterSchedule (List<DayOfWeekDTO> schedule,
+                                         List<String> subgroups,
+                                         String generalGroupName,
+                                         List<CustomSubjectDetails> customSubjectsDetails) {
+        //Go through user's schedule day by day
+        for (int i = 0; i < schedule.size(); i++) {
+            var day = schedule.get(i);
+            
+            //delete subjects colliding with custom subjects by name
+            deleteSubjectsCollidingWithCustomFilters(customSubjectsDetails, day);
+            //Filter by user's subgroups
+            filterDayByUsersSubgroups(subgroups, customSubjectsDetails, day, i);
         }
         
         schedule.forEach(DayOfWeekDTO::deleteSubjectTypesFromNames);
@@ -100,9 +171,71 @@ public class TimetableService {
         return new TimetableDTO(generalGroupName, schedule);
     }
     
-    /**
-     * @return List of general group's names
-     */
+    private void filterDayByUsersSubgroups (List<String> subgroups,
+                                            List<CustomSubjectDetails> customSubjectsDetails,
+                                            DayOfWeekDTO day, int dayIndex) {
+        subgroups.forEach(subgroup -> {
+            if (customSubjectsDetails.isEmpty()) {
+                day.filterByGroup(subgroup);
+                return;
+            }
+            
+            var customSubjectsByDay = customSubjectsDetails.stream()
+              //Compare day of week and subgroup
+              .filter(subject -> subject.getSubGroup().charAt(0) == subgroup.charAt(0)) // match subgroup
+              .filter(subject -> subject.getDayOfWeekNumber() == dayIndex) // match day of week
+              .toList();
+            
+            day.filterByGroup(subgroup, customSubjectsByDay);
+        });
+    }
+    
+    private void deleteSubjectsCollidingWithCustomFilters (List<CustomSubjectDetails> customSubjectsDetails,
+                                                           DayOfWeekDTO day) {
+        for (CustomSubjectDetails customSubjectDetail : customSubjectsDetails) {
+            customSubjectDetail.getSubject().deleteTypeAndUnnecessaryCharactersFromName();
+            
+            day.setEven(
+              day
+                .getEven()
+                .stream()
+                .filter(
+                  subject -> !(subject
+                    .getName()
+                    .contains(customSubjectDetail.getSubject().getName())
+                    && subjectsAreSameType(subject, customSubjectDetail))
+                ).toList());
+            
+            day.setOdd(day
+                         .getOdd()
+                         .stream()
+                         .filter(
+                           subject -> !(subject.getName().contains(customSubjectDetail.getSubject().getName())
+                             && subjectsAreSameType(subject, customSubjectDetail))
+                         ).toList());
+            
+        }
+    }
+    
+    private boolean subjectsAreSameType (SubjectDTO subject, CustomSubjectDetails customSubjectDetails) {
+        var subjectType = TimetableParserService.extractSubjectTypeFromName(subject.getName());
+        var customSubjectType = TimetableParserService.extractSubjectTypeFromName(
+          customSubjectDetails.getSubGroup());
+        return subjectType.equals(customSubjectType);
+        
+    }
+    
+    private void checkSubGroupAvailability (String generalGroupName, List<String> subgroup)
+      throws JsonProcessingException {
+        //Check if specified subgroup is available for this generalGroup
+        var subgroups = getAvailableSubGroups(generalGroupName);
+        for (var group : subgroup) {
+            if (!subgroups.contains(group)) {
+                throw new SpecifiedSubGroupDoesntExistsException(group);
+            }
+        }
+    }
+    
     public List<String> getGeneralGroupList () throws WebPageContentNotAvailableException {
         return cachedService.getGeneralGroupsMap().keySet().stream().sorted().collect(Collectors.toList());
     }
