@@ -50,7 +50,7 @@ class OTPServiceTest {
     @Test
     void shouldSendCorrectMailWithRepresentativePayload () {
         //given
-        List<OTPRequest> requests = List.of(new OTPRequest("test@localhost", "12K"));
+        List<OTPRequest> requests = List.of(new OTPRequest("test2@localhost", "12K"));
         Pattern pattern = Pattern.compile("[A-Z0-9]{6}");
         //when
         otpService.sendOTPCodesForManyGroups(requests);
@@ -61,7 +61,7 @@ class OTPServiceTest {
             
             MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
             assertEquals("Kod Starosty 12K", receivedMessage.getSubject());
-            assertEquals("test@localhost", receivedMessage.getAllRecipients()[0].toString());
+            assertEquals("test2@localhost", receivedMessage.getAllRecipients()[0].toString());
             
             Matcher matcher = pattern.matcher(Objects.requireNonNull(extractBody(receivedMessage)));
             assertTrue(matcher.find());
