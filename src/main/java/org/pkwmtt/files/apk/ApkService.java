@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,10 +25,14 @@ public class ApkService {
     @Value("${app.upload.dir:uploads}")
     private String FILES_DIR;
     
+    @Value("${apk.download.count.path:counter}")
+    private String COUNTER_PATH;
+    
     private final FileService fileService;
     
     public UrlResource getApkResource () throws IOException, IllegalArgumentException {
         Path filePath = findNewestApkByExtensionInUploads().orElseThrow(FileNotFoundException::new);
+        incrementNumerousDownloads();
         return fileService.getResourceByFileName(filePath.getFileName().toString());
     }
     
@@ -61,6 +67,34 @@ public class ApkService {
                       throw new RuntimeException("Couldn't locate last modified file");
                   }
               }));
+        }
+    }
+    
+    public void incrementNumerousDownloads () {
+        int counter = 0;
+        String counterFilePath = this.COUNTER_PATH + "/counter.txt";
+        
+        // Load existing value
+        try {
+            Path path = Paths.get(counterFilePath);
+            if (Files.exists(path)) {
+                String content = Files.readString(path).trim();
+                if (!content.isEmpty()) {
+                    counter = Integer.parseInt(content);
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Failed to load counter, starting from 0.");
+        }
+        
+        // Increment
+        counter++;
+        
+        // Save new value
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(counterFilePath))) {
+            writer.write(String.valueOf(counter));
+        } catch (IOException e) {
+            System.err.println("Failed to save counter: " + e.getMessage());
         }
     }
 }

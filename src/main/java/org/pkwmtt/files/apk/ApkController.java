@@ -38,6 +38,8 @@ public class ApkController {
         if (allowedOrigins.contains(origin)) {
             headers.set("Access-Control-Allow-Origin", origin);
         }
+        
+        
         return ResponseEntity.ok().headers(headers).body(apkService.getApkResource());
     }
     
