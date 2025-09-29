@@ -19,6 +19,11 @@ public class OTPExceptionHandler {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
     
+    @ExceptionHandler(UserAlreadyAssignedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleConflict (Exception e) {
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.CONFLICT);
+    }
+    
     @ExceptionHandler({MailCouldNotBeSendException.class})
     public ResponseEntity<ErrorResponseDTO> handleServerErrors (Exception e) {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
