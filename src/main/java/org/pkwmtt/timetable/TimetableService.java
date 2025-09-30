@@ -16,10 +16,7 @@ import org.pkwmtt.timetable.parser.TimetableParserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -71,6 +68,42 @@ public class TimetableService {
         return matchedGroups.stream().sorted().toList();
     }
     
+    public List<String> getAvailableSubGroupsForSubject (String generalGroupName, String subjectName) {
+        
+        generalGroupName = generalGroupName.toUpperCase();
+        List<String> result = new ArrayList<>();
+        
+        TimetableDTO timetable = cachedService.getGeneralGroupSchedule(generalGroupName);
+        String regex = "(?<!\\S)(?:G?[KPL]0\\d|[WĆS])(?!\\S)";
+        Pattern pattern = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
+        
+        timetable.getData().forEach(day -> {
+            day
+              .getEven()
+              .forEach(subjectDTO -> addMatchingSubjectGroups(subjectDTO, subjectName, pattern, result));
+            day
+              .getOdd()
+              .forEach(subjectDTO -> addMatchingSubjectGroups(subjectDTO, subjectName, pattern, result));
+        });
+        return new HashSet<>(result.stream().toList()).stream().toList();
+        
+    }
+    
+    private void addMatchingSubjectGroups (SubjectDTO subjectDTO,
+                                           String subjectName,
+                                           Pattern pattern,
+                                           List<String> result) {
+        if (subjectDTO.getName().contains(subjectName)) {
+            Matcher matcher = pattern.matcher(subjectDTO.getName());
+            while (matcher.find()) {
+                String text = matcher.group();
+                if (text.startsWith("G")) {
+                    text = text.substring(1);
+                }
+                result.add(text);
+            }
+        }
+    }
     
     /**
      * Retrieves timetable and filters entries based on subgroups parameters
@@ -92,12 +125,11 @@ public class TimetableService {
         
         //Get user's schedule
         List<DayOfWeekDTO> schedule = cachedService.getGeneralGroupSchedule(generalGroupName).getData();
-        
-        //Get schedule to extract customSubject details
-        List<CustomSubjectDetails> customSubjects =
+        //Go through schedule and extract customSubject details
+        List<CustomSubjectDetails> customSubjectsDetails =
           createListOfCustomSchedulesDetails(generalGroupName, customSubjectFilters, schedule);
         
-        return filterSchedule(schedule, subgroup, generalGroupName, customSubjects);
+        return filterSchedule(schedule, subgroup, generalGroupName, customSubjectsDetails);
     }
     
     private List<CustomSubjectDetails> createListOfCustomSchedulesDetails (String generalGroupName,
@@ -137,11 +169,35 @@ public class TimetableService {
                                                                                    CustomSubjectFilterDTO customFilter,
                                                                                    int dayIndex,
                                                                                    TypeOfWeek typeOfWeek) {
-        var matches = day.stream()
-          //Filter by matching name and subgroup from customFilter
-          .filter(item -> (item.getName().contains(customFilter.getName()) && item
-            .getName()
-            .contains(customFilter.getSubGroup()))).toList();
+        List<SubjectDTO> matches = switch (TimetableParserService.extractSubjectTypeFromName(
+          customFilter.getSubGroup())) {
+            //Filter by matching name and subgroup from customFilter
+            //If exercises,lecture or seminar just compare type of subject
+            case EXERCISES, LECTURE, SEMINAR -> day
+              .stream()
+              .filter(item -> (item
+                .getName()
+                .contains(customFilter.getName()) &&
+                TimetableParserService
+                  .extractSubjectTypeFromName(item.getName())
+                  .equals(
+                    TimetableParserService
+                      .extractSubjectTypeFromName(customFilter.getSubGroup()))
+              ))
+              .toList();
+            
+            //Filter by matching name and subgroup from customFilter
+            //if LKP groups compare group type and number
+            default -> day
+              .stream()
+              .filter(item ->
+                        (item
+                          .getName()
+                          .contains(customFilter.getName()) &&
+                          item
+                            .getName()
+                            .contains(customFilter.getSubGroup()))).toList();
+        };
         
         if (!matches.isEmpty()) {
             return matches
@@ -156,14 +212,15 @@ public class TimetableService {
                                          List<String> subgroups,
                                          String generalGroupName,
                                          List<CustomSubjectDetails> customSubjectsDetails) {
+        
         //Go through user's schedule day by day
         for (int i = 0; i < schedule.size(); i++) {
             var day = schedule.get(i);
-            
-            //delete subjects colliding with custom subjects by name
             deleteSubjectsCollidingWithCustomFilters(customSubjectsDetails, day);
+            
             //Filter by user's subgroups
-            filterDayByUsersSubgroups(subgroups, customSubjectsDetails, day, i);
+            filterDayBySubgroupsWithSeminarsExercisesAndLectures(
+              subgroups, customSubjectsDetails, day, i);
         }
         
         schedule.forEach(DayOfWeekDTO::deleteSubjectTypesFromNames);
@@ -186,9 +243,34 @@ public class TimetableService {
               .filter(subject -> subject.getDayOfWeekNumber() == dayIndex) // match day of week
               .toList();
             
+            
             day.filterByGroup(subgroup, customSubjectsByDay);
         });
     }
+    
+    private void filterDayBySubgroupsWithSeminarsExercisesAndLectures (List<String> subgroups,
+                                                                       List<CustomSubjectDetails> customSubjectsDetails,
+                                                                       DayOfWeekDTO day, int dayIndex) {
+        
+        Set<String> SCWgroups = new HashSet<>(
+          customSubjectsDetails.stream().map(CustomSubjectDetails::getSubGroup)
+            .map(item ->
+                   switch (TimetableParserService.extractSubjectTypeFromName(item)) {
+                       case SEMINAR -> "S";
+                       case EXERCISES -> "Ć";
+                       case LECTURE -> "W";
+                       default -> null;
+                   }
+            )
+            .filter(Objects::nonNull)
+            .toList());
+        
+        List<String> effectiveSubgroups = new ArrayList<>(subgroups);
+        effectiveSubgroups.addAll(SCWgroups);
+        
+        filterDayByUsersSubgroups(effectiveSubgroups, customSubjectsDetails, day, dayIndex);
+    }
+    
     
     private void deleteSubjectsCollidingWithCustomFilters (List<CustomSubjectDetails> customSubjectsDetails,
                                                            DayOfWeekDTO day) {
