@@ -65,9 +65,9 @@ public class DayOfWeekDTO {
         
     }
     
-    public void filterByGroup (String group, List<CustomSubjectDetails> customSubjects) {
-        var groupCharAndTargetNumber = getGroupCharAndTargetNumber(group);
-        
+    public void filterByGroup (String subGroup, List<CustomSubjectDetails> customSubjects) {
+        var groupCharAndTargetNumber = getGroupCharAndTargetNumber(subGroup);
+
         // Apply the filter to both odd- and even-week lists
         odd = filter(
           odd, groupCharAndTargetNumber.getFirst(), groupCharAndTargetNumber.getSecond(), customSubjects

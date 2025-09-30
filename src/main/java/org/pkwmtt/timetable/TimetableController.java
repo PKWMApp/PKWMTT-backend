@@ -103,6 +103,13 @@ public class TimetableController {
         return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName));
     }
     
+    @GetMapping("/groups/{generalGroupName}/{subjectName}")
+    public ResponseEntity<List<String>> getListOfAvailableGroupsForSubjectName (@PathVariable String generalGroupName,
+                                                                                @PathVariable String subjectName)
+      throws SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException {
+        return ResponseEntity.ok(service.getAvailableSubGroupsForSubject(generalGroupName, subjectName));
+    }
+    
     @GetMapping("/{generalGroupName}/list")
     public ResponseEntity<List<String>> getListOfSubjects (@PathVariable String generalGroupName) {
         return ResponseEntity.ok(service.getListOfSubjects(generalGroupName));
