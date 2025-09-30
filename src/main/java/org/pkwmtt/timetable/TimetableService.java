@@ -68,6 +68,42 @@ public class TimetableService {
         return matchedGroups.stream().sorted().toList();
     }
     
+    public List<String> getAvailableSubGroupsForSubject (String generalGroupName, String subjectName) {
+        
+        generalGroupName = generalGroupName.toUpperCase();
+        List<String> result = new ArrayList<>();
+        
+        TimetableDTO timetable = cachedService.getGeneralGroupSchedule(generalGroupName);
+        String regex = "(?<!\\S)(?:G?[KPL]0\\d|[WĆS])(?!\\S)";
+        Pattern pattern = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
+        
+        timetable.getData().forEach(day -> {
+            day
+              .getEven()
+              .forEach(subjectDTO -> addMatchingSubjectGroups(subjectDTO, subjectName, pattern, result));
+            day
+              .getOdd()
+              .forEach(subjectDTO -> addMatchingSubjectGroups(subjectDTO, subjectName, pattern, result));
+        });
+        return new HashSet<>(result.stream().toList()).stream().toList();
+        
+    }
+    
+    private void addMatchingSubjectGroups (SubjectDTO subjectDTO,
+                                           String subjectName,
+                                           Pattern pattern,
+                                           List<String> result) {
+        if (subjectDTO.getName().contains(subjectName)) {
+            Matcher matcher = pattern.matcher(subjectDTO.getName());
+            while (matcher.find()) {
+                String text = matcher.group();
+                if (text.startsWith("G")) {
+                    text = text.substring(1);
+                }
+                result.add(text);
+            }
+        }
+    }
     
     /**
      * Retrieves timetable and filters entries based on subgroups parameters
