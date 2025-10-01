@@ -98,7 +98,7 @@ public class ExamService {
      */
     public Set<Exam> getExamByGroups(Set<String> generalGroups, Set<String> subgroups) {
 
-        String superiorGroup = trimLastDigit(generalGroups);
+        String superiorGroup = extractSuperiorGroup(generalGroups);
         verifyGeneralGroupsFormat(generalGroups);
 
         if(subgroups == null || subgroups.isEmpty())
@@ -135,11 +135,10 @@ public class ExamService {
         if (subgroups == null || subgroups.isEmpty())
             return saveNewStudentGroups(generalGroups);
 
-        if (generalGroups.size() > 1)
-            throw new InvalidGroupIdentifierException("ambiguous general groups for subgroups");
+        String superiorGroup = extractSuperiorGroup(generalGroups);
 
-        String superiorGroup = generalGroups.iterator().next();
-        verifySubgroups(superiorGroup, subgroups);
+
+        verifySubgroups(generalGroups, subgroups);
 
         subgroups.add(trimLastDigit(superiorGroup));
         return saveNewStudentGroups(subgroups);
@@ -173,30 +172,29 @@ public class ExamService {
             throw new ServiceNotAvailableException("Timetable service unavailable, couldn't verify groups using repository");
     }
 
-    /**
-     * verifies provided subgroups using timetable service or repository when service is unavailable
-     * @param superiorGroup of provided subgroups
-     * @param subgroups that would be verified
-     */
-    private void verifySubgroups(String superiorGroup, Set<String> subgroups){
+
+    private void verifySubgroups(Set<String> generalGroups, Set<String> subgroups){
         try {
-            Set<String> subGroupsFromTimetable = new HashSet<>(timetableService.getAvailableSubGroups(superiorGroup));
+            Set<String> subGroupsFromTimetable = new HashSet<>();
+            for(String generalGroup : generalGroups){
+                subGroupsFromTimetable.addAll(timetableService.getAvailableSubGroups(generalGroup));
+            }
             if (!subGroupsFromTimetable.containsAll(subgroups))
                 throw new InvalidGroupIdentifierException(subGroupsFromTimetable, subgroups);
         } catch (JsonProcessingException |
                  SpecifiedGeneralGroupDoesntExistsException |
                  WebPageContentNotAvailableException e) {
-            verifySubgroupsUsingRepository(superiorGroup,  subgroups);
+            verifySubgroupsUsingRepository(extractSuperiorGroup(generalGroups), subgroups);
         }
     }
 
     /**
-     * @param superiorGroup of provided subgroups
+     * @param generalGroup of provided subgroups
      * @param groups subgroups for verification
      * @throws ServiceNotAvailableException when verification not succeeded
      */
-    private void verifySubgroupsUsingRepository(String superiorGroup, Set<String> groups) throws ServiceNotAvailableException {
-        groups.add(trimLastDigit(superiorGroup));
+    private void verifySubgroupsUsingRepository(String generalGroup, Set<String> groups) throws ServiceNotAvailableException {
+        groups.add(generalGroup);
         if(examRepository.findCommonExamIdsForGroups(groups, groups.size()).isEmpty())
             throw new ServiceNotAvailableException("Timetable service unavailable, couldn't verify groups using repository");
     }
@@ -215,14 +213,14 @@ public class ExamService {
 
     /**
      * extract common superior group form provided general groups e.g. 12K2 -> 12K
-     * @param superiorGroups set of general groups from the same year of study
+     * @param generalGroup set of general groups from the same year of study
      * @return single superior group of provided general groups
      * @throws InvalidGroupIdentifierException when not all provided groups belong to the same year of study
      */
-    private static String trimLastDigit(Set<String> superiorGroups) throws InvalidGroupIdentifierException {
-        if(superiorGroups == null || superiorGroups.isEmpty())
+    private static String extractSuperiorGroup(Set<String> generalGroup) throws InvalidGroupIdentifierException {
+        if(generalGroup == null || generalGroup.isEmpty())
             throw new InvalidGroupIdentifierException("general group is missing");
-        Set<String> trimmedGroups = superiorGroups.stream()
+        Set<String> trimmedGroups = generalGroup.stream()
                 .map(ExamService::trimLastDigit)
                 .collect(Collectors.toSet());
         if(trimmedGroups.size() > 1)
@@ -280,7 +278,8 @@ public class ExamService {
      */
     private void verifyGroupPermissionsForNewResource(Set<String> newGroups){
         String userGroup = getUserGroup();
-        if(!trimLastDigit(newGroups).equals(userGroup))
+        Set<String> groupsFromRequest = new  HashSet<>(newGroups);
+        if(!extractSuperiorGroup(groupsFromRequest).equals(userGroup))
             throw new AccessDeniedException("You don't have permission to access this group");
     }
 
@@ -294,7 +293,7 @@ public class ExamService {
                 .stream()
                 .filter(group -> group.matches("^\\d.*"))
                 .collect(Collectors.toSet());
-        if(!trimLastDigit(generalGroupsOfExam).equals(userGroup))
+        if(!extractSuperiorGroup(generalGroupsOfExam).equals(userGroup))
             throw new AccessDeniedException("You don't have permission to access this group");
     }
 
