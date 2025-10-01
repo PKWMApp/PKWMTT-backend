@@ -169,7 +169,7 @@ public class TimetableParserService {
         if (name.endsWith("S")) {
             return SubjectType.SEMINAR;
         }
-        if (name.endsWith("Ć")) {
+        if (name.endsWith("Ć") || name.endsWith("ĆM") || name.endsWith("ĆK")) {
             return SubjectType.EXERCISES;
         }
         
