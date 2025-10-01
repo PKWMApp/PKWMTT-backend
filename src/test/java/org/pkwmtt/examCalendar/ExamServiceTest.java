@@ -160,28 +160,6 @@ class ExamServiceTest {
 
     /**
      * test specification
-     * generalGroup         - 3 item
-     * subgroup             - 2 items
-     * timetable service    - available
-     * provided groups      - match groups from timetable service
-     * groupRepository      - don't contain provided groups
-     */
-    @Test
-    @Disabled("need update")
-    void shouldThrowWhenThereAreMoreThan1GeneralGroupsAndSubgroupsIsPresent() throws JsonProcessingException {
-        //        given
-        LocalDateTime date = LocalDateTime.now().plusDays(1);
-        Set<String> generalGroups = Set.of("12K1", "12K2", "12K3");
-        Set<String> subgroups = Set.of("L04", "L05");
-        RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
-        when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
-        when(timetableService.getAvailableSubGroups(any(String.class))).thenReturn(new ArrayList<>(subgroups));
-        RuntimeException exception = assertThrows(InvalidGroupIdentifierException.class, () -> examService.addExam(requestExamDto));
-        assertEquals("Invalid group identifier: ambiguous general groups for subgroups", exception.getMessage());
-    }
-
-    /**
-     * test specification
      * generalGroup         - 1 item
      * subgroup             - 1 items
      * timetable service    - available
