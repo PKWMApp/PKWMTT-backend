@@ -302,7 +302,6 @@ class ExamControllerTest {
     }
 
     @Test
-    @Disabled("need update")
     void addExamWithMultipleGeneralGroupsAndSubgroups () throws Exception {
         //      given
         createExampleExamType("Project");
@@ -320,9 +319,8 @@ class ExamControllerTest {
         when(timetableService.getAvailableSubGroups("12K2")).thenReturn(List.of("K04", "L04", "P04"));
 
         //        when
-        MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
-        //        then
-        assertResponseMessage("Invalid group identifier: ambiguous general groups for subgroups", result);
+        assertPostRequest(status().isCreated(), requestData);
+
     }
 
     @Test
