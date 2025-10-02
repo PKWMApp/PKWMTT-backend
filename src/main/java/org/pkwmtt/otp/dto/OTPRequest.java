@@ -17,7 +17,6 @@ public class OTPRequest {
             Dzięki temu będziesz mógł dodawać oraz usuwać egzaminy dla swojego kierunku w kalendarzu aplikacji.<br/>
             Wpisz kod w <i>[Ustawienia > Wpisz kod]</i>, albo przekaż go osobie odpowiedzialnej za kalendarz egzaminów.<br/>
             Twój kod: <b>%s</b> <br/>
-            Na wykorzystanie kodu masz 1 dzień. <br/>
             """, generalGroupName, code
         );
     }
