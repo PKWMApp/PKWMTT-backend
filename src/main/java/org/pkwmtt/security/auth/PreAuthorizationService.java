@@ -33,9 +33,11 @@ public class PreAuthorizationService {
 
     /**
      * verifies if user has authorities to modify existing resource
+     * also check if resource exists
      * @param examId id of existing resource
+     * @throws NoSuchElementWithProvidedIdException when resource don't exist
      */
-    public boolean verifyGroupPermissionsForExistingResource(Integer examId){
+    public boolean verifyGroupPermissionsForExistingResource(Integer examId) throws  NoSuchElementWithProvidedIdException {
         String userGroup = getUserGroup();
         Set<String> generalGroupsOfExam = examRepository.findGroupsByExamId(examId)
                 .stream()
@@ -44,12 +46,15 @@ public class PreAuthorizationService {
         return extractSuperiorGroup(generalGroupsOfExam).equals(userGroup);
     }
 
+
     /**
      * verifies if user had authorities to replace existing resource with new one
+     * also check if modified exam exists
      * @param newGroups set of groups of new resource
      * @param examId id of existing resource
+     * @throws NoSuchElementWithProvidedIdException when resource don't exist
      */
-    public boolean verifyGroupPermissionsForModifiedResource(Set<String> newGroups, Integer examId){
+    public boolean verifyGroupPermissionsForModifiedResource(Set<String> newGroups, Integer examId) throws NoSuchElementWithProvidedIdException{
         examRepository.findById(examId).orElseThrow(() -> new NoSuchElementWithProvidedIdException(examId));
         return verifyGroupPermissionsForNewResource(newGroups) && verifyGroupPermissionsForExistingResource(examId);
     }

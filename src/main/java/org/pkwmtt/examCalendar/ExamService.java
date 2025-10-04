@@ -60,7 +60,6 @@ public class ExamService {
      */
     @PreAuthorize("@preAuthorizationService.verifyGroupPermissionsForModifiedResource(#requestExamDto.generalGroups, #id)")
     public void modifyExam(RequestExamDto requestExamDto, int id) {
-//        examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
 
         Set<StudentGroup> groups = verifyAndUpdateExamGroups(requestExamDto);
 
@@ -75,7 +74,6 @@ public class ExamService {
      */
     @PreAuthorize("@preAuthorizationService.verifyGroupPermissionsForExistingResource(#id)")
     public void deleteExam(int id) {
-//        examRepository.findById(id).orElseThrow(() -> new NoSuchElementWithProvidedIdException(id));
         examRepository.deleteById(id);
     }
 
