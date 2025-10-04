@@ -98,6 +98,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void filterUser(HttpServletRequest request, String token, String subject) {
+//        TODO: handle invalid email
         User user = userRepository.findByEmail(subject).orElseThrow();
 
         if (jwtService.validateToken(token, user)) {
