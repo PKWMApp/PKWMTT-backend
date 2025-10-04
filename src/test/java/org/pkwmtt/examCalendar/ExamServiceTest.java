@@ -621,21 +621,9 @@ class ExamServiceTest {
 
 //modify exam
 
-    /************************************************************************************/
-//delete exam
-    @Test
-    void shouldDeleteExamWhenIdExists() {
-//        given
-        int examId = 1;
-        when(examRepository.findById(examId)).thenReturn(Optional.of(mock(Exam.class)));
-        when(examRepository.findGroupsByExamId(examId)).thenReturn(Set.of("12K2"));
-//        when
-        examService.deleteExam(examId);
-//        then
-        verify(examRepository).deleteById(examId);
-    }
 
     @Test
+    @Disabled("move test to controller")
     void shouldThrowExceptionWhenExamIdNotExists() {
 //        given
         int examId = 5;
