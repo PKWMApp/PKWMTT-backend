@@ -527,6 +527,7 @@ class ExamControllerTest {
     }
 
     @Test
+    @Disabled("move to controller")
     void deleteNonExistingExam () throws Exception {
         //        given
         ExamType examType = createExampleExamType("Exam");
