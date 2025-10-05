@@ -28,7 +28,7 @@ public class ModeratorService {
                 .stream()
                 .filter(m -> passwordEncoder.matches(password, m.getPassword()))
                 .findFirst()
-                .map(m -> jwtService.generateToken(m.getModeratorId()))
+                .map(m -> jwtService.generateAccessToken(m.getModeratorId()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
     }
 

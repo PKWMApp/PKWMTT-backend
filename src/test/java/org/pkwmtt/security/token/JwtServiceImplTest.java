@@ -35,13 +35,13 @@ class JwtServiceImplTest {
     }
 
     @Test
-    void generateToken_shouldCreateNonEmptyToken() {
+    void generateAccessToken_shouldCreateNonEmptyAccessToken() {
         UserDTO user = new UserDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateAccessToken(user);
         assertNotNull(token);
         assertFalse(token.isEmpty());
     }
@@ -53,7 +53,7 @@ class JwtServiceImplTest {
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateAccessToken(user);
         String email = jwtService.getSubject(token);
         assertEquals("user@example.com", email);
     }
@@ -65,7 +65,7 @@ class JwtServiceImplTest {
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateAccessToken(user);
         String roleClaim = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
         assertEquals("ADMIN", roleClaim);
     }
@@ -77,39 +77,39 @@ class JwtServiceImplTest {
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateAccessToken(user);
         String groupClaim = jwtService.extractClaim(token, claims -> claims.get("group", String.class));
         assertEquals("GROUP1", groupClaim);
     }
 
     @Test
-    void validateToken_shouldReturnTrueForValidToken() {
+    void validateAccessToken_shouldReturnTrueForValidAccessToken() {
         UserDTO userDTO = new UserDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
 
-        String token = jwtService.generateToken(userDTO);
+        String token = jwtService.generateAccessToken(userDTO);
         User mockUser = mock(User.class);
         when(mockUser.getEmail()).thenReturn("user@example.com");
-        assertTrue(jwtService.validateToken(token, mockUser));
+        assertTrue(jwtService.validateAccessToken(token, mockUser));
     }
 
     @Test
-    void validateToken_shouldReturnFalseForInvalidEmail() {
+    void validateAccessToken_shouldReturnFalseForInvalidEmail() {
         UserDTO userDTO = new UserDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
 
-        String token = jwtService.generateToken(userDTO);
+        String token = jwtService.generateAccessToken(userDTO);
         User mockUser = mock(User.class);
         when(mockUser.getEmail()).thenReturn("other@example.com");
-        assertFalse(jwtService.validateToken(token, mockUser));
+        assertFalse(jwtService.validateAccessToken(token, mockUser));
     }
 
     @Test
-    void validateToken_shouldReturnFalseForExpiredToken() {
+    void validateAccessToken_shouldReturnFalseForExpiredAccessToken() {
         UserDTO user = new UserDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
@@ -128,7 +128,7 @@ class JwtServiceImplTest {
         User mockUser = mock(User.class);
         when(mockUser.getEmail()).thenReturn("user@example.com");
 
-        assertFalse(jwtService.validateToken(expiredToken, mockUser));
+        assertFalse(jwtService.validateAccessToken(expiredToken, mockUser));
     }
 
     @Test

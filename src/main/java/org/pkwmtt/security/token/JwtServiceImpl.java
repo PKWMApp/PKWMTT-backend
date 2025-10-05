@@ -7,10 +7,14 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.security.token.dto.UserDTO;
+import org.pkwmtt.security.token.entity.RefreshToken;
+import org.pkwmtt.security.token.repository.RefreshTokenRepository;
 import org.pkwmtt.security.token.utils.JwtUtils;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
@@ -20,6 +24,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
     private final JwtUtils jwtUtils;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     /**
      * Generates a JWT token for a given user.
@@ -30,7 +35,7 @@ public class JwtServiceImpl implements JwtService {
      * @return signed JWT token as a String
      */
     @Override
-    public String generateToken(UserDTO user) {
+    public String generateAccessToken(UserDTO user) {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("group", user.getGroup())
@@ -42,7 +47,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(UUID uuid) {
+    public String generateAccessToken(UUID uuid) {
         return Jwts.builder()
                 .subject(uuid.toString())
                 .claim("role", "MODERATOR")
@@ -50,6 +55,29 @@ public class JwtServiceImpl implements JwtService {
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getModeratorExpirationMs())))
                 .signWith(decodeSecretKey())
                 .compact();
+    }
+
+    private String generateRefreshToken() {
+        SecureRandom random = new SecureRandom();
+        byte[] randomBytes = new byte[64];
+        random.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    }
+
+    @Override
+    public String getNewRefreshToken(User user) {
+        String token = generateRefreshToken();
+        refreshTokenRepository.save(new RefreshToken(token, user));
+        return token;
+    }
+
+    @Override
+    public RefreshToken verifyAndUpdateRefreshToken(String token) throws JwtException {
+        RefreshToken rt = refreshTokenRepository.findByToken(token).orElseThrow(() -> new JwtException("ex"));        //TODO: exception type
+        if (rt.getExpires().isBefore(LocalDateTime.now()) || !rt.isEnabled())
+            throw new JwtException("ex");        //TODO: exception type
+        String newToken = generateRefreshToken();
+        return refreshTokenRepository.save(rt.update(newToken));
     }
 
     /**
@@ -71,7 +99,7 @@ public class JwtServiceImpl implements JwtService {
      * @return true if the token is valid, false otherwise
      */
     @Override
-    public Boolean validateToken(String token, User user) {
+    public Boolean validateAccessToken(String token, User user) {
         try {
             final String userEmail = getSubject(token);
             return userEmail != null
@@ -83,7 +111,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Boolean validateToken(String token, String uuid) {
+    public Boolean validateAccessToken(String token, String uuid) {
         try {
             final String userid = getSubject(token);
             return userid != null
@@ -93,6 +121,12 @@ public class JwtServiceImpl implements JwtService {
             return false;
         }
     }
+
+//    public Boolean validateRefreshToken(String token) {
+//        return refreshTokenRepository.findByToken(token)
+//                .map(rt -> rt.getExpires().isAfter(LocalDateTime.now()) && rt.isEnabled())
+//                .orElse(false);
+//    }
 
     /**
      * Extracts the user identifier (email) from a JWT token.

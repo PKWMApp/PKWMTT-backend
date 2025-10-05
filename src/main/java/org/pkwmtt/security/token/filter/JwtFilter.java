@@ -79,7 +79,7 @@ public class JwtFilter extends OncePerRequestFilter {
         UUID uuid = UUID.fromString(subject);
         moderatorRepository.findById(uuid).orElseThrow();       //TODO: add exception type
 
-        if (jwtService.validateToken(token, subject)) {
+        if (jwtService.validateAccessToken(token, subject)) {
             List<SimpleGrantedAuthority> authorities = List.of(
                     new SimpleGrantedAuthority("ROLE_" + "MODERATOR")
             );
@@ -101,7 +101,7 @@ public class JwtFilter extends OncePerRequestFilter {
 //        TODO: handle invalid email
         User user = userRepository.findByEmail(subject).orElseThrow();
 
-        if (jwtService.validateToken(token, user)) {
+        if (jwtService.validateAccessToken(token, user)) {
             List<SimpleGrantedAuthority> authorities = List.of(
                     new SimpleGrantedAuthority("ROLE_" + user.getRole())
             );
