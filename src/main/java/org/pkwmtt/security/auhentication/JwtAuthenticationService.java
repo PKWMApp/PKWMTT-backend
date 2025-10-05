@@ -2,6 +2,7 @@ package org.pkwmtt.security.auhentication;
 
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
@@ -21,5 +22,10 @@ public class JwtAuthenticationService {
                 .refreshToken(newRefreshToken.getToken())
                 .accessToken(jwtService.generateAccessToken(new UserDTO(newRefreshToken.getUser())))
                 .build();
+    }
+
+    public void logout(RefreshRequestDto requestDto) {
+        if(!jwtService.deleteRefreshToken(requestDto.getRefreshToken()))
+            throw new InvalidRefreshTokenException();
     }
 }

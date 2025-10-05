@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.token.dto.UserDTO;
 import org.pkwmtt.security.token.entity.RefreshToken;
 import org.pkwmtt.security.token.repository.RefreshTokenRepository;
@@ -73,11 +74,16 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public RefreshToken verifyAndUpdateRefreshToken(String token) throws JwtException {
-        RefreshToken rt = refreshTokenRepository.findByToken(token).orElseThrow(() -> new JwtException("ex"));        //TODO: exception type
+        RefreshToken rt = refreshTokenRepository.findByToken(token).orElseThrow(InvalidRefreshTokenException::new);
         if (rt.getExpires().isBefore(LocalDateTime.now()) || !rt.isEnabled())
-            throw new JwtException("ex");        //TODO: exception type
+            throw new InvalidRefreshTokenException();
         String newToken = generateRefreshToken();
         return refreshTokenRepository.save(rt.update(newToken));
+    }
+
+    @Override
+    public Boolean deleteRefreshToken(String token) {
+        return refreshTokenRepository.deleteTokenAsBoolean(token);
     }
 
     /**
@@ -122,11 +128,6 @@ public class JwtServiceImpl implements JwtService {
         }
     }
 
-//    public Boolean validateRefreshToken(String token) {
-//        return refreshTokenRepository.findByToken(token)
-//                .map(rt -> rt.getExpires().isAfter(LocalDateTime.now()) && rt.isEnabled())
-//                .orElse(false);
-//    }
 
     /**
      * Extracts the user identifier (email) from a JWT token.

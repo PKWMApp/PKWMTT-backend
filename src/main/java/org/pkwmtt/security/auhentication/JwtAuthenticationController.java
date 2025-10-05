@@ -30,6 +30,12 @@ public class JwtAuthenticationController {
         return ResponseEntity.ok(jwtAuthenticationService.refresh(requestDto));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody RefreshRequestDto requestDto){
+        jwtAuthenticationService.logout(requestDto);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 }
