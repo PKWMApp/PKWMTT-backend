@@ -11,6 +11,7 @@ import org.pkwmtt.security.token.dto.UserDTO;
 import org.pkwmtt.security.token.entity.RefreshToken;
 import org.pkwmtt.security.token.repository.RefreshTokenRepository;
 import org.pkwmtt.security.token.utils.JwtUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -18,6 +19,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -26,6 +28,7 @@ import java.util.function.Function;
 public class JwtServiceImpl implements JwtService {
     private final JwtUtils jwtUtils;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder  passwordEncoder;
 
     /**
      * Generates a JWT token for a given user.
@@ -68,22 +71,35 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String getNewRefreshToken(User user) {
         String token = generateRefreshToken();
-        refreshTokenRepository.save(new RefreshToken(token, user));
+        refreshTokenRepository.save(new RefreshToken(passwordEncoder.encode(token), user));
         return token;
     }
 
     @Override
     public RefreshToken verifyAndUpdateRefreshToken(String token) throws JwtException {
-        RefreshToken rt = refreshTokenRepository.findByToken(token).orElseThrow(InvalidRefreshTokenException::new);
+        RefreshToken rt = findRefreshToken(token);
+
         if (rt.getExpires().isBefore(LocalDateTime.now()) || !rt.isEnabled())
             throw new InvalidRefreshTokenException();
         String newToken = generateRefreshToken();
-        return refreshTokenRepository.save(rt.update(newToken));
+        return refreshTokenRepository.save(rt.update(passwordEncoder.encode(newToken)));
     }
 
     @Override
-    public Boolean deleteRefreshToken(String token) {
-        return refreshTokenRepository.deleteTokenAsBoolean(token);
+    public boolean deleteRefreshToken(String token) {
+        return refreshTokenRepository.deleteTokenAsBoolean(findRefreshToken(token).getToken());
+    }
+
+    /**
+     * finds hashed refresh token in repository based on unhashed token
+     * @param token unhashed refresh token
+     * @return refresh token entity
+     */
+    private RefreshToken findRefreshToken(String token) {
+        List<RefreshToken> refreshTokens = refreshTokenRepository.findAll();
+        return refreshTokens.stream()
+                .filter(ref -> passwordEncoder.matches(token, ref.getToken()))
+                .findFirst().orElseThrow(InvalidRefreshTokenException::new);
     }
 
     /**

@@ -13,7 +13,7 @@ public interface JwtService {
     String generateAccessToken(UUID uuid);
     String getNewRefreshToken(User user);
     RefreshToken verifyAndUpdateRefreshToken(String token);
-    Boolean deleteRefreshToken(String token);
+    boolean deleteRefreshToken(String token);
     Boolean validateAccessToken(String token, User user);
     Boolean validateAccessToken(String token, String uuid);
     String getSubject(String token);
