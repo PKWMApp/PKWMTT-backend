@@ -53,7 +53,7 @@ public class OTPService {
         otpRepository.deleteByCode(code);
         return JwtAuthenticationDto.builder()
                 .accessToken(token)
-                .refreshToken(jwtService.getNewRefreshToken(user))
+                .refreshToken(jwtService.getNewUserRefreshToken(user))
                 .build();
     }
 

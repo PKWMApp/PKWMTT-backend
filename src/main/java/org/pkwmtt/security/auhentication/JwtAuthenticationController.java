@@ -5,6 +5,7 @@ import org.pkwmtt.exceptions.OTPCodeNotFoundException;
 import org.pkwmtt.exceptions.UserNotFoundException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
 import org.pkwmtt.otp.OTPService;
+import org.pkwmtt.otp.dto.otpDto;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,9 @@ public class JwtAuthenticationController {
     private final OTPService otpService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestParam(name = "c") String code)
+    public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody otpDto code)
             throws OTPCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
-        return ResponseEntity.ok(otpService.generateTokenForRepresentative(code));
+        return ResponseEntity.ok(otpService.generateTokenForRepresentative(code.getOtpCode()));
     }
 
     @PostMapping("/refresh")

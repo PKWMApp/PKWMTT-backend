@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 @Getter
 @Component
 public class JwtUtils {
@@ -11,8 +13,8 @@ public class JwtUtils {
     // is not set, a default value "TEST_SECRET" is used. This allows the application
     // to start without a real secret, e.g., for local development or tests.
     private final String secret;
-    private final long expirationMs = 1000L * 60 * 60 * 24 * 30 * 6;
-    private final long moderatorExpirationMs = 1000L * 60 * 60 * 2;
+    private final long expirationMs = TimeUnit.MINUTES.toMillis(5);
+//    private final long moderatorExpirationMs = 1000L * 60 * 60 * 2;
 
 
     public JwtUtils(Environment environment) {

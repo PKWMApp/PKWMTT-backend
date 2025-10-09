@@ -7,10 +7,17 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
+import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
+import org.pkwmtt.security.moderator.Moderator;
 import org.pkwmtt.security.token.dto.UserDTO;
+import org.pkwmtt.security.token.entity.ModeratorRefreshToken;
 import org.pkwmtt.security.token.entity.RefreshToken;
+import org.pkwmtt.security.token.entity.UserRefreshToken;
+import org.pkwmtt.security.token.repository.ModeratorRefreshTokenRepository;
 import org.pkwmtt.security.token.repository.RefreshTokenRepository;
+import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
 import org.pkwmtt.security.token.utils.JwtUtils;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +34,8 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
     private final JwtUtils jwtUtils;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final ModeratorRefreshTokenRepository moderatorRefreshTokenRepository;
     private final PasswordEncoder  passwordEncoder;
 
     /**
@@ -56,7 +64,7 @@ public class JwtServiceImpl implements JwtService {
                 .subject(uuid.toString())
                 .claim("role", "MODERATOR")
                 .issuedAt(new Date())
-                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getModeratorExpirationMs())))
+                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
                 .compact();
     }
@@ -69,36 +77,50 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String getNewRefreshToken(User user) {
+    public String getNewUserRefreshToken(User user) {
         String token = generateRefreshToken();
-        refreshTokenRepository.save(new RefreshToken(passwordEncoder.encode(token), user));
+        userRefreshTokenRepository.save(new UserRefreshToken(passwordEncoder.encode(token), user));
         return token;
     }
 
     @Override
-    public RefreshToken verifyAndUpdateRefreshToken(String token) throws JwtException {
-        RefreshToken rt = findRefreshToken(token);
+    public String getNewModeratorRefreshToken(Moderator moderator) {
+        String token = generateRefreshToken();
+        moderatorRefreshTokenRepository.save(new ModeratorRefreshToken(passwordEncoder.encode(token), moderator));
+        return token;
+    }
+
+    @Override
+    public <RT extends RefreshToken<RT>, ID> RT verifyAndUpdateRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) throws JwtException {
+        RT rt = findRefreshToken(repository, token);
 
         if (rt.getExpires().isBefore(LocalDateTime.now()) || !rt.isEnabled())
             throw new InvalidRefreshTokenException();
         String newToken = generateRefreshToken();
-        return refreshTokenRepository.save(rt.update(passwordEncoder.encode(newToken)));
+        return repository.save(rt.update(passwordEncoder.encode(newToken)));
     }
+
 
     @Override
-    public boolean deleteRefreshToken(String token) {
-        return refreshTokenRepository.deleteTokenAsBoolean(findRefreshToken(token).getToken());
+    public <RT extends RefreshToken<RT>, ID> boolean deleteRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) {
+        return repository.deleteTokenAsBoolean(findRefreshToken(repository, token).getToken());
     }
 
+
     /**
-     * finds hashed refresh token in repository based on unhashed token
-     * @param token unhashed refresh token
-     * @return refresh token entity
+     * converts a refresh token hash to its corresponding RefreshToken entity, if it exists
+     * @param repository repository storing refresh tokens of type RT. must extend JpaRepository
+     * @param token refresh token hash
+     * @param <RT> refresh token entity class implementing RefreshToken interface
+     * @param <ID> type of repository primary key
+     * @return RefreshToken entity matching given hash
+     * @throws InvalidRefreshTokenException if no matching token is found
      */
-    private RefreshToken findRefreshToken(String token) {
-        List<RefreshToken> refreshTokens = refreshTokenRepository.findAll();
+    private <RT extends RefreshToken<RT>, ID> RT findRefreshToken(RefreshTokenRepository<RT, ID> repository, String token)
+            throws InvalidRefreshTokenException {
+        List<RT> refreshTokens = repository.findAll();
         return refreshTokens.stream()
-                .filter(ref -> passwordEncoder.matches(token, ref.getToken()))
+                .filter(rt -> passwordEncoder.matches(token, rt.getToken()))
                 .findFirst().orElseThrow(InvalidRefreshTokenException::new);
     }
 

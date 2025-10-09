@@ -8,24 +8,27 @@ import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
 import org.pkwmtt.security.token.dto.UserDTO;
 import org.pkwmtt.security.token.entity.RefreshToken;
+import org.pkwmtt.security.token.entity.UserRefreshToken;
+import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class JwtAuthenticationService {
     private final JwtService jwtService;
+    private final UserRefreshTokenRepository userRefreshTokenRepository;
 
 
     public JwtAuthenticationDto refresh(RefreshRequestDto requestDto) throws JwtException {
-        RefreshToken newRefreshToken = jwtService.verifyAndUpdateRefreshToken(requestDto.getRefreshToken());
+        UserRefreshToken newUserRefreshToken = jwtService.verifyAndUpdateRefreshToken(userRefreshTokenRepository, requestDto.getRefreshToken());
         return JwtAuthenticationDto.builder()
-                .refreshToken(newRefreshToken.getToken())
-                .accessToken(jwtService.generateAccessToken(new UserDTO(newRefreshToken.getUser())))
+                .refreshToken(newUserRefreshToken.getToken())
+                .accessToken(jwtService.generateAccessToken(new UserDTO(newUserRefreshToken.getUser())))
                 .build();
     }
 
     public void logout(RefreshRequestDto requestDto) {
-        if(!jwtService.deleteRefreshToken(requestDto.getRefreshToken()))
+        if(!jwtService.deleteRefreshToken(userRefreshTokenRepository, requestDto.getRefreshToken()))
             throw new InvalidRefreshTokenException();
     }
 }

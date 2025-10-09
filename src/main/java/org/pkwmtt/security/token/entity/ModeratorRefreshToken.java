@@ -1,0 +1,46 @@
+package org.pkwmtt.security.token.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.security.moderator.Moderator;
+
+import java.time.LocalDateTime;
+
+@Entity
+@NoArgsConstructor
+@Getter
+@Table(name = "moderator_refresh_token")
+public class ModeratorRefreshToken implements RefreshToken {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer token_id;
+
+    private String token;
+
+    @ManyToOne
+    @JoinColumn(name = "moderator_id")
+    private Moderator moderator;
+
+    private boolean enabled;
+
+    private LocalDateTime created;
+
+    private LocalDateTime expires;
+
+    public ModeratorRefreshToken(String token, Moderator moderator) {
+        this.token = token;
+        this.moderator = moderator;
+        this.enabled = true;
+        this.created = LocalDateTime.now();
+        this.expires = LocalDateTime.now().plusMonths(6);
+    }
+
+    public ModeratorRefreshToken update(String token) {
+        this.token = token;
+        this.created = LocalDateTime.now();
+        this.expires = LocalDateTime.now().plusMonths(6);
+        return this;
+    }
+
+}
