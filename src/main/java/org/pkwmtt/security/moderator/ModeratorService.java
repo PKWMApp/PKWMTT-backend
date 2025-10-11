@@ -47,10 +47,17 @@ public class ModeratorService {
         return userRepository.findAll();
     }
 
+/*
+1
+2
+3
+4
+ */
     public JwtAuthenticationDto refresh(RefreshRequestDto requestDto) {
-        ModeratorRefreshToken newModeratorRefreshToken = jwtService.verifyAndUpdateRefreshToken(moderatorRefreshTokenRepository, requestDto.getRefreshToken());
+
+        String newModeratorRefreshToken = jwtService.verifyAndUpdateRefreshToken(moderatorRefreshTokenRepository, requestDto.getRefreshToken());
         return JwtAuthenticationDto.builder()
-                .refreshToken(newModeratorRefreshToken.getToken())
+                .refreshToken(newModeratorRefreshToken)
                 .accessToken(jwtService.generateAccessToken(newModeratorRefreshToken.getModerator().getModeratorId()))
                 .build();
     }

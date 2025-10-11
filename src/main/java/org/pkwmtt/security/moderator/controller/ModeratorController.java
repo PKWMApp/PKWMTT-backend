@@ -26,13 +26,11 @@ public class ModeratorController {
         return ResponseEntity.ok(moderatorService.generateTokenForModerator(auth.getPassword()));
     }
 
-//    TODO
     @PostMapping("/refresh")
     public ResponseEntity<JwtAuthenticationDto> refresh(@RequestBody RefreshRequestDto requestDto){
         return ResponseEntity.ok(moderatorService.refresh(requestDto));
     }
 
-//    TODO
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody RefreshRequestDto requestDto){
         moderatorService.logout(requestDto);

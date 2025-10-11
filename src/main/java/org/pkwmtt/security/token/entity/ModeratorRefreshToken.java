@@ -22,8 +22,6 @@ public class ModeratorRefreshToken implements RefreshToken {
     @JoinColumn(name = "moderator_id")
     private Moderator moderator;
 
-    private boolean enabled;
-
     private LocalDateTime created;
 
     private LocalDateTime expires;
@@ -31,7 +29,6 @@ public class ModeratorRefreshToken implements RefreshToken {
     public ModeratorRefreshToken(String token, Moderator moderator) {
         this.token = token;
         this.moderator = moderator;
-        this.enabled = true;
         this.created = LocalDateTime.now();
         this.expires = LocalDateTime.now().plusMonths(6);
     }

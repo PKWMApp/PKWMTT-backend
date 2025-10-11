@@ -16,7 +16,7 @@ public interface JwtService {
     String generateAccessToken(UUID uuid);
     String getNewUserRefreshToken(User user);
     String getNewModeratorRefreshToken(Moderator moderator);
-    <RT extends RefreshToken<RT>, ID> RT verifyAndUpdateRefreshToken(RefreshTokenRepository<RT, ID> repository, String token);
+    <RT extends RefreshToken<RT>, ID> String verifyAndUpdateRefreshToken(RefreshTokenRepository<RT, ID> repository, String token);
     <RT extends RefreshToken<RT>, ID> boolean deleteRefreshToken(RefreshTokenRepository<RT, ID> repository, String token);
     Boolean validateAccessToken(String token, User user);
     Boolean validateAccessToken(String token, String uuid);

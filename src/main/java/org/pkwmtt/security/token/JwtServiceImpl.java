@@ -71,7 +71,7 @@ public class JwtServiceImpl implements JwtService {
 
     private String generateRefreshToken() {
         SecureRandom random = new SecureRandom();
-        byte[] randomBytes = new byte[64];
+        byte[] randomBytes = new byte[32];
         random.nextBytes(randomBytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
@@ -91,13 +91,14 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public <RT extends RefreshToken<RT>, ID> RT verifyAndUpdateRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) throws JwtException {
+    public <RT extends RefreshToken<RT>, ID> String verifyAndUpdateRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) throws JwtException {
         RT rt = findRefreshToken(repository, token);
 
-        if (rt.getExpires().isBefore(LocalDateTime.now()) || !rt.isEnabled())
+        if (rt.getExpires().isBefore(LocalDateTime.now()))
             throw new InvalidRefreshTokenException();
         String newToken = generateRefreshToken();
-        return repository.save(rt.update(passwordEncoder.encode(newToken)));
+        repository.save(rt.update(passwordEncoder.encode(newToken)));
+        return newToken;
     }
 
 

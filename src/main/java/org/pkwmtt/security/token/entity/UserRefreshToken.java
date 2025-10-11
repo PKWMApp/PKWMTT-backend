@@ -21,8 +21,6 @@ public class UserRefreshToken implements RefreshToken {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private boolean enabled;
-
     private LocalDateTime created;
 
     private LocalDateTime expires;
@@ -30,7 +28,6 @@ public class UserRefreshToken implements RefreshToken {
     public UserRefreshToken(String token, User user) {
         this.token = token;
         this.user = user;
-        this.enabled = true;
         this.created = LocalDateTime.now();
         this.expires = LocalDateTime.now().plusMonths(6);
     }
