@@ -83,11 +83,6 @@ public class JwtServiceImpl implements JwtService {
         return token;
     }
 
-    public static String getNewModeratorRefreshToken(Moderator moderator) {
-        String token = generateRefreshToken();
-        moderatorRefreshTokenRepository.save(new ModeratorRefreshToken(passwordEncoder.encode(token), moderator));
-        return token;
-    }
 
 //    @Override
 //    public <RT extends RefreshToken<RT>, ID> String updateRefreshToken(RefreshTokenRepository<RT, ID> repository, RT rt) throws JwtException {
@@ -103,7 +98,7 @@ public class JwtServiceImpl implements JwtService {
 
 
     @Override
-    public <RT extends RefreshToken<RT>, ID> boolean deleteRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) {
+    public <RT extends RefreshToken, ID> boolean deleteRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) {
         return repository.deleteTokenAsBoolean(findRefreshToken(repository, token).getToken());
     }
 
@@ -117,7 +112,7 @@ public class JwtServiceImpl implements JwtService {
      * @return RefreshToken entity matching given hash
      * @throws InvalidRefreshTokenException if no matching token is found
      */
-    private <RT extends RefreshToken<RT>, ID> RT findRefreshToken(RefreshTokenRepository<RT, ID> repository, String token)
+    private <RT extends RefreshToken, ID> RT findRefreshToken(RefreshTokenRepository<RT, ID> repository, String token)
             throws InvalidRefreshTokenException {
         List<RT> refreshTokens = repository.findAll();
         return refreshTokens.stream()

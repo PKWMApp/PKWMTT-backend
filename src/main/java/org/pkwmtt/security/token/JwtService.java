@@ -14,8 +14,8 @@ public interface JwtService {
     String generateAccessToken(UserDTO user);
     String generateAccessToken(UUID uuid);
     String getNewUserRefreshToken(User user);
-    <RT extends RefreshToken<RT>, ID> String updateRefreshToken(RefreshTokenRepository<RT, ID> repository, RT token);
-    <RT extends RefreshToken<RT>, ID> boolean deleteRefreshToken(RefreshTokenRepository<RT, ID> repository, String token);
+    <RT extends RefreshToken, ID> String updateRefreshToken(RefreshTokenRepository<RT, ID> repository, RT token);
+    <RT extends RefreshToken, ID> boolean deleteRefreshToken(RefreshTokenRepository<RT, ID> repository, String token);
     Boolean validateAccessToken(String token, User user);
     Boolean validateAccessToken(String token, String uuid);
     String getSubject(String token);

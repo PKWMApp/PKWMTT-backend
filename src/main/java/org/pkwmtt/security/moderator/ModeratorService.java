@@ -10,6 +10,7 @@ import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
 import org.pkwmtt.security.token.JwtServiceImpl;
 import org.pkwmtt.security.token.entity.ModeratorRefreshToken;
+import org.pkwmtt.security.token.entity.UserRefreshToken;
 import org.pkwmtt.security.token.repository.ModeratorRefreshTokenRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +40,7 @@ public class ModeratorService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
         return JwtAuthenticationDto.builder()
                 .accessToken(jwtService.generateAccessToken(moderator.getModeratorId()))
-                .refreshToken(jwtService.getNewModeratorRefreshToken(moderator))
+                .refreshToken(getNewModeratorRefreshToken(moderator))
                 .build();
     }
 
@@ -78,5 +79,11 @@ public class ModeratorService {
         return refreshTokens.stream()
                 .filter(rt -> passwordEncoder.matches(token, rt.getToken()))
                 .findFirst().orElseThrow(InvalidRefreshTokenException::new);
+    }
+
+    private String getNewModeratorRefreshToken(Moderator moderator) {
+        String token = JwtServiceImpl.generateRefreshToken();
+        moderatorRefreshTokenRepository.save(new ModeratorRefreshToken(passwordEncoder.encode(token), moderator));
+        return token;
     }
 }
