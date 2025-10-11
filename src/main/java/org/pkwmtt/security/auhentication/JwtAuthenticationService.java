@@ -7,7 +7,6 @@ import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
 import org.pkwmtt.security.token.dto.UserDTO;
-import org.pkwmtt.security.token.entity.RefreshToken;
 import org.pkwmtt.security.token.entity.UserRefreshToken;
 import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class JwtAuthenticationService {
 
 
     public JwtAuthenticationDto refresh(RefreshRequestDto requestDto) throws JwtException {
-        UserRefreshToken newUserRefreshToken = jwtService.verifyAndUpdateRefreshToken(userRefreshTokenRepository, requestDto.getRefreshToken());
+        UserRefreshToken newUserRefreshToken = jwtService.updateRefreshToken(userRefreshTokenRepository, requestDto.getRefreshToken());
         return JwtAuthenticationDto.builder()
                 .refreshToken(newUserRefreshToken.getToken())
                 .accessToken(jwtService.generateAccessToken(new UserDTO(newUserRefreshToken.getUser())))

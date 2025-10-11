@@ -69,7 +69,7 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-    private String generateRefreshToken() {
+    public static String generateRefreshToken() {
         SecureRandom random = new SecureRandom();
         byte[] randomBytes = new byte[32];
         random.nextBytes(randomBytes);
@@ -83,22 +83,22 @@ public class JwtServiceImpl implements JwtService {
         return token;
     }
 
-    @Override
-    public String getNewModeratorRefreshToken(Moderator moderator) {
+    public static String getNewModeratorRefreshToken(Moderator moderator) {
         String token = generateRefreshToken();
         moderatorRefreshTokenRepository.save(new ModeratorRefreshToken(passwordEncoder.encode(token), moderator));
         return token;
     }
 
-    @Override
-    public <RT extends RefreshToken<RT>, ID> String verifyAndUpdateRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) throws JwtException {
-        RT rt = findRefreshToken(repository, token);
+//    @Override
+//    public <RT extends RefreshToken<RT>, ID> String updateRefreshToken(RefreshTokenRepository<RT, ID> repository, RT rt) throws JwtException {
+//        String newToken = generateRefreshToken();
+//        repository.save(rt.update(passwordEncoder.encode(newToken)));
+//        return newToken;
+//    }
 
+    public static void validateRefreshToken(RefreshToken rt) {
         if (rt.getExpires().isBefore(LocalDateTime.now()))
             throw new InvalidRefreshTokenException();
-        String newToken = generateRefreshToken();
-        repository.save(rt.update(passwordEncoder.encode(newToken)));
-        return newToken;
     }
 
 

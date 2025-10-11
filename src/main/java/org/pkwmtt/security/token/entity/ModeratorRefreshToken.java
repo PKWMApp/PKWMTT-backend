@@ -2,7 +2,6 @@ package org.pkwmtt.security.token.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.security.moderator.Moderator;
 
 import java.time.LocalDateTime;
@@ -33,11 +32,10 @@ public class ModeratorRefreshToken implements RefreshToken {
         this.expires = LocalDateTime.now().plusMonths(6);
     }
 
-    public ModeratorRefreshToken update(String token) {
+    public void updateToken(String token) {
         this.token = token;
         this.created = LocalDateTime.now();
-        this.expires = LocalDateTime.now().plusMonths(6);
-        return this;
     }
+
 
 }

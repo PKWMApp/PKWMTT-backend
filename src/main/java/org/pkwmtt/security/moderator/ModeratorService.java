@@ -8,9 +8,8 @@ import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
-import org.pkwmtt.security.token.dto.UserDTO;
+import org.pkwmtt.security.token.JwtServiceImpl;
 import org.pkwmtt.security.token.entity.ModeratorRefreshToken;
-import org.pkwmtt.security.token.entity.UserRefreshToken;
 import org.pkwmtt.security.token.repository.ModeratorRefreshTokenRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -47,23 +47,36 @@ public class ModeratorService {
         return userRepository.findAll();
     }
 
-/*
-1
-2
-3
-4
- */
+
     public JwtAuthenticationDto refresh(RefreshRequestDto requestDto) {
 
-        String newModeratorRefreshToken = jwtService.verifyAndUpdateRefreshToken(moderatorRefreshTokenRepository, requestDto.getRefreshToken());
+        ModeratorRefreshToken moderatorRefreshToken = findRefreshToken(requestDto.getRefreshToken());
+
+        JwtServiceImpl.validateRefreshToken(moderatorRefreshToken);
+
+        String tokenHash = JwtServiceImpl.generateRefreshToken();
+
+        moderatorRefreshToken.updateToken(passwordEncoder.encode(tokenHash));
+        moderatorRefreshTokenRepository.save(moderatorRefreshToken);
+
+        UUID id = moderatorRefreshToken.getModerator().getModeratorId();
+
         return JwtAuthenticationDto.builder()
-                .refreshToken(newModeratorRefreshToken)
-                .accessToken(jwtService.generateAccessToken(newModeratorRefreshToken.getModerator().getModeratorId()))
+                .refreshToken(tokenHash)
+                .accessToken(jwtService.generateAccessToken(id))
                 .build();
     }
 
     public void logout(RefreshRequestDto requestDto) {
         if(!jwtService.deleteRefreshToken(moderatorRefreshTokenRepository, requestDto.getRefreshToken()))
             throw new InvalidRefreshTokenException();
+    }
+
+    private ModeratorRefreshToken findRefreshToken(String token)
+            throws InvalidRefreshTokenException {
+        List<ModeratorRefreshToken> refreshTokens = moderatorRefreshTokenRepository.findAll();
+        return refreshTokens.stream()
+                .filter(rt -> passwordEncoder.matches(token, rt.getToken()))
+                .findFirst().orElseThrow(InvalidRefreshTokenException::new);
     }
 }
