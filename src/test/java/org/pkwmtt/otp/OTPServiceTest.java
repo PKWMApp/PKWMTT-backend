@@ -8,7 +8,6 @@ import jakarta.mail.Multipart;
 import jakarta.mail.Part;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -17,6 +16,9 @@ import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
 import org.pkwmtt.otp.dto.OTPRequest;
 import org.pkwmtt.otp.repository.OTPCodeRepository;
+import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.token.repository.RefreshTokenRepository;
+import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -42,6 +44,9 @@ class OTPServiceTest {
     
     @Autowired
     private OTPCodeRepository otpCodeRepository;
+
+    @Autowired
+    private UserRefreshTokenRepository userRefreshTokenRepository;
     
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
@@ -89,9 +94,7 @@ class OTPServiceTest {
         assertThrows(SpecifiedGeneralGroupDoesntExistsException.class, () -> otpService.sendOTPCodesForManyGroups(requests));
     }
 
-//    TODO: update test
     @Test
-    @Disabled("NeedUpdate")
     void shouldGenerateTokenForRepresentative () throws Exception {
         //given
         List<OTPRequest> requests = List.of(new OTPRequest("test@localhost", "12K"));
@@ -113,16 +116,18 @@ class OTPServiceTest {
             fail("Code not found");
         }
         
-//        String token = otpService.generateTokenForRepresentative(code); //generate token
-//
-//        //then
-//        assertAll(() -> {
-//            assertNotNull(token);
-//
-//            Matcher tokenMatcher = tokenPattern.matcher(token);
-//            assertTrue(tokenMatcher.find());
-//            assertFalse(otpCodeRepository.existsOTPCodeByCode(code));
-//        });
+        JwtAuthenticationDto token = otpService.generateTokenForRepresentative(code); //generate token
+
+        //then
+        assertAll(() -> {
+            assertNotNull(token);
+
+            Matcher tokenMatcher = tokenPattern.matcher(token.getAccessToken());
+            assertNotNull(token.getRefreshToken());
+            assertTrue(tokenMatcher.find());
+            assertFalse(otpCodeRepository.existsOTPCodeByCode(code));
+            assertFalse(userRefreshTokenRepository.findAll().isEmpty());
+        });
     }
     
     @Test
