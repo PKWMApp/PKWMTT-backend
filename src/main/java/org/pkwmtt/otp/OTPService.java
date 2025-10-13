@@ -95,14 +95,10 @@ public class OTPService {
 
         var userByEmail = userRepository.findByEmail(request.getEmail());
 
-        //Check if user isn't already assigned to different general group
+        //Check if user isn't already assigned to any general group
         if (userByEmail.isPresent()) {
-            if (!userByEmail.get()
-              .getGeneralGroup()
-              .equals(generalGroup.get())) {
                 throw new UserAlreadyAssignedException(
-                  "User with this email is already assigned to different group.");
-            }
+                  "User with this email is already assigned group.");
         }
 
         try {
