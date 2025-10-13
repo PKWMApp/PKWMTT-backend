@@ -7,17 +7,10 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
-import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
-import org.pkwmtt.security.moderator.Moderator;
 import org.pkwmtt.security.token.dto.UserDTO;
-import org.pkwmtt.security.token.entity.ModeratorRefreshToken;
 import org.pkwmtt.security.token.entity.RefreshToken;
-import org.pkwmtt.security.token.entity.UserRefreshToken;
-import org.pkwmtt.security.token.repository.ModeratorRefreshTokenRepository;
 import org.pkwmtt.security.token.repository.RefreshTokenRepository;
-import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
 import org.pkwmtt.security.token.utils.JwtUtils;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +27,6 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
     private final JwtUtils jwtUtils;
-    private final UserRefreshTokenRepository userRefreshTokenRepository;
-    private final ModeratorRefreshTokenRepository moderatorRefreshTokenRepository;
     private final PasswordEncoder  passwordEncoder;
 
     /**
@@ -76,49 +67,12 @@ public class JwtServiceImpl implements JwtService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 
-    @Override
-    public String getNewUserRefreshToken(User user) {
-        String token = generateRefreshToken();
-        userRefreshTokenRepository.save(new UserRefreshToken(passwordEncoder.encode(token), user));
-        return token;
-    }
 
-
-//    @Override
-//    public <RT extends RefreshToken<RT>, ID> String updateRefreshToken(RefreshTokenRepository<RT, ID> repository, RT rt) throws JwtException {
-//        String newToken = generateRefreshToken();
-//        repository.save(rt.update(passwordEncoder.encode(newToken)));
-//        return newToken;
-//    }
-
-    public static void validateRefreshToken(RefreshToken rt) {
+    public static void validateRefreshToken(RefreshToken rt) throws  InvalidRefreshTokenException {
         if (rt.getExpires().isBefore(LocalDateTime.now()))
             throw new InvalidRefreshTokenException();
     }
-
-
-    @Override
-    public <RT extends RefreshToken, ID> boolean deleteRefreshToken(RefreshTokenRepository<RT, ID> repository, String token) {
-        return repository.deleteTokenAsBoolean(findRefreshToken(repository, token).getToken());
-    }
-
-
-    /**
-     * converts a refresh token hash to its corresponding RefreshToken entity, if it exists
-     * @param repository repository storing refresh tokens of type RT. must extend JpaRepository
-     * @param token refresh token hash
-     * @param <RT> refresh token entity class implementing RefreshToken interface
-     * @param <ID> type of repository primary key
-     * @return RefreshToken entity matching given hash
-     * @throws InvalidRefreshTokenException if no matching token is found
-     */
-    private <RT extends RefreshToken, ID> RT findRefreshToken(RefreshTokenRepository<RT, ID> repository, String token)
-            throws InvalidRefreshTokenException {
-        List<RT> refreshTokens = repository.findAll();
-        return refreshTokens.stream()
-                .filter(rt -> passwordEncoder.matches(token, rt.getToken()))
-                .findFirst().orElseThrow(InvalidRefreshTokenException::new);
-    }
+    
 
     /**
      * Decode a secret key for signing JWT.

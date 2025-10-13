@@ -32,10 +32,8 @@ public class UserRefreshToken implements RefreshToken {
         this.expires = LocalDateTime.now().plusMonths(6);
     }
 
-    public UserRefreshToken update(String token) {
+    public void updateToken(String token) {
         this.token = token;
         this.created = LocalDateTime.now();
-        this.expires = LocalDateTime.now().plusMonths(6);
-        return this;
     }
 }

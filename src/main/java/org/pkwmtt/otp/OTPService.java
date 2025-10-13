@@ -14,6 +14,7 @@ import org.pkwmtt.mail.EmailService;
 import org.pkwmtt.mail.dto.MailDTO;
 import org.pkwmtt.otp.dto.OTPRequest;
 import org.pkwmtt.otp.repository.OTPCodeRepository;
+import org.pkwmtt.security.auhentication.JwtAuthenticationService;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.token.JwtService;
 import org.pkwmtt.security.token.dto.UserDTO;
@@ -36,6 +37,7 @@ public class OTPService {
     private final GeneralGroupRepository generalGroupRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
+    private final JwtAuthenticationService jwtAuthenticationService;
     private final TimetableService timetableService;
 
     public JwtAuthenticationDto generateTokenForRepresentative (String code)
@@ -53,7 +55,7 @@ public class OTPService {
         otpRepository.deleteByCode(code);
         return JwtAuthenticationDto.builder()
                 .accessToken(token)
-                .refreshToken(jwtService.getNewUserRefreshToken(user))
+                .refreshToken(jwtAuthenticationService.getNewUserRefreshToken(user))
                 .build();
     }
 

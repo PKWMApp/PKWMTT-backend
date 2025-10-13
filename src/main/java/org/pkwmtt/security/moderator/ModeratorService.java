@@ -10,7 +10,7 @@ import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
 import org.pkwmtt.security.token.JwtServiceImpl;
 import org.pkwmtt.security.token.entity.ModeratorRefreshToken;
-import org.pkwmtt.security.token.entity.UserRefreshToken;
+import org.pkwmtt.security.token.entity.RefreshToken;
 import org.pkwmtt.security.token.repository.ModeratorRefreshTokenRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,7 +52,6 @@ public class ModeratorService {
     public JwtAuthenticationDto refresh(RefreshRequestDto requestDto) {
 
         ModeratorRefreshToken moderatorRefreshToken = findRefreshToken(requestDto.getRefreshToken());
-
         JwtServiceImpl.validateRefreshToken(moderatorRefreshToken);
 
         String tokenHash = JwtServiceImpl.generateRefreshToken();
@@ -69,8 +68,15 @@ public class ModeratorService {
     }
 
     public void logout(RefreshRequestDto requestDto) {
-        if(!jwtService.deleteRefreshToken(moderatorRefreshTokenRepository, requestDto.getRefreshToken()))
+        RefreshToken refreshToken = findRefreshToken(requestDto.getRefreshToken());
+        if(!moderatorRefreshTokenRepository.deleteTokenAsBoolean(refreshToken.getToken()))
             throw new InvalidRefreshTokenException();
+    }
+
+    private String getNewModeratorRefreshToken(Moderator moderator) {
+        String token = JwtServiceImpl.generateRefreshToken();
+        moderatorRefreshTokenRepository.save(new ModeratorRefreshToken(passwordEncoder.encode(token), moderator));
+        return token;
     }
 
     private ModeratorRefreshToken findRefreshToken(String token)
@@ -79,11 +85,5 @@ public class ModeratorService {
         return refreshTokens.stream()
                 .filter(rt -> passwordEncoder.matches(token, rt.getToken()))
                 .findFirst().orElseThrow(InvalidRefreshTokenException::new);
-    }
-
-    private String getNewModeratorRefreshToken(Moderator moderator) {
-        String token = JwtServiceImpl.generateRefreshToken();
-        moderatorRefreshTokenRepository.save(new ModeratorRefreshToken(passwordEncoder.encode(token), moderator));
-        return token;
     }
 }
