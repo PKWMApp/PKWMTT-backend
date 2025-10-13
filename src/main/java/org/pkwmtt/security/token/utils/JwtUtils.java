@@ -14,7 +14,6 @@ public class JwtUtils {
     // to start without a real secret, e.g., for local development or tests.
     private final String secret;
     private final long expirationMs = TimeUnit.MINUTES.toMillis(5);
-//    private final long moderatorExpirationMs = 1000L * 60 * 60 * 2;
 
 
     public JwtUtils(Environment environment) {

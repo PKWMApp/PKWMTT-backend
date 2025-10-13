@@ -17,7 +17,6 @@ import org.pkwmtt.exceptions.WrongOTPFormatException;
 import org.pkwmtt.otp.dto.OTPRequest;
 import org.pkwmtt.otp.repository.OTPCodeRepository;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.token.repository.RefreshTokenRepository;
 import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;

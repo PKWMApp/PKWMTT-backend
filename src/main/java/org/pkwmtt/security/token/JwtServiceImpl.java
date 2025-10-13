@@ -9,9 +9,7 @@ import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.token.dto.UserDTO;
 import org.pkwmtt.security.token.entity.RefreshToken;
-import org.pkwmtt.security.token.repository.RefreshTokenRepository;
 import org.pkwmtt.security.token.utils.JwtUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -19,15 +17,14 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
+
     private final JwtUtils jwtUtils;
-    private final PasswordEncoder  passwordEncoder;
 
     /**
      * Generates a JWT token for a given user.
@@ -72,7 +69,7 @@ public class JwtServiceImpl implements JwtService {
         if (rt.getExpires().isBefore(LocalDateTime.now()))
             throw new InvalidRefreshTokenException();
     }
-    
+
 
     /**
      * Decode a secret key for signing JWT.
