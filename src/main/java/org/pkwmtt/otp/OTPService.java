@@ -21,6 +21,7 @@ import org.pkwmtt.security.token.dto.UserDTO;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -165,7 +166,7 @@ public class OTPService {
     private String generateNewCode () {
         String availableCharacters = "ABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
         StringBuilder code = new StringBuilder();
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
 
         do {
             code.setLength(0);
