@@ -108,7 +108,6 @@ public class TimetableParserService {
                 
                 //Go every item in column
                 for (int itemId = 0; itemId < items.size() - 1; itemId += 2) {
-                    boolean notOdd;
                     String name = items.get(itemId).text();
                     String classroom = items.get(itemId + 1).text();
                     
@@ -116,19 +115,10 @@ public class TimetableParserService {
                     
                     TypeOfWeek typeOfWeek;
                     
-                    if (isNameNotOdd(name) && isNameNotEven(name)) {
-                        typeOfWeek = TypeOfWeek.BOTH;
-                        notOdd = true;
-                    } else if (isNameNotOdd(name)) {
-                        typeOfWeek = TypeOfWeek.EVEN;
-                        notOdd = true;
-                    } else if (isNameNotEven(name)) {
-                        typeOfWeek = TypeOfWeek.ODD;
-                        notOdd = false;
-                    } else {
-                        typeOfWeek = TypeOfWeek.BOTH;
-                        notOdd = true;
-                    }
+                    typeOfWeek = (isNameNotOdd(name) && isNameNotEven(name)) ? TypeOfWeek.BOTH
+                                : isNameNotOdd(name) ? TypeOfWeek.EVEN
+                                : isNameNotEven(name) ? TypeOfWeek.ODD
+                                : TypeOfWeek.BOTH;
                     
                     days.get(columnId).add(subject, typeOfWeek);
                 }
