@@ -13,26 +13,32 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "otp_codes")
-public class OTPCode {
+@Table(name = "student_codes")
+public class StudentCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "otp_code_id")
-    private Integer otpCodeId;
-    
+    private Integer studentCodeId;
+
     @Column(nullable = false)
     private String code;
-    
+
     @Column(nullable = false)
     private LocalDateTime expire;
-    
-    @OneToOne
-    @JoinColumn(name = "general_group_id", nullable = false)
-    private GeneralGroup generalGroup;
-    
-    public OTPCode (String code, GeneralGroup generalGroup) {
+
+    @ManyToOne
+    @JoinColumn(name = "superior_group_id", nullable = false)
+    private SuperiorGroup superiorGroup;
+
+    @Column(name = "usage")
+    private Integer usage;
+
+    @Column(name = "usage_limit")
+    private Integer usageLimit;
+
+    public StudentCode(String code, SuperiorGroup superiorGroup) {
         this.code = code;
-        this.generalGroup = generalGroup;
+        this.superiorGroup = superiorGroup;
         this.expire = LocalDateTime.now().plusDays(1);
     }
 }

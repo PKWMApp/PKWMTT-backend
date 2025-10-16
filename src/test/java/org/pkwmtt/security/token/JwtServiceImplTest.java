@@ -8,9 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.enums.Role;
-import org.pkwmtt.security.token.dto.UserDTO;
+import org.pkwmtt.security.token.dto.RepresentativeDTO;
 import org.pkwmtt.security.token.utils.JwtUtils;
 
 import java.util.Base64;
@@ -28,7 +28,7 @@ class JwtServiceImplTest {
     private JwtUtils jwtUtils;
 
     @InjectMocks
-    private JwtServiceImpl jwtService;
+    private JwtService jwtService;
 
     @BeforeEach
     void setUp() {
@@ -42,7 +42,7 @@ class JwtServiceImplTest {
 
     @Test
     void generateAccessToken_shouldCreateNonEmptyAccessToken() {
-        UserDTO user = new UserDTO()
+        RepresentativeDTO user = new RepresentativeDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
@@ -56,7 +56,7 @@ class JwtServiceImplTest {
 
     @Test
     void getUserEmailFromToken_shouldReturnCorrectEmail() {
-        UserDTO user = new UserDTO()
+        RepresentativeDTO user = new RepresentativeDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
@@ -70,7 +70,7 @@ class JwtServiceImplTest {
 
     @Test
     void extractRoleFromToken_shouldReturnCorrectRole() {
-        UserDTO user = new UserDTO()
+        RepresentativeDTO user = new RepresentativeDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
@@ -84,7 +84,7 @@ class JwtServiceImplTest {
 
     @Test
     void extractGroupFromToken_shouldReturnCorrectGroup() {
-        UserDTO user = new UserDTO()
+        RepresentativeDTO user = new RepresentativeDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
@@ -98,7 +98,7 @@ class JwtServiceImplTest {
 
     @Test
     void validateAccessToken_shouldReturnTrueForValidAccessToken() {
-        UserDTO userDTO = new UserDTO()
+        RepresentativeDTO userDTO = new RepresentativeDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
@@ -106,14 +106,14 @@ class JwtServiceImplTest {
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
         String token = jwtService.generateAccessToken(userDTO);
-        User mockUser = mock(User.class);
+        Representative mockUser = mock(Representative.class);
         when(mockUser.getEmail()).thenReturn("user@example.com");
         assertTrue(jwtService.validateAccessToken(token, mockUser));
     }
 
     @Test
     void validateAccessToken_shouldReturnFalseForInvalidEmail() {
-        UserDTO userDTO = new UserDTO()
+        RepresentativeDTO userDTO = new RepresentativeDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
@@ -121,14 +121,14 @@ class JwtServiceImplTest {
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
         String token = jwtService.generateAccessToken(userDTO);
-        User mockUser = mock(User.class);
+        Representative mockUser = mock(Representative.class);
         when(mockUser.getEmail()).thenReturn("other@example.com");
         assertFalse(jwtService.validateAccessToken(token, mockUser));
     }
 
     @Test
     void validateAccessToken_shouldReturnFalseForExpiredAccessToken() {
-        UserDTO user = new UserDTO()
+        RepresentativeDTO user = new RepresentativeDTO()
                 .setEmail("user@example.com")
                 .setGroup("GROUP1")
                 .setRole(Role.ADMIN);
@@ -143,7 +143,7 @@ class JwtServiceImplTest {
                 .signWith(jwtService.decodeSecretKey())
                 .compact();
 
-        User mockUser = mock(User.class);
+        Representative mockUser = mock(Representative.class);
 //        when(mockUser.getEmail()).thenReturn("user@example.com");
 
         assertFalse(jwtService.validateAccessToken(expiredToken, mockUser));

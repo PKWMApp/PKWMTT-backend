@@ -1,24 +1,32 @@
 package org.pkwmtt.security.moderator;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "moderators")
 @Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "moderators")
 public class Moderator {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "moderator_id")
     private UUID moderatorId;
-    private String password;
-    private String role;
 
-    public Moderator(String encryptedPassword) {
-        password = encryptedPassword;
-        role = "MODERATOR";
+    @Column(nullable = false)
+    private String password;
+
+    @Column(length = 50)
+    private String role;
+    
+    public Moderator(String password) {
+        this.password = password;
+        this.role = "MODERATOR";
     }
 }
+

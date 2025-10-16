@@ -2,13 +2,12 @@ package org.pkwmtt.security.auhentication;
 
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
-import org.pkwmtt.security.token.JwtServiceImpl;
-import org.pkwmtt.security.token.dto.UserDTO;
+import org.pkwmtt.security.token.dto.RepresentativeDTO;
 import org.pkwmtt.security.token.entity.RefreshToken;
 import org.pkwmtt.security.token.entity.UserRefreshToken;
 import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
@@ -28,18 +27,18 @@ public class JwtAuthenticationService {
     public JwtAuthenticationDto refresh(RefreshRequestDto requestDto) throws JwtException {
 
         UserRefreshToken userRefreshToken = findRefreshToken(requestDto.getRefreshToken());
-        JwtServiceImpl.validateRefreshToken(userRefreshToken);
+        JwtService.validateRefreshToken(userRefreshToken);
 
-        String tokenHash = JwtServiceImpl.generateRefreshToken();
+        String tokenHash = JwtService.generateRefreshToken();
 
         userRefreshToken.updateToken(passwordEncoder.encode(tokenHash));
         userRefreshTokenRepository.save(userRefreshToken);
 
-        User user = userRefreshToken.getUser();
+        Representative representative = userRefreshToken.getRepresentative();
 
         return JwtAuthenticationDto.builder()
                 .refreshToken(tokenHash)
-                .accessToken(jwtService.generateAccessToken(new UserDTO(user)))
+                .accessToken(jwtService.generateAccessToken(new RepresentativeDTO(representative)))
                 .build();
     }
 
@@ -49,9 +48,9 @@ public class JwtAuthenticationService {
             throw new InvalidRefreshTokenException();
     }
 
-    public String getNewUserRefreshToken(User user) {
-        String token = JwtServiceImpl.generateRefreshToken();
-        userRefreshTokenRepository.save(new UserRefreshToken(passwordEncoder.encode(token), user));
+    public String getNewUserRefreshToken(Representative representative) {
+        String token = JwtService.generateRefreshToken();
+        userRefreshTokenRepository.save(new UserRefreshToken(passwordEncoder.encode(token), representative));
         return token;
     }
 

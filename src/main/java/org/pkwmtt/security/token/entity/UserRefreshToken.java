@@ -2,7 +2,7 @@ package org.pkwmtt.security.token.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.examCalendar.entity.Representative;
 
 import java.time.LocalDateTime;
 
@@ -18,16 +18,16 @@ public class UserRefreshToken implements RefreshToken {
     private String token;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "representative_id")
+    private Representative representative;
 
     private LocalDateTime created;
 
     private LocalDateTime expires;
 
-    public UserRefreshToken(String token, User user) {
+    public UserRefreshToken(String token, Representative representative) {
         this.token = token;
-        this.user = user;
+        this.representative = representative;
         this.created = LocalDateTime.now();
         this.expires = LocalDateTime.now().plusMonths(6);
     }

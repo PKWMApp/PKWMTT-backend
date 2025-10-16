@@ -1,13 +1,13 @@
-package org.pkwmtt.otp.dto;
+package org.pkwmtt.studentCodes.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class OTPRequest {
+public class StudentCodeRequest {
     private String email;
-    private String generalGroupName;
+    private String superiorGroup;
     
     public String getMailMessage (String code) {
         return String.format(
@@ -17,7 +17,7 @@ public class OTPRequest {
             Dzięki temu będziesz mógł dodawać oraz usuwać egzaminy dla swojego kierunku w kalendarzu aplikacji.<br/>
             Wpisz kod w <i>[Ustawienia > Wpisz kod]</i>, albo przekaż go osobie odpowiedzialnej za kalendarz egzaminów.<br/>
             Twój kod: <b>%s</b> <br/>
-            """, generalGroupName, code
+            """, superiorGroup, code
         );
     }
 }

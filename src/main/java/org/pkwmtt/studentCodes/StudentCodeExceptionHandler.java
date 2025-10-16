@@ -1,4 +1,4 @@
-package org.pkwmtt.otp;
+package org.pkwmtt.studentCodes;
 
 
 import com.mysql.cj.exceptions.WrongArgumentException;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Order(2)
-@RestControllerAdvice(assignableTypes = {OTPController.class, ModeratorController.class})
-public class OTPExceptionHandler {
-    @ExceptionHandler({OTPCodeNotFoundException.class, WrongOTPFormatException.class, UserNotFoundException.class, WrongArgumentException.class, SpecifiedGeneralGroupDoesntExistsException.class, IllegalArgumentException.class})
+@RestControllerAdvice(assignableTypes = {StudentCodeController.class, ModeratorController.class})
+public class StudentCodeExceptionHandler {
+    @ExceptionHandler({StudentCodeNotFoundException.class, WrongOTPFormatException.class, UserNotFoundException.class, WrongArgumentException.class, SpecifiedGeneralGroupDoesntExistsException.class, IllegalArgumentException.class})
     public ResponseEntity<ErrorResponseDTO> handleBadRequests (Exception e) {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
