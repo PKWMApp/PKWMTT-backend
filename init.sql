@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Paź 16, 2025 at 11:37 AM
+-- Generation Time: Paź 16, 2025 at 09:01 PM
 -- Wersja serwera: 9.4.0
 -- Wersja PHP: 8.2.27
 
@@ -40,7 +40,7 @@ CREATE TABLE `admin_keys` (
 -- Zrzut danych tabeli `admin_keys`
 --
 
-INSERT INTO `admin_keys` (`key_id`, `value`, `description`) VALUES
+INSERT IGNORE INTO `admin_keys` (`key_id`, `value`, `description`) VALUES
 (3, '0923cd6f-cd33-4883-87e4-ae3b50b80a3f', 'mikolaj'),
 (4, '2868b02b-a5dd-4386-a723-e450e5f54418', 'desc');
 
@@ -61,7 +61,7 @@ CREATE TABLE `api_keys` (
 -- Zrzut danych tabeli `api_keys`
 --
 
-INSERT INTO `api_keys` (`key_id`, `value`, `description`) VALUES
+INSERT IGNORE INTO `api_keys` (`key_id`, `value`, `description`) VALUES
 (1, 'ca3bdabb-b559-41ca-9e96-2c27d6199017', 'test');
 
 -- --------------------------------------------------------
@@ -111,7 +111,7 @@ CREATE TABLE `exams` (
 -- Zrzut danych tabeli `exams`
 --
 
-INSERT INTO `exams` (`exam_id`, `title`, `description`, `exam_date`, `exam_type_id`) VALUES
+INSERT IGNORE INTO `exams` (`exam_id`, `title`, `description`, `exam_date`, `exam_type_id`) VALUES
 (2, 'Egzamin końcowy z programowania', 'Egzamin pisemny i praktyczny', '2025-01-20 09:00:00', 2),
 (3, 'Projekt z baz danych', 'Oddanie projektu grupowego', '2025-06-15 23:59:00', 3),
 (4, 'Kolokwium z fizyki', 'Druga część materiału: mechanika', '2025-11-05 12:00:00', 1),
@@ -138,7 +138,7 @@ CREATE TABLE `exams_groups` (
 -- Zrzut danych tabeli `exams_groups`
 --
 
-INSERT INTO `exams_groups` (`exam_group_id`, `exam_id`, `group_id`) VALUES
+INSERT IGNORE INTO `exams_groups` (`exam_group_id`, `exam_id`, `group_id`) VALUES
 (9, 2, 12),
 (10, 2, 13),
 (11, 2, 14),
@@ -172,7 +172,7 @@ CREATE TABLE `exam_types` (
 -- Zrzut danych tabeli `exam_types`
 --
 
-INSERT INTO `exam_types` (`exam_type_id`, `name`) VALUES
+INSERT IGNORE INTO `exam_types` (`exam_type_id`, `name`) VALUES
 (1, 'Kolokwium'),
 (2, 'Egzamin końcowy'),
 (3, 'Projekt');
@@ -185,21 +185,10 @@ INSERT INTO `exam_types` (`exam_type_id`, `name`) VALUES
 
 DROP TABLE IF EXISTS `moderators`;
 CREATE TABLE `moderators` (
-  `moderator_id` binary(16) NOT NULL,
+  `moderator_id` varchar(36) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Zrzut danych tabeli `moderators`
---
-
-INSERT INTO `moderators` (`moderator_id`, `password`, `role`) VALUES
-(0x10b4cd4f840445ba9fff930fda8229c7, '$2a$10$zjcQISWSqPpMWQv99XWneOaHWiqTRhiXUJq5FT8iXbET.3hZfO0GO', 'MODERATOR'),
-(0x561e6e496eab4e9e965ac6c8ffe24293, '$2a$10$puIitW1sPdjyqCs2nbpco.wRAcGOpuWiOj6iQ0siFKOBaKmIS9ghK', 'MODERATOR'),
-(0x5d4153ce85c44935ab51acf9ed550898, '$2a$10$JwGNMpzYNvbdtkXmsq4HR.er3omj5Tq9D/.j/ks0h1QplqGBSXR62', 'MODERATOR'),
-(0x9e39a89631924bd6a38b0ee6e56be221, '$2a$10$e6H5n6xu4NymerBHqvO42OhUVg3aOHPpCPo0.TSDH1b/graC5FomC', 'MODERATOR'),
-(0xd45dd77e68ac45908a12340b35d04b6c, '$2a$10$k6aoa0OU8RKbCA4WHu4yDuMOZFmxP2zeX7Cjw3GmLVml2dDm6QGEG', 'MODERATOR');
 
 -- --------------------------------------------------------
 
@@ -211,27 +200,10 @@ DROP TABLE IF EXISTS `moderator_refresh_token`;
 CREATE TABLE `moderator_refresh_token` (
   `token_id` bigint NOT NULL,
   `token` char(64) NOT NULL,
-  `moderator_id` binary(16) NOT NULL,
+  `moderator_id` varchar(36) NOT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Zrzut danych tabeli `moderator_refresh_token`
---
-
-INSERT INTO `moderator_refresh_token` (`token_id`, `token`, `moderator_id`, `created`, `expires`) VALUES
-(1, '$2a$10$OmHymbfl961eDEenyPaY/Oy0SRLwctQ/LsQ7AME2/7iia3sQnfacG', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 17:31:40', '2026-04-11 17:31:40'),
-(2, '$2a$10$JRpDtVLeQuDvg/MMOyN7tu18ufl1oD/OpuHAokZtSWbN3lKR5g2J2', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 17:33:45', '2026-04-11 17:33:45'),
-(3, '$2a$10$ZknoOWYkx8lsD6SiBc1MiO5SyeV3i9/NZFcfj/KyR3rH8k2DKXuO2', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 17:37:17', '2026-04-11 17:37:17'),
-(4, '$2a$10$TJ3Vk8DJcl25Uud7uQ.9W.QH.jaG4PVv87M9IocYFjM8blQ4Bx5pi', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 17:59:23', '2026-04-11 17:59:23'),
-(5, '$2a$10$Xl8YG6PikP0q0ZC4wkORIOck33llSEnmJnnUiZv.OvD/Slhu2HP..', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 18:00:24', '2026-04-11 18:00:24'),
-(6, '$2a$10$aneQz5qe5y1SjICqQULsBe/tzncLC0cHeDkSKgrflDTjgnNP4QH42', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 18:06:10', '2026-04-11 18:06:10'),
-(7, '$2a$10$Q81UhgISfbcTPwqOTtgGv.RjCuQSdwWgkbI40RWlZiihJ2is6VcFm', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 18:11:08', '2026-04-11 18:11:08'),
-(8, '$2a$10$BC3RnQi5SRMIDITnujmNhO4h0MlnjoQ2SrwD6IHRomYvqiS34/v8C', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 18:13:53', '2026-04-11 18:13:53'),
-(9, '$2a$10$WFRcqffj1x2wbNHES7l1bOrsLxhBumyhY5Rj9MYEW0bnXKBvev2aK', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-11 20:53:02', '2026-04-11 20:52:27'),
-(10, '$2a$10$aDURQddSklLBMoBBcyPDTOhIiXNy0POPt2Lf4wZKywrIWOSLXtnye', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-13 17:50:04', '2026-04-13 17:44:26'),
-(11, '$2a$10$2hOwk3cxyH/y22J5iCY23ObLTY2r.LwGqUGZ205Urle88XL91H.CK', 0x561e6e496eab4e9e965ac6c8ffe24293, '2025-10-13 17:59:42', '2026-04-13 17:59:42');
 
 -- --------------------------------------------------------
 
@@ -267,7 +239,7 @@ CREATE TABLE `representatives` (
 -- Zrzut danych tabeli `representatives`
 --
 
-INSERT INTO `representatives` (`representative_id`, `superior_group_id`, `email`, `is_active`) VALUES
+INSERT IGNORE INTO `representatives` (`representative_id`, `superior_group_id`, `email`, `is_active`) VALUES
 (14, 21, 'mikiflor24@gmail.com', 1);
 
 -- --------------------------------------------------------
@@ -305,7 +277,7 @@ CREATE TABLE `student_codes` (
 -- Zrzut danych tabeli `student_codes`
 --
 
-INSERT INTO `student_codes` (`otp_code_id`, `code`, `expire`, `superior_group_id`, `usage`, `usage_limit`) VALUES
+INSERT IGNORE INTO `student_codes` (`otp_code_id`, `code`, `expire`, `superior_group_id`, `usage`, `usage_limit`) VALUES
 (2, 'XYZ789', '2025-08-18 20:51:40', 18, 0, 0),
 (4, 'JKL999', '2025-08-18 22:51:40', 20, 0, 0),
 (8, 'NTBX5O', '2025-09-30 20:06:06', 21, 0, 0);
@@ -326,7 +298,7 @@ CREATE TABLE `student_groups` (
 -- Zrzut danych tabeli `student_groups`
 --
 
-INSERT INTO `student_groups` (`group_id`, `name`) VALUES
+INSERT IGNORE INTO `student_groups` (`group_id`, `name`) VALUES
 (22, '11A'),
 (9, '11A1'),
 (10, '11A2'),
@@ -355,7 +327,7 @@ CREATE TABLE `superior_groups` (
 -- Zrzut danych tabeli `superior_groups`
 --
 
-INSERT INTO `superior_groups` (`superior_group_id`, `name`) VALUES
+INSERT IGNORE INTO `superior_groups` (`superior_group_id`, `name`) VALUES
 (17, '11A'),
 (18, '12E'),
 (19, '13K'),
@@ -575,7 +547,7 @@ ALTER TABLE `exams_groups`
 -- Ograniczenia dla tabeli `moderator_refresh_token`
 --
 ALTER TABLE `moderator_refresh_token`
-  ADD CONSTRAINT `fk_refresh_moderator` FOREIGN KEY (`moderator_id`) REFERENCES `moderators` (`moderator_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `moderator_refresh_token_ibfk_1` FOREIGN KEY (`moderator_id`) REFERENCES `moderators` (`moderator_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ograniczenia dla tabeli `representatives`

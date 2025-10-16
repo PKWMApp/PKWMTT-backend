@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Getter
-@Table(name = "user_refresh_token")
+@Table(name = "representative_refresh_token")
+//TODO not representative but user
 public class UserRefreshToken implements RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +22,10 @@ public class UserRefreshToken implements RefreshToken {
     @JoinColumn(name = "representative_id")
     private Representative representative;
 
+    @Column(name = "created_at")
     private LocalDateTime created;
 
+    @Column(name = "expires_at")
     private LocalDateTime expires;
 
     public UserRefreshToken(String token, Representative representative) {

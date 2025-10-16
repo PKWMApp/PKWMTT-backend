@@ -112,11 +112,25 @@ public class TimetableParserService {
                     String name = items.get(itemId).text();
                     String classroom = items.get(itemId + 1).text();
                     
-                    notOdd = isNameNotOdd(name);
-                    
                     SubjectDTO subject = buildSubject(name, classroom, rowId);
                     
-                    days.get(columnId).add(subject, notOdd ? TypeOfWeek.EVEN : TypeOfWeek.ODD);
+                    TypeOfWeek typeOfWeek;
+                    
+                    if (isNameNotOdd(name) && isNameNotEven(name)) {
+                        typeOfWeek = TypeOfWeek.BOTH;
+                        notOdd = true;
+                    } else if (isNameNotOdd(name)) {
+                        typeOfWeek = TypeOfWeek.EVEN;
+                        notOdd = true;
+                    } else if (isNameNotEven(name)) {
+                        typeOfWeek = TypeOfWeek.ODD;
+                        notOdd = false;
+                    } else {
+                        typeOfWeek = TypeOfWeek.BOTH;
+                        notOdd = true;
+                    }
+                    
+                    days.get(columnId).add(subject, typeOfWeek);
                 }
             }
         }
@@ -290,5 +304,9 @@ public class TimetableParserService {
      */
     private boolean isNameNotOdd (String name) {
         return !name.contains("(N") && !name.contains("-(n");
+    }
+    
+    private boolean isNameNotEven (String name) {
+        return !name.contains("(P") && !name.contains("-(p");
     }
 }
