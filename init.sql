@@ -111,16 +111,6 @@ CREATE TABLE `exams` (
 -- Zrzut danych tabeli `exams`
 --
 
-INSERT IGNORE INTO `exams` (`exam_id`, `title`, `description`, `exam_date`, `exam_type_id`) VALUES
-(2, 'Egzamin końcowy z programowania', 'Egzamin pisemny i praktyczny', '2025-01-20 09:00:00', 2),
-(3, 'Projekt z baz danych', 'Oddanie projektu grupowego', '2025-06-15 23:59:00', 3),
-(4, 'Kolokwium z fizyki', 'Druga część materiału: mechanika', '2025-11-05 12:00:00', 1),
-(5, 'Egzamin końcowy z ekonomii', 'Egzamin pisemny testowy', '2025-02-10 08:30:00', 2),
-(6, 'Projekt z systemów operacyjnych', 'Prezentacja projektu semestralnego', '2025-06-25 14:00:00', 3),
-(7, 'test authorities', 'do usuniecia', '2027-09-01 09:00:00', 3),
-(8, 'test authorities', 'do usuniecia', '2027-09-01 09:00:00', 3),
-(9, 'test authorities', 'do usunieciaaaaa', '2027-09-01 09:00:00', 3);
-
 -- --------------------------------------------------------
 
 --
@@ -138,23 +128,6 @@ CREATE TABLE `exams_groups` (
 -- Zrzut danych tabeli `exams_groups`
 --
 
-INSERT IGNORE INTO `exams_groups` (`exam_group_id`, `exam_id`, `group_id`) VALUES
-(9, 2, 12),
-(10, 2, 13),
-(11, 2, 14),
-(12, 3, 15),
-(13, 3, 16),
-(14, 3, 17),
-(15, 4, 9),
-(16, 4, 10),
-(17, 5, 12),
-(18, 5, 13),
-(19, 6, 15),
-(20, 6, 16),
-(21, 7, 21),
-(22, 7, 22),
-(23, 8, 9),
-(24, 9, 9);
 
 -- --------------------------------------------------------
 
@@ -239,9 +212,6 @@ CREATE TABLE `representatives` (
 -- Zrzut danych tabeli `representatives`
 --
 
-INSERT IGNORE INTO `representatives` (`representative_id`, `superior_group_id`, `email`, `is_active`) VALUES
-(14, 21, 'mikiflor24@gmail.com', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -277,11 +247,6 @@ CREATE TABLE `student_codes` (
 -- Zrzut danych tabeli `student_codes`
 --
 
-INSERT IGNORE INTO `student_codes` (`otp_code_id`, `code`, `expire`, `superior_group_id`, `usage`, `usage_limit`) VALUES
-(2, 'XYZ789', '2025-08-18 20:51:40', 18, 0, 0),
-(4, 'JKL999', '2025-08-18 22:51:40', 20, 0, 0),
-(8, 'NTBX5O', '2025-09-30 20:06:06', 21, 0, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -298,18 +263,6 @@ CREATE TABLE `student_groups` (
 -- Zrzut danych tabeli `student_groups`
 --
 
-INSERT IGNORE INTO `student_groups` (`group_id`, `name`) VALUES
-(22, '11A'),
-(9, '11A1'),
-(10, '11A2'),
-(12, '12E1'),
-(13, '12E2'),
-(14, '12E3'),
-(15, '13K1'),
-(16, '13K2'),
-(17, '13K3'),
-(18, '14M1'),
-(21, 'P01');
 
 -- --------------------------------------------------------
 
@@ -323,17 +276,7 @@ CREATE TABLE `superior_groups` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Zrzut danych tabeli `superior_groups`
---
 
-INSERT IGNORE INTO `superior_groups` (`superior_group_id`, `name`) VALUES
-(17, '11A'),
-(18, '12E'),
-(19, '13K'),
-(20, '14M'),
-(21, '12K'),
-(22, '11K');
 
 --
 -- Indeksy dla zrzutów tabel
