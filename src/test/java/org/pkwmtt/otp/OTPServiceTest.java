@@ -16,6 +16,8 @@ import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
 import org.pkwmtt.otp.dto.OTPRequest;
 import org.pkwmtt.otp.repository.OTPCodeRepository;
+import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -41,6 +43,9 @@ class OTPServiceTest {
     
     @Autowired
     private OTPCodeRepository otpCodeRepository;
+
+    @Autowired
+    private UserRefreshTokenRepository userRefreshTokenRepository;
     
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
@@ -87,7 +92,7 @@ class OTPServiceTest {
         //then
         assertThrows(SpecifiedGeneralGroupDoesntExistsException.class, () -> otpService.sendOTPCodesForManyGroups(requests));
     }
-    
+
     @Test
     void shouldGenerateTokenForRepresentative () throws Exception {
         //given
@@ -110,15 +115,17 @@ class OTPServiceTest {
             fail("Code not found");
         }
         
-        String token = otpService.generateTokenForRepresentative(code); //generate token
-        
+        JwtAuthenticationDto token = otpService.generateTokenForRepresentative(code); //generate token
+
         //then
         assertAll(() -> {
             assertNotNull(token);
-            
-            Matcher tokenMatcher = tokenPattern.matcher(token);
+
+            Matcher tokenMatcher = tokenPattern.matcher(token.getAccessToken());
+            assertNotNull(token.getRefreshToken());
             assertTrue(tokenMatcher.find());
             assertFalse(otpCodeRepository.existsOTPCodeByCode(code));
+            assertFalse(userRefreshTokenRepository.findAll().isEmpty());
         });
     }
     

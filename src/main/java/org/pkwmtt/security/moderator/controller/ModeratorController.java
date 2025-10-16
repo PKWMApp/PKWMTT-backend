@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.User;
 import org.pkwmtt.otp.OTPService;
 import org.pkwmtt.otp.dto.OTPRequest;
+import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.moderator.ModeratorService;
 import org.pkwmtt.security.moderator.dto.AuthDto;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,19 @@ public class ModeratorController {
     private final OTPService otpService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticate (@RequestBody AuthDto auth) {
+    public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody AuthDto auth) {
         return ResponseEntity.ok(moderatorService.generateTokenForModerator(auth.getPassword()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtAuthenticationDto> refresh(@RequestBody RefreshRequestDto requestDto){
+        return ResponseEntity.ok(moderatorService.refresh(requestDto));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody RefreshRequestDto requestDto){
+        moderatorService.logout(requestDto);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/users")

@@ -1,4 +1,4 @@
-package org.pkwmtt.security.auth;
+package org.pkwmtt.security.authorization;
 
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.repository.ExamRepository;

@@ -49,7 +49,7 @@ class JwtFilterTest {
         when(mockUser.getEmail()).thenReturn("user@example.com");
 
         when(jwtService.getSubject("validToken")).thenReturn("user@example.com");
-        when(jwtService.validateToken(eq("validToken"), any(User.class))).thenReturn(true);
+        when(jwtService.validateAccessToken(eq("validToken"), any(User.class))).thenReturn(true);
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
         when(jwtService.extractClaim(any(String.class), any(Function.class))).thenReturn("ADMIN");
         jwtFilter.doFilterInternal(request, response, filterChain);

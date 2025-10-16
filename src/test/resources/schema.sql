@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS otp_codes;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS student_groups;
 DROP TABLE IF EXISTS general_group;
+DROP TABLE IF EXISTS user_refresh_token;
 
 CREATE TABLE exam_type (
                            exam_type_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -59,3 +60,16 @@ CREATE TABLE users (
                        CONSTRAINT fk_users_general_group FOREIGN KEY (general_group_id)
                            REFERENCES general_group (general_group_id) ON DELETE CASCADE
 );
+
+CREATE TABLE user_refresh_token (
+                                    token_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                    token CHAR(64) NOT NULL UNIQUE,
+                                    user_id INT NOT NULL,
+                                    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                                    expires TIMESTAMP NOT NULL
+);
+
+ALTER TABLE user_refresh_token
+    ADD CONSTRAINT fk_refresh_user
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    ON DELETE CASCADE;

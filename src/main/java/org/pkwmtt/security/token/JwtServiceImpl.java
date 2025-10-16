@@ -6,11 +6,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.token.dto.UserDTO;
+import org.pkwmtt.security.token.entity.RefreshToken;
 import org.pkwmtt.security.token.utils.JwtUtils;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
@@ -19,6 +23,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
+
     private final JwtUtils jwtUtils;
 
     /**
@@ -30,7 +35,7 @@ public class JwtServiceImpl implements JwtService {
      * @return signed JWT token as a String
      */
     @Override
-    public String generateToken(UserDTO user) {
+    public String generateAccessToken(UserDTO user) {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("group", user.getGroup())
@@ -42,15 +47,29 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(UUID uuid) {
+    public String generateAccessToken(UUID uuid) {
         return Jwts.builder()
                 .subject(uuid.toString())
                 .claim("role", "MODERATOR")
                 .issuedAt(new Date())
-                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getModeratorExpirationMs())))
+                .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
                 .compact();
     }
+
+    public static String generateRefreshToken() {
+        SecureRandom random = new SecureRandom();
+        byte[] randomBytes = new byte[32];
+        random.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    }
+
+
+    public static void validateRefreshToken(RefreshToken rt) throws  InvalidRefreshTokenException {
+        if (rt.getExpires().isBefore(LocalDateTime.now()))
+            throw new InvalidRefreshTokenException();
+    }
+
 
     /**
      * Decode a secret key for signing JWT.
@@ -71,7 +90,7 @@ public class JwtServiceImpl implements JwtService {
      * @return true if the token is valid, false otherwise
      */
     @Override
-    public Boolean validateToken(String token, User user) {
+    public Boolean validateAccessToken(String token, User user) {
         try {
             final String userEmail = getSubject(token);
             return userEmail != null
@@ -83,7 +102,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Boolean validateToken(String token, String uuid) {
+    public Boolean validateAccessToken(String token, String uuid) {
         try {
             final String userid = getSubject(token);
             return userid != null
@@ -93,6 +112,7 @@ public class JwtServiceImpl implements JwtService {
             return false;
         }
     }
+
 
     /**
      * Extracts the user identifier (email) from a JWT token.
