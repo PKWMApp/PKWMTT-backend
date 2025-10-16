@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,7 +19,7 @@ public class Event {
     @Column(nullable = false)
     private String title;
 
-    @Column()
+    @Column
     private String description;
 
     @Column(name = "start_date")

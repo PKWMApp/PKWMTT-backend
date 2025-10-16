@@ -79,11 +79,8 @@ public class JwtFilter extends OncePerRequestFilter {
     }
     
     private void filterModerator (HttpServletRequest request, String token, String subject) {
-        
-        // After
         UUID uuid = UUID.fromString(subject);
-        byte[] uuidBytes = uuid.toString().getBytes(); // Convert UUID to byte[]
-        moderatorRepository.findById(uuidBytes).orElseThrow(); // TODO: add exception type
+        moderatorRepository.findById(uuid).orElseThrow(); // TODO: add exception type
         
         if (jwtService.validateAccessToken(token, subject)) {
             List<SimpleGrantedAuthority> authorities = List.of(

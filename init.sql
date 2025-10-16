@@ -40,10 +40,6 @@ CREATE TABLE `admin_keys` (
 -- Zrzut danych tabeli `admin_keys`
 --
 
-INSERT IGNORE INTO `admin_keys` (`key_id`, `value`, `description`) VALUES
-(3, '0923cd6f-cd33-4883-87e4-ae3b50b80a3f', 'mikolaj'),
-(4, '2868b02b-a5dd-4386-a723-e450e5f54418', 'desc');
-
 -- --------------------------------------------------------
 
 --
@@ -60,9 +56,6 @@ CREATE TABLE `api_keys` (
 --
 -- Zrzut danych tabeli `api_keys`
 --
-
-INSERT IGNORE INTO `api_keys` (`key_id`, `value`, `description`) VALUES
-(1, 'ca3bdabb-b559-41ca-9e96-2c27d6199017', 'test');
 
 -- --------------------------------------------------------
 
