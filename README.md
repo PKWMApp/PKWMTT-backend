@@ -98,7 +98,7 @@ MIT License. See [LICENSE](./LICENSE) for details.
 ## 💬 Contact
 
 - Issues: [GitHub Issues](https://github.com/PKWMApp/PKWMTT-backend/issues)
-- Team: [@PKWMApp](https://github.com/PKWMNTeam)
+- Team: [@PKWMApp](https://github.com/PKWMApp)
 
 ---
 
