@@ -34,8 +34,6 @@ public class RequestInterceptor implements HandlerInterceptor {
         
         try {
             apiKeyService.validateApiKey(apiKey, Role.REPRESENTATIVE);
-        } catch (IncorrectApiKeyValue e) {
-            throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new InternalException("Internal server error with validating API key.");
