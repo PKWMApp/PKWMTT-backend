@@ -29,11 +29,11 @@ public class ApiKeyService {
     }
     
     private void saveApiKey (String value, String description, Role role) {
-        value = encoder.encode(value);
+        String encodedValue = encoder.encode(value);
         if (role == Role.ADMIN) {
-            adminKeyRepository.save(new AdminKey(value, description));
+            adminKeyRepository.save(new AdminKey(encodedValue, description));
         } else {
-            apiKeyRepository.save(new ApiKey(value, description));
+            apiKeyRepository.save(new ApiKey(encodedValue, description));
         }
     }
     
