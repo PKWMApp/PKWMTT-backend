@@ -18,7 +18,9 @@ public class AdminRequestInterceptor implements HandlerInterceptor {
     private final ApiKeyService apiKeyService;
     
     @Override
-    public boolean preHandle (@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
+    public boolean preHandle (@NonNull HttpServletRequest request,
+                              @NonNull HttpServletResponse response,
+                              @NonNull Object handler) throws MissingHeaderException {
         String headerName = "X-ADMIN-KEY";
         try {
             String providedApiKey = request.getHeader(headerName);
@@ -28,10 +30,12 @@ public class AdminRequestInterceptor implements HandlerInterceptor {
             }
             
             apiKeyService.validateApiKey(providedApiKey, Role.ADMIN);
-        } catch (IncorrectApiKeyValue | MissingHeaderException e) {
+        } catch (MissingHeaderException e) {
+            throw new MissingHeaderException(headerName);
+        } catch (IncorrectApiKeyValue e) {
             throw new IncorrectApiKeyValue();
         } catch (Exception e) {
-            throw new InternalException("Internal server error with validating API key.");
+            throw new InternalException("Internal server error while validating API key.");
         }
         
         return true;

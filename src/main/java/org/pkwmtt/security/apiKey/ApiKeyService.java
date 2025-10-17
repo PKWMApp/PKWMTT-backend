@@ -24,17 +24,18 @@ public class ApiKeyService {
     
     public String generateApiKey (String description, Role role) {
         String value = UUID.randomUUID().toString();
-        if (role == Role.REPRESENTATIVE || role == Role.ADMIN) {
-            saveApiKey(encoder.encode(value), description, role);
+        if (role == Role.REPRESENTATIVE || role == Role.STUDENT || role == Role.ADMIN) {
+            saveApiKey(value, description, role);
         }
         return value;
     }
     
-    private void saveApiKey (String value, String description, Role role) {
-        if (role == Role.REPRESENTATIVE) {
-            apiKeyRepository.save(new ApiKey(value, description));
-        } else {
+    public void saveApiKey (String value, String description, Role role) {
+        value = encoder.encode(value);
+        if (role == Role.ADMIN) {
             adminKeyRepository.save(new AdminKey(value, description));
+        } else {
+            apiKeyRepository.save(new ApiKey(value, description));
         }
     }
     
