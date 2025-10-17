@@ -11,11 +11,6 @@ public class JwtAuthenticationToken extends UsernamePasswordAuthenticationToken 
     @Getter
     private String examGroup;
 
-
-    public JwtAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
-        super(principal, null, authorities);
-    }
-
     public JwtAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities,  String group) {
         super(principal, null, authorities);
         this.examGroup = group;

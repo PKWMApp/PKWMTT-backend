@@ -23,7 +23,7 @@ public class JwtAuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody StudentCodeDTO code)
       throws StudentCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
-        return ResponseEntity.ok(studentCodeService.generateTokenForRepresentative(code.getOtpCode()));
+        return ResponseEntity.ok(studentCodeService.generateTokenForUser(code.getOtpCode()));
     }
 
     @PostMapping("/refresh")

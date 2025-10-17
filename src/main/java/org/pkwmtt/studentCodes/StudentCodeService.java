@@ -40,7 +40,7 @@ public class StudentCodeService {
     private final JwtAuthenticationService jwtAuthenticationService;
     private final TimetableService timetableService;
 
-    public JwtAuthenticationDto generateTokenForRepresentative (String code)
+    public JwtAuthenticationDto generateTokenForUser (String code)
       throws StudentCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
         var superiorGroup = this.getSuperiorGroupAssignedToCode(code);
         var representative = representativeRepository

@@ -110,7 +110,7 @@ class StudentCodeServiceTest {
             fail("Code not found");
         }
         
-        JwtAuthenticationDto token = studentCodeService.generateTokenForRepresentative(code); //generate token
+        JwtAuthenticationDto token = studentCodeService.generateTokenForUser(code); //generate token
 
         //then
         assertAll(() -> {
@@ -126,17 +126,17 @@ class StudentCodeServiceTest {
     
     @Test
     void shouldThrow_WrongOTPFormatException_wrongCharacters () {
-        assertThrows(WrongOTPFormatException.class, () -> studentCodeService.generateTokenForRepresentative("XXXXX#"));
+        assertThrows(WrongOTPFormatException.class, () -> studentCodeService.generateTokenForUser("XXXXX#"));
     }
     
     @Test
     void shouldThrow_WrongOTPFormatException_tooLongCode () {
-        assertThrows(WrongOTPFormatException.class, () -> studentCodeService.generateTokenForRepresentative("X".repeat(7)));
+        assertThrows(WrongOTPFormatException.class, () -> studentCodeService.generateTokenForUser("X".repeat(7)));
     }
     
     @Test
     void shouldThrow_OTPCodeNotFoundException () {
-        assertThrows(StudentCodeNotFoundException.class, () -> studentCodeService.generateTokenForRepresentative("X".repeat(6)));
+        assertThrows(StudentCodeNotFoundException.class, () -> studentCodeService.generateTokenForUser("X".repeat(6)));
     }
     
     private String extractBody (Part part) throws Exception {
