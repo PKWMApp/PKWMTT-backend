@@ -30,8 +30,6 @@ public class AdminRequestInterceptor implements HandlerInterceptor {
             }
             
             apiKeyService.validateApiKey(providedApiKey, Role.ADMIN);
-        } catch (MissingHeaderException e) {
-            throw new MissingHeaderException(headerName);
         } catch (IncorrectApiKeyValue e) {
             throw new IncorrectApiKeyValue();
         } catch (Exception e) {
