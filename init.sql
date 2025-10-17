@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Paź 16, 2025 at 09:01 PM
+-- Generation Time: Paź 17, 2025 at 01:07 PM
 -- Wersja serwera: 9.4.0
 -- Wersja PHP: 8.2.27
 
@@ -40,6 +40,10 @@ CREATE TABLE `admin_keys` (
 -- Zrzut danych tabeli `admin_keys`
 --
 
+INSERT INTO `admin_keys` (`key_id`, `value`, `description`) VALUES
+(6, '$2a$10$AF/3/7aVlFk4Ypqk7Te/uuLGhtXPmrkESNn3.kzcCoRDW8FRGBRu2', 'mikolaj'),
+(8, '$2a$10$EQU7/.muQM/e1aZtw.FVK.UAk/4SsRGeUIzLSsplrPi/JnAYHF8V2', 'patryk');
+
 -- --------------------------------------------------------
 
 --
@@ -56,6 +60,10 @@ CREATE TABLE `api_keys` (
 --
 -- Zrzut danych tabeli `api_keys`
 --
+
+INSERT INTO `api_keys` (`key_id`, `value`, `description`) VALUES
+(4, '$2a$10$uUvJtEEewxJsdUvI5kE0Iuvcv8MeixlfMML.Jx0XicXKT2AtMHP32', 'mobile app'),
+(5, '$2a$10$VuoisZPoCWNBXtdQEEGQXO.T4SK1mQGXeA6JSM1KW4MUQ.JSuy7C2', 'web app');
 
 -- --------------------------------------------------------
 
@@ -100,10 +108,6 @@ CREATE TABLE `exams` (
   `exam_type_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Zrzut danych tabeli `exams`
---
-
 -- --------------------------------------------------------
 
 --
@@ -116,11 +120,6 @@ CREATE TABLE `exams_groups` (
   `exam_id` int NOT NULL,
   `group_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Zrzut danych tabeli `exams_groups`
---
-
 
 -- --------------------------------------------------------
 
@@ -138,7 +137,7 @@ CREATE TABLE `exam_types` (
 -- Zrzut danych tabeli `exam_types`
 --
 
-INSERT IGNORE INTO `exam_types` (`exam_type_id`, `name`) VALUES
+INSERT INTO `exam_types` (`exam_type_id`, `name`) VALUES
 (1, 'Kolokwium'),
 (2, 'Egzamin końcowy'),
 (3, 'Projekt');
@@ -159,11 +158,11 @@ CREATE TABLE `moderators` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `moderator_refresh_token`
+-- Struktura tabeli dla tabeli `moderator_refresh_tokens`
 --
 
-DROP TABLE IF EXISTS `moderator_refresh_token`;
-CREATE TABLE `moderator_refresh_token` (
+DROP TABLE IF EXISTS `moderator_refresh_tokens`;
+CREATE TABLE `moderator_refresh_tokens` (
   `token_id` bigint NOT NULL,
   `token` char(64) NOT NULL,
   `moderator_id` varchar(36) NOT NULL,
@@ -201,25 +200,6 @@ CREATE TABLE `representatives` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Zrzut danych tabeli `representatives`
---
-
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `representative_refresh_token`
---
-
-DROP TABLE IF EXISTS `representative_refresh_token`;
-CREATE TABLE `representative_refresh_token` (
-  `token_id` bigint NOT NULL,
-  `token` char(64) NOT NULL,
-  `representative_id` int NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `expires_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 -- --------------------------------------------------------
 
 --
@@ -230,15 +210,11 @@ DROP TABLE IF EXISTS `student_codes`;
 CREATE TABLE `student_codes` (
   `otp_code_id` int NOT NULL,
   `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `expire` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expire` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `superior_group_id` int NOT NULL,
   `usage` int NOT NULL,
   `usage_limit` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Zrzut danych tabeli `student_codes`
---
 
 -- --------------------------------------------------------
 
@@ -252,11 +228,6 @@ CREATE TABLE `student_groups` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Zrzut danych tabeli `student_groups`
---
-
-
 -- --------------------------------------------------------
 
 --
@@ -269,7 +240,20 @@ CREATE TABLE `superior_groups` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
+--
+-- Struktura tabeli dla tabeli `user_refresh_tokens`
+--
+
+DROP TABLE IF EXISTS `user_refresh_tokens`;
+CREATE TABLE `user_refresh_tokens` (
+  `token_id` bigint NOT NULL,
+  `token` char(64) NOT NULL,
+  `representative_id` int NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expires_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Indeksy dla zrzutów tabel
@@ -331,9 +315,9 @@ ALTER TABLE `moderators`
   ADD PRIMARY KEY (`moderator_id`);
 
 --
--- Indeksy dla tabeli `moderator_refresh_token`
+-- Indeksy dla tabeli `moderator_refresh_tokens`
 --
-ALTER TABLE `moderator_refresh_token`
+ALTER TABLE `moderator_refresh_tokens`
   ADD PRIMARY KEY (`token_id`),
   ADD UNIQUE KEY `token` (`token`),
   ADD KEY `idx_moderator_id` (`moderator_id`);
@@ -344,14 +328,6 @@ ALTER TABLE `moderator_refresh_token`
 ALTER TABLE `representatives`
   ADD PRIMARY KEY (`representative_id`),
   ADD KEY `general_group_id_idx` (`superior_group_id`);
-
---
--- Indeksy dla tabeli `representative_refresh_token`
---
-ALTER TABLE `representative_refresh_token`
-  ADD PRIMARY KEY (`token_id`),
-  ADD UNIQUE KEY `token` (`token`),
-  ADD KEY `idx_representative_id` (`representative_id`);
 
 --
 -- Indeksy dla tabeli `student_codes`
@@ -374,6 +350,14 @@ ALTER TABLE `superior_groups`
   ADD PRIMARY KEY (`superior_group_id`);
 
 --
+-- Indeksy dla tabeli `user_refresh_tokens`
+--
+ALTER TABLE `user_refresh_tokens`
+  ADD PRIMARY KEY (`token_id`),
+  ADD UNIQUE KEY `token` (`token`),
+  ADD KEY `idx_representative_id` (`representative_id`);
+
+--
 -- AUTO_INCREMENT dla zrzuconych tabel
 --
 
@@ -381,13 +365,13 @@ ALTER TABLE `superior_groups`
 -- AUTO_INCREMENT dla tabeli `admin_keys`
 --
 ALTER TABLE `admin_keys`
-  MODIFY `key_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `key_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT dla tabeli `api_keys`
 --
 ALTER TABLE `api_keys`
-  MODIFY `key_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `key_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT dla tabeli `events`
@@ -420,9 +404,9 @@ ALTER TABLE `exam_types`
   MODIFY `exam_type_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT dla tabeli `moderator_refresh_token`
+-- AUTO_INCREMENT dla tabeli `moderator_refresh_tokens`
 --
-ALTER TABLE `moderator_refresh_token`
+ALTER TABLE `moderator_refresh_tokens`
   MODIFY `token_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
@@ -430,12 +414,6 @@ ALTER TABLE `moderator_refresh_token`
 --
 ALTER TABLE `representatives`
   MODIFY `representative_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
---
--- AUTO_INCREMENT dla tabeli `representative_refresh_token`
---
-ALTER TABLE `representative_refresh_token`
-  MODIFY `token_id` bigint NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT dla tabeli `student_codes`
@@ -454,6 +432,12 @@ ALTER TABLE `student_groups`
 --
 ALTER TABLE `superior_groups`
   MODIFY `superior_group_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT dla tabeli `user_refresh_tokens`
+--
+ALTER TABLE `user_refresh_tokens`
+  MODIFY `token_id` bigint NOT NULL AUTO_INCREMENT;
 
 --
 -- Ograniczenia dla zrzutów tabel
@@ -480,10 +464,10 @@ ALTER TABLE `exams_groups`
   ADD CONSTRAINT `exams_groups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `student_groups` (`group_id`) ON DELETE CASCADE;
 
 --
--- Ograniczenia dla tabeli `moderator_refresh_token`
+-- Ograniczenia dla tabeli `moderator_refresh_tokens`
 --
-ALTER TABLE `moderator_refresh_token`
-  ADD CONSTRAINT `moderator_refresh_token_ibfk_1` FOREIGN KEY (`moderator_id`) REFERENCES `moderators` (`moderator_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `moderator_refresh_tokens`
+  ADD CONSTRAINT `moderator_refresh_tokens_ibfk_1` FOREIGN KEY (`moderator_id`) REFERENCES `moderators` (`moderator_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ograniczenia dla tabeli `representatives`
@@ -492,16 +476,16 @@ ALTER TABLE `representatives`
   ADD CONSTRAINT `representatives_ibfk_1` FOREIGN KEY (`superior_group_id`) REFERENCES `superior_groups` (`superior_group_id`) ON DELETE CASCADE;
 
 --
--- Ograniczenia dla tabeli `representative_refresh_token`
---
-ALTER TABLE `representative_refresh_token`
-  ADD CONSTRAINT `fk_refresh_user` FOREIGN KEY (`representative_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE;
-
---
 -- Ograniczenia dla tabeli `student_codes`
 --
 ALTER TABLE `student_codes`
   ADD CONSTRAINT `student_codes_ibfk_1` FOREIGN KEY (`superior_group_id`) REFERENCES `superior_groups` (`superior_group_id`) ON DELETE CASCADE;
+
+--
+-- Ograniczenia dla tabeli `user_refresh_tokens`
+--
+ALTER TABLE `user_refresh_tokens`
+  ADD CONSTRAINT `fk_refresh_user` FOREIGN KEY (`representative_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
