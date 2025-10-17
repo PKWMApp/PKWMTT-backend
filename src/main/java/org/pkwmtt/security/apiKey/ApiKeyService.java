@@ -24,9 +24,7 @@ public class ApiKeyService {
     
     public String generateApiKey (String description, Role role) {
         String value = UUID.randomUUID().toString();
-        if (role == Role.REPRESENTATIVE || role == Role.STUDENT || role == Role.ADMIN) {
-            saveApiKey(value, description, role);
-        }
+        saveApiKey(value, description, role);
         return value;
     }
     
