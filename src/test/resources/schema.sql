@@ -1,12 +1,12 @@
 DROP TABLE IF EXISTS events_superior_group;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS representatives;
-DROP TABLE IF EXISTS superior_groups;
 DROP TABLE IF EXISTS student_codes;
-DROP TABLE IF EXISTS student_groups;
-DROP TABLE IF EXISTS exam_types;
 DROP TABLE IF EXISTS exams_groups;
 DROP TABLE IF EXISTS exams;
+DROP TABLE IF EXISTS superior_groups;
+DROP TABLE IF EXISTS exam_types;
+DROP TABLE IF EXISTS student_groups;
 DROP TABLE IF EXISTS moderators;
 DROP TABLE IF EXISTS api_keys;
 DROP TABLE IF EXISTS admin_keys;
