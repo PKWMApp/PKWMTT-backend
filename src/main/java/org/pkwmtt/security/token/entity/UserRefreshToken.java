@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Getter
-@Table(name = "representative_refresh_token")
+@Table(name = "user_refresh_tokens")
 //TODO not representative but user
 public class UserRefreshToken implements RefreshToken {
     @Id
