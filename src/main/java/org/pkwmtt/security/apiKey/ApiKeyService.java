@@ -30,7 +30,7 @@ public class ApiKeyService {
         return value;
     }
     
-    public void saveApiKey (String value, String description, Role role) {
+    private void saveApiKey (String value, String description, Role role) {
         value = encoder.encode(value);
         if (role == Role.ADMIN) {
             adminKeyRepository.save(new AdminKey(value, description));
