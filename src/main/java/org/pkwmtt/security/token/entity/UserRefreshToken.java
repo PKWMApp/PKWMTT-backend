@@ -19,7 +19,7 @@ public class UserRefreshToken implements RefreshToken {
     private String token;
 
     @ManyToOne
-    @JoinColumn(name = "representative_id")
+    @JoinColumn(name = "user_id")
     private Representative representative;
 
     @Column(name = "created_at")

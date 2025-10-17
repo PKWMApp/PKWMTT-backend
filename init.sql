@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Paź 17, 2025 at 01:07 PM
+-- Generation Time: Paź 17, 2025 at 01:13 PM
 -- Wersja serwera: 9.4.0
 -- Wersja PHP: 8.2.27
 
@@ -37,6 +37,11 @@ CREATE TABLE `admin_keys` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Tabela Truncate przed wstawieniem `admin_keys`
+--
+
+TRUNCATE TABLE `admin_keys`;
+--
 -- Zrzut danych tabeli `admin_keys`
 --
 
@@ -57,6 +62,11 @@ CREATE TABLE `api_keys` (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `api_keys`
+--
+
+TRUNCATE TABLE `api_keys`;
 --
 -- Zrzut danych tabeli `api_keys`
 --
@@ -80,6 +90,11 @@ CREATE TABLE `events` (
   `end_date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `events`
+--
+
+TRUNCATE TABLE `events`;
 -- --------------------------------------------------------
 
 --
@@ -93,6 +108,11 @@ CREATE TABLE `events_superior_group` (
   `superior_group_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `events_superior_group`
+--
+
+TRUNCATE TABLE `events_superior_group`;
 -- --------------------------------------------------------
 
 --
@@ -108,6 +128,11 @@ CREATE TABLE `exams` (
   `exam_type_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `exams`
+--
+
+TRUNCATE TABLE `exams`;
 -- --------------------------------------------------------
 
 --
@@ -121,6 +146,11 @@ CREATE TABLE `exams_groups` (
   `group_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `exams_groups`
+--
+
+TRUNCATE TABLE `exams_groups`;
 -- --------------------------------------------------------
 
 --
@@ -133,6 +163,11 @@ CREATE TABLE `exam_types` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `exam_types`
+--
+
+TRUNCATE TABLE `exam_types`;
 --
 -- Zrzut danych tabeli `exam_types`
 --
@@ -155,6 +190,11 @@ CREATE TABLE `moderators` (
   `role` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `moderators`
+--
+
+TRUNCATE TABLE `moderators`;
 -- --------------------------------------------------------
 
 --
@@ -170,6 +210,11 @@ CREATE TABLE `moderator_refresh_tokens` (
   `expires` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `moderator_refresh_tokens`
+--
+
+TRUNCATE TABLE `moderator_refresh_tokens`;
 -- --------------------------------------------------------
 
 --
@@ -186,6 +231,11 @@ CREATE TABLE `refresh_token` (
   `expires_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `refresh_token`
+--
+
+TRUNCATE TABLE `refresh_token`;
 -- --------------------------------------------------------
 
 --
@@ -200,6 +250,11 @@ CREATE TABLE `representatives` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `representatives`
+--
+
+TRUNCATE TABLE `representatives`;
 -- --------------------------------------------------------
 
 --
@@ -216,6 +271,11 @@ CREATE TABLE `student_codes` (
   `usage_limit` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `student_codes`
+--
+
+TRUNCATE TABLE `student_codes`;
 -- --------------------------------------------------------
 
 --
@@ -228,6 +288,11 @@ CREATE TABLE `student_groups` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `student_groups`
+--
+
+TRUNCATE TABLE `student_groups`;
 -- --------------------------------------------------------
 
 --
@@ -240,6 +305,11 @@ CREATE TABLE `superior_groups` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `superior_groups`
+--
+
+TRUNCATE TABLE `superior_groups`;
 -- --------------------------------------------------------
 
 --
@@ -250,11 +320,16 @@ DROP TABLE IF EXISTS `user_refresh_tokens`;
 CREATE TABLE `user_refresh_tokens` (
   `token_id` bigint NOT NULL,
   `token` char(64) NOT NULL,
-  `representative_id` int NOT NULL,
+  `user_id` int NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Tabela Truncate przed wstawieniem `user_refresh_tokens`
+--
+
+TRUNCATE TABLE `user_refresh_tokens`;
 --
 -- Indeksy dla zrzutów tabel
 --
@@ -355,7 +430,7 @@ ALTER TABLE `superior_groups`
 ALTER TABLE `user_refresh_tokens`
   ADD PRIMARY KEY (`token_id`),
   ADD UNIQUE KEY `token` (`token`),
-  ADD KEY `idx_representative_id` (`representative_id`);
+  ADD KEY `idx_representative_id` (`user_id`);
 
 --
 -- AUTO_INCREMENT dla zrzuconych tabel
@@ -485,7 +560,7 @@ ALTER TABLE `student_codes`
 -- Ograniczenia dla tabeli `user_refresh_tokens`
 --
 ALTER TABLE `user_refresh_tokens`
-  ADD CONSTRAINT `fk_refresh_user` FOREIGN KEY (`representative_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_refresh_user` FOREIGN KEY (`user_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
