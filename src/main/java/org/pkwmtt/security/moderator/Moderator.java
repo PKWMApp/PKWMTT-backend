@@ -2,6 +2,8 @@ package org.pkwmtt.security.moderator;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ public class Moderator {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "moderator_id")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID moderatorId;
 
     @Column(nullable = false)
