@@ -116,10 +116,10 @@ class ExamRepositoryTest {
         
         ex1Id = examRepository.save(smallGroupExam1).getExamId();
         ex2Id = examRepository.save(smallGroupExam2).getExamId();
-        examRepository.save(smallGroupExam3).getExamId();
-        examRepository.save(generalGroupExam1).getExamId();
-        examRepository.save(generalGroupExam2).getExamId();
-        examRepository.save(generalGroupExam3).getExamId();
+        examRepository.save(smallGroupExam3);
+        examRepository.save(generalGroupExam1);
+        examRepository.save(generalGroupExam2);
+        examRepository.save(generalGroupExam3);
     }
     
     @Test
