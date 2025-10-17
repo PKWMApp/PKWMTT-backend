@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class StudentCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "otp_code_id")
+    @Column(name = "student_code_id")
     private Integer studentCodeId;
 
     @Column(nullable = false)

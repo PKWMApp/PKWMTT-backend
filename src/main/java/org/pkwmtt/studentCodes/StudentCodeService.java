@@ -68,7 +68,7 @@ public class StudentCodeService {
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException, IllegalArgumentException {
         var code = generateNewCode();
         var mail = createMail(request, code);
-        var groupName = request.getSuperiorGroup();
+        var groupName = request.getSuperiorGroupName();
         var groupNameLength = groupName.length();
 
         if (groupNameLength > 3 && Character.isDigit(
@@ -140,7 +140,7 @@ public class StudentCodeService {
 
     private MailDTO createMail (StudentCodeRequest request, String code) {
         return new MailDTO()
-          .setTitle("Kod Starosty " + request.getSuperiorGroup())
+          .setTitle("Kod Starosty " + request.getSuperiorGroupName())
           .setRecipient(request.getEmail())
           .setDescription(request.getMailMessage(code));
     }

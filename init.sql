@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Paź 17, 2025 at 06:43 PM
+-- Generation Time: Paź 17, 2025 at 06:52 PM
 -- Wersja serwera: 9.4.0
 -- Wersja PHP: 8.2.27
 
@@ -208,7 +208,7 @@ CREATE TABLE `representatives` (
 
 DROP TABLE IF EXISTS `student_codes`;
 CREATE TABLE `student_codes` (
-  `otp_code_id` int NOT NULL,
+  `student_code_id` int NOT NULL,
   `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `expire` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `superior_group_id` int NOT NULL,
@@ -333,7 +333,7 @@ ALTER TABLE `representatives`
 -- Indeksy dla tabeli `student_codes`
 --
 ALTER TABLE `student_codes`
-  ADD PRIMARY KEY (`otp_code_id`),
+  ADD PRIMARY KEY (`student_code_id`),
   ADD KEY `general_group_id_idx` (`superior_group_id`);
 
 --
@@ -419,7 +419,7 @@ ALTER TABLE `representatives`
 -- AUTO_INCREMENT dla tabeli `student_codes`
 --
 ALTER TABLE `student_codes`
-  MODIFY `otp_code_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `student_code_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT dla tabeli `student_groups`
