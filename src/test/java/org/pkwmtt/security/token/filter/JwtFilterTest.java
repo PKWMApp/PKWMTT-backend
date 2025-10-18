@@ -3,9 +3,8 @@ package org.pkwmtt.security.token.filter;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.pkwmtt.examCalendar.entity.User;
-import org.pkwmtt.examCalendar.enums.Role;
-import org.pkwmtt.examCalendar.repository.UserRepository;
+import org.pkwmtt.examCalendar.entity.Representative;
+import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.security.token.JwtService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -23,16 +22,16 @@ import static org.mockito.Mockito.when;
 class JwtFilterTest {
 
     private JwtService jwtService;
-    private UserRepository userRepository;
+    private RepresentativeRepository representativeRepository;
     private JwtFilter jwtFilter;
 
     @BeforeEach
     void setUp() {
         jwtService = mock(JwtService.class);
-        userRepository = mock(UserRepository.class);
+        representativeRepository = mock(RepresentativeRepository.class);
         jwtFilter = new JwtFilter();
         jwtFilter.jwtService = jwtService;
-        jwtFilter.userRepository = userRepository;
+        jwtFilter.representativeRepository = representativeRepository;
 
         SecurityContextHolder.clearContext();
     }
@@ -44,13 +43,12 @@ class JwtFilterTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain filterChain = mock(FilterChain.class);
 
-        User mockUser = mock(User.class);
-        when(mockUser.getRole()).thenReturn(Role.valueOf("ADMIN"));
+        Representative mockUser = mock(Representative.class);
         when(mockUser.getEmail()).thenReturn("user@example.com");
 
         when(jwtService.getSubject("validToken")).thenReturn("user@example.com");
-        when(jwtService.validateAccessToken(eq("validToken"), any(User.class))).thenReturn(true);
-        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
+        when(jwtService.validateAccessToken(eq("validToken"), any(Representative.class))).thenReturn(true);
+        when(representativeRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
         when(jwtService.extractClaim(any(String.class), any(Function.class))).thenReturn("ADMIN");
         jwtFilter.doFilterInternal(request, response, filterChain);
 

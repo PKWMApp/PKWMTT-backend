@@ -6,3 +6,4 @@ import java.util.UUID;
 
 public interface ModeratorRepository extends JpaRepository<Moderator, UUID> {
 }
+

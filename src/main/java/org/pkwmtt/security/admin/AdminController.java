@@ -21,7 +21,8 @@ public class AdminController {
     }
     
     @PostMapping("/api/keys/generate")
-    public String generateApiKey (@RequestParam(name = "d") String description, @RequestParam(name = "r") Role role) {
+    public String generateApiKey (@RequestParam(name = "d") String description,
+                                  @RequestParam(name = "r") Role role) {
         return service.generateApiKey(description, role);
     }
     
@@ -29,9 +30,9 @@ public class AdminController {
     public Map<String, String> getMapOfPublicApiKeys () {
         return service.getMapOfPublicApiKeys();
     }
-
+    
     @PostMapping("/add-moderator")
-    public ResponseEntity<String> addModerator(){
+    public ResponseEntity<String> addModerator () {
         return ResponseEntity.ok(adminService.addModerator());
     }
     

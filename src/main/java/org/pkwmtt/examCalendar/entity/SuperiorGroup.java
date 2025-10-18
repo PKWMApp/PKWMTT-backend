@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "general_group")
-public class GeneralGroup {
+@Table(name = "superior_groups")
+public class SuperiorGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "general_group_id")
-    private Integer generalGroupId;
+    @Column(name = "superior_group_id")
+    private Integer superiorGroupId;
 
     @Column(nullable = false)
     private String name;

@@ -39,6 +39,10 @@ public class DayOfWeekDTO {
         switch (typeOfWeek) {
             case EVEN -> this.even.add(subjectDTO);
             case ODD -> this.odd.add(subjectDTO);
+            case BOTH -> {
+                this.even.add(subjectDTO);
+                this.odd.add(subjectDTO);
+            }
         }
     }
     

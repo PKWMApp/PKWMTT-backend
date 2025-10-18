@@ -1,23 +1,23 @@
-package org.pkwmtt.otp;
+package org.pkwmtt.studentCodes;
 
 import com.mysql.cj.exceptions.WrongArgumentException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.entity.GeneralGroup;
-import org.pkwmtt.examCalendar.entity.OTPCode;
-import org.pkwmtt.examCalendar.entity.User;
+import org.pkwmtt.examCalendar.entity.SuperiorGroup;
+import org.pkwmtt.examCalendar.entity.StudentCode;
+import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.enums.Role;
-import org.pkwmtt.examCalendar.repository.GeneralGroupRepository;
-import org.pkwmtt.examCalendar.repository.UserRepository;
+import org.pkwmtt.examCalendar.repository.SuperiorGroupRepository;
+import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.exceptions.*;
 import org.pkwmtt.mail.EmailService;
 import org.pkwmtt.mail.dto.MailDTO;
-import org.pkwmtt.otp.dto.OTPRequest;
-import org.pkwmtt.otp.repository.OTPCodeRepository;
+import org.pkwmtt.security.token.JwtService;
+import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
+import org.pkwmtt.studentCodes.repository.StudentCodeRepository;
 import org.pkwmtt.security.auhentication.JwtAuthenticationService;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.token.JwtService;
-import org.pkwmtt.security.token.dto.UserDTO;
+import org.pkwmtt.security.token.dto.RepresentativeDTO;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.stereotype.Service;
 
@@ -31,44 +31,44 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OTPService {
-    private final OTPCodeRepository otpRepository;
-    private final UserRepository userRepository;
-    private final GeneralGroupRepository generalGroupRepository;
+public class StudentCodeService {
+    private final StudentCodeRepository studentCodeRepository;
+    private final RepresentativeRepository representativeRepository;
+    private final SuperiorGroupRepository superiorGroupRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
     private final JwtAuthenticationService jwtAuthenticationService;
     private final TimetableService timetableService;
 
-    public JwtAuthenticationDto generateTokenForRepresentative (String code)
-      throws OTPCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
-        var generalGroup = this.getGeneralGroupAssignedToCode(code);
-        var user = userRepository
-          .findByGeneralGroup(generalGroup)
-          .orElseThrow(() -> new UserNotFoundException("No user is assigned to this code."));
+    public JwtAuthenticationDto generateTokenForUser (String code)
+      throws StudentCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
+        var superiorGroup = this.getSuperiorGroupAssignedToCode(code);
+        var representative = representativeRepository
+          .findBySuperiorGroup(superiorGroup)
+          .orElseThrow(() -> new UserNotFoundException("No representative is assigned to this code."));
 
-        var userEmail = user.getEmail();
-        String token = jwtService.generateAccessToken(new UserDTO()
+        var userEmail = representative.getEmail();
+        String token = jwtService.generateAccessToken(new RepresentativeDTO()
                                                   .setEmail(userEmail)
                                                   .setRole(Role.REPRESENTATIVE)
-                                                  .setGroup(generalGroup.getName()));
-        otpRepository.deleteByCode(code);
+                                                  .setGroup(superiorGroup.getName()));
+        studentCodeRepository.deleteByCode(code);
         return JwtAuthenticationDto.builder()
                 .accessToken(token)
-                .refreshToken(jwtAuthenticationService.getNewUserRefreshToken(user))
+                .refreshToken(jwtAuthenticationService.getNewUserRefreshToken(representative))
                 .build();
     }
 
-    public void sendOTPCodesForManyGroups (List<OTPRequest> requests)
+    public void sendOTPCodesForManyGroups (List<StudentCodeRequest> requests)
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException, IllegalArgumentException {
         requests.forEach(this::sendOtpCode);
     }
 
-    public void sendOtpCode (OTPRequest request)
+    public void sendOtpCode (StudentCodeRequest request)
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException, IllegalArgumentException {
         var code = generateNewCode();
         var mail = createMail(request, code);
-        var groupName = request.getGeneralGroupName();
+        var groupName = request.getSuperiorGroupName();
         var groupNameLength = groupName.length();
 
         if (groupNameLength > 3 && Character.isDigit(
@@ -81,63 +81,46 @@ public class OTPService {
             throw new SpecifiedGeneralGroupDoesntExistsException();
         }
 
-        var generalGroup = generalGroupRepository.findByName(groupName);
-
-        if (generalGroup.isPresent()) { //Check if general group is already saved in database
-            if (otpRepository.existsOTPCodeByGeneralGroup(
-              generalGroup.get())) { //Check if provided general group has assigned code
-                otpRepository.deleteByGeneralGroup(generalGroup.get()); // Delete existing code
+        var superiorGroup = superiorGroupRepository.findByName(groupName);
+        if (superiorGroup.isPresent()) {
+            if (studentCodeRepository.existsBySuperiorGroup(
+              superiorGroup.get())) {
+                studentCodeRepository.deleteBySuperiorGroup(superiorGroup.get());
             }
         } else {
-            //Save general group to database
-            generalGroup = Optional.of(generalGroupRepository.save(new GeneralGroup(null, groupName)));
+            superiorGroup = Optional.of(superiorGroupRepository.save(new SuperiorGroup(null, groupName)));
         }
-
-        var userByEmail = userRepository.findByEmail(request.getEmail());
-
-        //Check if user isn't already assigned to any general group
-        if (userByEmail.isPresent()) {
+        var representativeByEmail = representativeRepository.findByEmail(request.getEmail());
+        if (representativeByEmail.isPresent()) {
                 throw new UserAlreadyAssignedException(
-                  "User with this email is already assigned group.");
+                  "Representative with this email is already assigned group.");
         }
-
         try {
-            emailService.send(mail); //Send email
+            emailService.send(mail);
         } catch (MessagingException e) {
             throw new MailCouldNotBeSendException("Couldn't send mail for group: " + groupName);
         }
-
-        var user = User
+        var representative = Representative
           .builder()
           .email(request.getEmail())
-          .generalGroup(generalGroup.get())
-          .role(Role.REPRESENTATIVE)
+          .superiorGroup(superiorGroup.get())
           .isActive(true)
           .build();
-
-
-
-
-
-        userRepository
-          .findByGeneralGroup(generalGroup.get())
-          .ifPresent(value -> userRepository.deleteUserByEmail(value.getEmail()));
-
-        userRepository.save(user);
-        otpRepository.save(new OTPCode(code, generalGroup.get()));
+        representativeRepository
+          .findBySuperiorGroup(superiorGroup.get())
+          .ifPresent(value -> representativeRepository.deleteRepresentativeByEmail(value.getEmail()));
+        representativeRepository.save(representative);
+        studentCodeRepository.save(new StudentCode(code, superiorGroup.get()));
     }
 
-    private GeneralGroup getGeneralGroupAssignedToCode (String code)
-      throws OTPCodeNotFoundException, WrongOTPFormatException {
+    private SuperiorGroup getSuperiorGroupAssignedToCode (String code)
+      throws StudentCodeNotFoundException, WrongOTPFormatException {
         this.validateCode(code);
-
-        Optional<OTPCode> result = otpRepository.findByCode(code);
-
+        Optional<StudentCode> result = studentCodeRepository.findByCode(code);
         if (result.isEmpty()) {
-            throw new OTPCodeNotFoundException();
+            throw new StudentCodeNotFoundException();
         }
-
-        return result.get().getGeneralGroup();
+        return result.get().getSuperiorGroup();
     }
 
     private void validateCode (String code) throws WrongOTPFormatException {
@@ -155,9 +138,9 @@ public class OTPService {
     }
 
 
-    private MailDTO createMail (OTPRequest request, String code) {
+    private MailDTO createMail (StudentCodeRequest request, String code) {
         return new MailDTO()
-          .setTitle("Kod Starosty " + request.getGeneralGroupName())
+          .setTitle("Kod Starosty " + request.getSuperiorGroupName())
           .setRecipient(request.getEmail())
           .setDescription(request.getMailMessage(code));
     }
@@ -172,7 +155,7 @@ public class OTPService {
             for (int i = 0; i < 6; i++) {
                 code.append(availableCharacters.charAt(random.nextInt(availableCharacters.length())));
             }
-        } while (otpRepository.findByCode(code.toString()).isPresent());
+        } while (studentCodeRepository.findByCode(code.toString()).isPresent());
 
         return code.toString();
     }

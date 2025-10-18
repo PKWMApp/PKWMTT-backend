@@ -23,21 +23,22 @@ public class RequestInterceptor implements HandlerInterceptor {
     private final ApiKeyService apiKeyService;
     
     @Override
-    public boolean preHandle (@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
+    public boolean preHandle (@NonNull HttpServletRequest request,
+                              @NonNull HttpServletResponse response,
+                              @NonNull Object handler) throws MissingHeaderException {
+        String apiKey = request.getHeader("X-API-KEY");
         
-        String headerName = "X-API-KEY";
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new MissingHeaderException("X-API-KEY");
+        }
+        
         try {
-            String providedApiKey = request.getHeader(headerName);
-            
-            if (providedApiKey == null || providedApiKey.isBlank()) {
-                throw new MissingHeaderException(headerName);
-            }
-            
-            apiKeyService.validateApiKey(providedApiKey, Role.REPRESENTATIVE);
-        } catch (IncorrectApiKeyValue | MissingHeaderException e) {
-            throw new IncorrectApiKeyValue();
+            apiKeyService.validateApiKey(apiKey, Role.REPRESENTATIVE);
+        } catch (IncorrectApiKeyValue e) {
+            // Rethrow specific validation error so it can be handled appropriately
+            throw e;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Unexpected error during API key validation", e);
             throw new InternalException("Internal server error with validating API key.");
         }
         

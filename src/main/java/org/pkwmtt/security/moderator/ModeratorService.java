@@ -2,13 +2,12 @@ package org.pkwmtt.security.moderator;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.entity.User;
-import org.pkwmtt.examCalendar.repository.UserRepository;
+import org.pkwmtt.examCalendar.entity.Representative;
+import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.token.JwtService;
-import org.pkwmtt.security.token.JwtServiceImpl;
 import org.pkwmtt.security.token.entity.ModeratorRefreshToken;
 import org.pkwmtt.security.token.entity.RefreshToken;
 import org.pkwmtt.security.token.repository.ModeratorRefreshTokenRepository;
@@ -30,7 +29,7 @@ public class ModeratorService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
-    private final UserRepository userRepository;
+    private final RepresentativeRepository representativeRepository;
 
     public JwtAuthenticationDto generateTokenForModerator(String password) {
         Moderator moderator = moderatorRepository.findAll()
@@ -44,17 +43,17 @@ public class ModeratorService {
                 .build();
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<Representative> getUsers() {
+        return representativeRepository.findAll();
     }
 
 
     public JwtAuthenticationDto refresh(RefreshRequestDto requestDto) {
 
         ModeratorRefreshToken moderatorRefreshToken = findRefreshToken(requestDto.getRefreshToken());
-        JwtServiceImpl.validateRefreshToken(moderatorRefreshToken);
+        JwtService.validateRefreshToken(moderatorRefreshToken);
 
-        String tokenHash = JwtServiceImpl.generateRefreshToken();
+        String tokenHash = JwtService.generateRefreshToken();
 
         moderatorRefreshToken.updateToken(passwordEncoder.encode(tokenHash));
         moderatorRefreshTokenRepository.save(moderatorRefreshToken);
@@ -74,7 +73,7 @@ public class ModeratorService {
     }
 
     private String getNewModeratorRefreshToken(Moderator moderator) {
-        String token = JwtServiceImpl.generateRefreshToken();
+        String token = JwtService.generateRefreshToken();
         moderatorRefreshTokenRepository.save(new ModeratorRefreshToken(passwordEncoder.encode(token), moderator));
         return token;
     }

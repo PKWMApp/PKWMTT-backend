@@ -2,6 +2,7 @@ package org.pkwmtt.global;
 
 import org.apache.logging.log4j.util.InternalException;
 import org.pkwmtt.exceptions.IncorrectApiKeyValue;
+import org.pkwmtt.exceptions.MissingHeaderException;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IncorrectApiKeyValue.class)
     public ResponseEntity<ErrorResponseDTO> handleIncorrectApiKeyValue (Exception e) {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+    
+    @ExceptionHandler(MissingHeaderException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingHeaderException (Exception e) {
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(InternalException.class)

@@ -86,7 +86,7 @@ class ExamServiceTest {
                 .build();
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(g12K2);
-        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+        Exam exam = buildExamWithIdAndGroups(studentGroups);
 
         when(examTypeRepository.findByName(requestExamDto.getExamType())).thenReturn(Optional.of(examType));
 //        more groups than in set
@@ -130,7 +130,7 @@ class ExamServiceTest {
         RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
-        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+        Exam exam = buildExamWithIdAndGroups(studentGroups);
 
         when(examTypeRepository.findByName(requestExamDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
@@ -359,7 +359,7 @@ class ExamServiceTest {
         RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
-        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+        Exam exam = buildExamWithIdAndGroups(studentGroups);
 
         when(examTypeRepository.findByName(requestExamDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
@@ -391,7 +391,7 @@ class ExamServiceTest {
         RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
-        Exam newExam =  buildExamWithIdAndGroups(1, studentGroups);
+        Exam newExam =  buildExamWithIdAndGroups(studentGroups);
         Exam existingExam = Exam.builder()
                 .title("title")
                 .description("description")
@@ -440,7 +440,7 @@ class ExamServiceTest {
         RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(combinedGroups);
-        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+        Exam exam = buildExamWithIdAndGroups(studentGroups);
 
         when(examTypeRepository.findByName(requestExamDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
@@ -549,7 +549,7 @@ class ExamServiceTest {
         RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(generalGroups);
-        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+        Exam exam = buildExamWithIdAndGroups(studentGroups);
 
         when(examTypeRepository.findByName(requestExamDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenThrow(new WebPageContentNotAvailableException());
@@ -590,7 +590,7 @@ class ExamServiceTest {
         RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(combinedGroups);
-        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+        Exam exam = buildExamWithIdAndGroups(studentGroups);
 
         when(examTypeRepository.findByName(requestExamDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenThrow(new WebPageContentNotAvailableException());
@@ -765,19 +765,24 @@ class ExamServiceTest {
 
 
 
+    // Updated helper methods to match new schema
     private static List<StudentGroup> buildExampleStudentGroupList(Set<String> groupNames) {
-        AtomicInteger id = new AtomicInteger();
+        AtomicInteger id = new AtomicInteger(1); // group_id starts from 1
         return groupNames.stream()
                 .map(g -> StudentGroup.builder()
                         .groupId(id.getAndIncrement())
                         .name(g)
-                        .build()
-                ).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
     }
 
-    private static Exam buildExamWithIdAndGroups(int id, List<StudentGroup> groups) {
+    private static Exam buildExamWithIdAndGroups(List<StudentGroup> groups) {
         return Exam.builder()
-                .examId(id)
+                .examId(1)
+                .title("title")
+                .description("description")
+                .examDate(LocalDateTime.now().plusDays(1))
+                .examType(buildExampleExamType())
                 .groups(new HashSet<>(groups))
                 .build();
     }
@@ -820,7 +825,7 @@ class ExamServiceTest {
         RequestExamDto requestExamDto = buildExampleExamDto(generalGroups, subgroups, date);
         ExamType examType = buildExampleExamType();
         List<StudentGroup> studentGroups = buildExampleStudentGroupList(combinedGroups);
-        Exam exam = buildExamWithIdAndGroups(1, studentGroups);
+        Exam exam = buildExamWithIdAndGroups(studentGroups);
 
         when(examTypeRepository.findByName(requestExamDto.getExamType())).thenReturn(Optional.of(examType));
         when(timetableService.getGeneralGroupList()).thenReturn(new ArrayList<>(generalGroups));
@@ -847,3 +852,4 @@ class ExamServiceTest {
         assertExam(savedExam, date, savedId, combinedGroups);
     }
 }
+

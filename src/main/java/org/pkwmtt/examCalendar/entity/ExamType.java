@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Table(name = "exam_type")
+@Table(name = "exam_types")
 public class ExamType {
 
     @Id

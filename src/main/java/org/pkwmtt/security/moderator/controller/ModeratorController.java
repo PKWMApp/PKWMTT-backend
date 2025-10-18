@@ -1,9 +1,9 @@
 package org.pkwmtt.security.moderator.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.entity.User;
-import org.pkwmtt.otp.OTPService;
-import org.pkwmtt.otp.dto.OTPRequest;
+import org.pkwmtt.examCalendar.entity.Representative;
+import org.pkwmtt.studentCodes.StudentCodeService;
+import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.moderator.ModeratorService;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ModeratorController {
 
     private final ModeratorService moderatorService;
-    private final OTPService otpService;
+    private final StudentCodeService studentCodeService;
 
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody AuthDto auth) {
@@ -38,19 +38,19 @@ public class ModeratorController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Void> addUser (@RequestBody OTPRequest otpRequest) {
-        otpService.sendOtpCode(otpRequest);
+    public ResponseEntity<Void> addUser (@RequestBody StudentCodeRequest studentCodeRequest) {
+        studentCodeService.sendOtpCode(studentCodeRequest);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/multiple-users")
-    public ResponseEntity<Void> addMultipleUser (@RequestBody List<OTPRequest> otpRequests) {
-        otpService.sendOTPCodesForManyGroups(otpRequests);
+    public ResponseEntity<Void> addMultipleUser (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
+        studentCodeService.sendOTPCodesForManyGroups(studentCodeRequests);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<Representative>> getAllUsers() {
         return ResponseEntity.ok(moderatorService.getUsers());
     }
 }

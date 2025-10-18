@@ -1,10 +1,10 @@
-package org.pkwmtt.otp;
+package org.pkwmtt.studentCodes;
 
 
 import com.mysql.cj.exceptions.WrongArgumentException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.*;
-import org.pkwmtt.otp.dto.OTPRequest;
+import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,11 +13,11 @@ import java.util.List;
 @RestController
 @RequestMapping("${apiPrefix}/representatives")
 @RequiredArgsConstructor
-public class OTPController {
-    private final OTPService service;
+public class StudentCodeController {
+    private final StudentCodeService service;
     
     @PostMapping("/codes/generate")
-    public ResponseEntity<Void> generateCodes (@RequestBody List<OTPRequest> request)
+    public ResponseEntity<Void> generateCodes (@RequestBody List<StudentCodeRequest> request)
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedGeneralGroupDoesntExistsException, IllegalArgumentException {
         service.sendOTPCodesForManyGroups(request);
         return ResponseEntity.ok().build();

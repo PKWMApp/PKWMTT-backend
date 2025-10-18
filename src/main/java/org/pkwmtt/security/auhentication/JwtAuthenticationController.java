@@ -1,11 +1,11 @@
 package org.pkwmtt.security.auhentication;
 
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.exceptions.OTPCodeNotFoundException;
+import org.pkwmtt.exceptions.StudentCodeNotFoundException;
 import org.pkwmtt.exceptions.UserNotFoundException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
-import org.pkwmtt.otp.OTPService;
-import org.pkwmtt.otp.dto.otpDto;
+import org.pkwmtt.studentCodes.StudentCodeService;
+import org.pkwmtt.studentCodes.dto.StudentCodeDTO;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class JwtAuthenticationController {
 
     private final JwtAuthenticationService jwtAuthenticationService;
-    private final OTPService otpService;
+    private final StudentCodeService studentCodeService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody otpDto code)
-            throws OTPCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
-        return ResponseEntity.ok(otpService.generateTokenForRepresentative(code.getOtpCode()));
+    public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody StudentCodeDTO code)
+      throws StudentCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
+        return ResponseEntity.ok(studentCodeService.generateTokenForUser(code.getOtpCode()));
     }
 
     @PostMapping("/refresh")

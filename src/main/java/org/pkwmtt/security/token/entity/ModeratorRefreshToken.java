@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Getter
-@Table(name = "moderator_refresh_token")
+@Table(name = "moderator_refresh_tokens")
 public class ModeratorRefreshToken implements RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
