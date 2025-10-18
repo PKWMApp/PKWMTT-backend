@@ -30,7 +30,7 @@ public class StudentCode {
     @JoinColumn(name = "superior_group_id", nullable = false)
     private SuperiorGroup superiorGroup;
     
-    @Column(name = "usage")
+    @Column(name = "usage_count")
     private Integer usage;
     
     @Column(name = "usage_limit")

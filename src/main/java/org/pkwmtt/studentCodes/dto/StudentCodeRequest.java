@@ -12,11 +12,11 @@ public class StudentCodeRequest {
     public String getMailMessage (String code) {
         return String.format(
           """
-            <b>Kod starosty %s</b><br/>
-            Poniżej znajduje się kod służący do ulepszenia wersji aplikacji do poziomu starosty. <br/>
-            Dzięki temu będziesz mógł dodawać oraz usuwać egzaminy dla swojego kierunku w kalendarzu aplikacji.<br/>
-            Wpisz kod w <i>[Ustawienia > Wpisz kod]</i>, albo przekaż go osobie odpowiedzialnej za kalendarz egzaminów.<br/>
-            Twój kod: <b>%s</b> <br/>
+            <b>Kod grupy %s</b><br/>
+            Twój kod: <b>%s</b> <br/><br/>
+            Poniżej znajduje się kod służący do odblokowania możliwości dodawania/edytowanie/usuwania wydarzeń w kalendarzu dla twojej grupy. <br/>
+            Wpisz kod w <b><i>[Ustawienia > Wpisz kod]</i></b> i przekaż go innym osobom.<br/>
+            Twórcy aplikacji nie ponoszą odpowiedzialności za niewłaściwe użycie kodu przez osoby trzecie.<br/><br/>
             """, superiorGroupName, code
         );
     }

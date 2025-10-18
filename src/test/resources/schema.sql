@@ -30,7 +30,7 @@ CREATE TABLE student_codes (
     code VARCHAR(255) NOT NULL,
     expire DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     superior_group_id INT NOT NULL,
-    usage INT,
+    usage_count INT,
     usage_limit INT,
     CONSTRAINT fk_student_codes_superior_group FOREIGN KEY (superior_group_id)
         REFERENCES superior_groups (superior_group_id) ON DELETE CASCADE
