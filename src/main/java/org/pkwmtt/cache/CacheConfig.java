@@ -1,30 +1,36 @@
 package org.pkwmtt.cache;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Configuration
 @EnableCaching
+@EnableScheduling
 public class CacheConfig {
-
+    
     @Bean
-    public Caffeine<Object, Object> caffeineConfig() {
+    public Caffeine<Object, Object> caffeineConfig () {
         return Caffeine.newBuilder()
-            .expireAfterWrite(12, TimeUnit.HOURS)
-            .recordStats();
+          .expireAfterWrite(12, TimeUnit.HOURS)
+          .recordStats();
     }
-
+    
     @Bean
-    public CacheManager cacheManager(Caffeine<Object, Object> caffeine) {
+    public CacheManager cacheManager (Caffeine<Object, Object> caffeine) {
+        log.info("Initializing Caffeine Cache Manager with 12-hour expiration");
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("timetables");
         cacheManager.setCaffeine(caffeine);
+        log.info("Caffeine Cache Manager initialized successfully");
         return cacheManager;
     }
-
+    
 }

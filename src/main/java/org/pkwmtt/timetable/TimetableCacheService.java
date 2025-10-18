@@ -53,7 +53,7 @@ public class TimetableCacheService {
      * @throws SpecifiedGeneralGroupDoesntExistsException if the specified general group doesn't exist
      */
     public TimetableDTO getGeneralGroupSchedule (String generalGroupName)
-      throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException {
+      throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException, JsonProcessingException {
         Map<String, String> generalGroupMap = getGeneralGroupsMap();
         
         if (!generalGroupMap.containsKey(generalGroupName)) {
@@ -80,7 +80,8 @@ public class TimetableCacheService {
      * @return Map where keys are general group names and values are their timetable URLs
      * @throws WebPageContentNotAvailableException if the general groups page can't be loaded
      */
-    public Map<String, String> getGeneralGroupsMap () throws WebPageContentNotAvailableException {
+    public Map<String, String> getGeneralGroupsMap ()
+      throws WebPageContentNotAvailableException, JsonProcessingException {
         String url = mainUrl + "lista.html";
         String json = cache.get(
           "generalGroupMap",
@@ -116,7 +117,7 @@ public class TimetableCacheService {
      * @throws WebPageContentNotAvailableException if there were trouble with fetching data
      */
     @SuppressWarnings("unused")
-    private List<String> fetchListOfHours () {
+    private List<String> fetchListOfHours () throws JsonProcessingException {
         String url = mainUrl + "plany/o25.html";
         String json = cache.get("hourList", () -> mapper.writeValueAsString(parser.parseHours(fetchData(url))));
         
@@ -142,16 +143,16 @@ public class TimetableCacheService {
      * @throws CacheContentNotAvailableException if mapping fails
      */
     private <T> T getMappedValue (String json, String key, Cache cache, TypeReference<T> typeRef)
-      throws CacheContentNotAvailableException {
+      throws JsonProcessingException {
         try {
             return mapper.readValue(json, typeRef);
         } catch (JsonProcessingException e) {
             cache.evict(key);
-            throw new CacheContentNotAvailableException(e.getMessage());
+            throw e;
         }
     }
     
-/**
+    /**
      * Fetches the HTML content of the specified URL using Jsoup.
      *
      * <p>This method performs a blocking HTTP GET request and returns the raw

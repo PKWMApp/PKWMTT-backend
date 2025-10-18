@@ -133,7 +133,8 @@ public class TimetableController {
      * @throws WebPageContentNotAvailableException if the underlying source is not available
      */
     @GetMapping("/groups/general")
-    public ResponseEntity<List<String>> getListOfGeneralGroups () throws WebPageContentNotAvailableException {
+    public ResponseEntity<List<String>> getListOfGeneralGroups ()
+      throws WebPageContentNotAvailableException, JsonProcessingException {
         return ResponseEntity.ok(service.getGeneralGroupList());
     }
     
@@ -167,7 +168,7 @@ public class TimetableController {
     @GetMapping("/groups/{generalGroupName}/{subjectName}")
     public ResponseEntity<List<String>> getListOfAvailableGroupsForSubjectName (@PathVariable String generalGroupName,
                                                                                 @PathVariable String subjectName)
-      throws SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException {
+      throws SpecifiedGeneralGroupDoesntExistsException, WebPageContentNotAvailableException, JsonProcessingException {
         return ResponseEntity.ok(service.getAvailableSubGroupsForSubject(generalGroupName, subjectName));
     }
     
@@ -180,7 +181,8 @@ public class TimetableController {
      * @return list of subject names wrapped in {@link ResponseEntity}
      */
     @GetMapping("/{generalGroupName}/list")
-    public ResponseEntity<List<String>> getListOfSubjects (@PathVariable String generalGroupName) {
+    public ResponseEntity<List<String>> getListOfSubjects (@PathVariable String generalGroupName)
+      throws JsonProcessingException {
         return ResponseEntity.ok(service.getListOfSubjects(generalGroupName));
     }
     

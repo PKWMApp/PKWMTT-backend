@@ -2,6 +2,7 @@ package org.pkwmtt.timetable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.InternalException;
 import org.pkwmtt.exceptions.SpecifiedSubGroupDoesntExistsException;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
@@ -54,7 +55,7 @@ public class TimetableExceptionHandler {
      */
     @ExceptionHandler(JsonProcessingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponseDTO> handleJsonProcessingException (JsonProcessingException e) {
+    public ResponseEntity<ErrorResponseDTO> handleJsonProcessingException (Exception e) {
         log.error("INTERNAL_SERVER_ERROR # " + e.getMessage());
         return new ResponseEntity<>(
           new ErrorResponseDTO("Json Processing Failed"),
@@ -97,4 +98,20 @@ public class TimetableExceptionHandler {
         log.error("INTERNAL_SERVER_ERROR # " + e.getMessage());
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    /**
+     * Handles {@link InternalException} for unexpected internal application errors.
+     * Returns HTTP 500 (Internal Server Error) with an {@link ErrorResponseDTO}
+     * containing the exception message. The exception is logged at error level.
+     *
+     * @param e the thrown InternalException
+     * @return a ResponseEntity containing ErrorResponseDTO and HTTP 500 status
+     */
+    @ExceptionHandler(InternalException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponseDTO> handleInternalException (InternalException e) {
+        log.error("INTERNAL_SERVER_ERROR # " + e.getMessage());
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
 }
