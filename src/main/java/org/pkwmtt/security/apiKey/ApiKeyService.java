@@ -38,6 +38,14 @@ public class ApiKeyService {
     }
     
     public void validateApiKey (String value, Role role) throws IncorrectApiKeyValue {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IncorrectApiKeyValue();
+        }
+        try {
+            UUID.fromString(value);
+        } catch (IllegalArgumentException e) {
+            throw new IncorrectApiKeyValue();
+        }
         if (existsInAdminKeyBase(value)) { // Admin can access all endpoint
             return;
         }
