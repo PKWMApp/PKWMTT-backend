@@ -1,6 +1,7 @@
 package org.pkwmtt.security.auhentication;
 
 import io.jsonwebtoken.JwtException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class JwtAuthenticationService {
     private final JwtService jwtService;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
