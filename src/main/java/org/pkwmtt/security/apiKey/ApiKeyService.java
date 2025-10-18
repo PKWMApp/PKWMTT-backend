@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+
 @Service
 @RequiredArgsConstructor
 public class ApiKeyService {
@@ -21,7 +23,7 @@ public class ApiKeyService {
     private final ApiKeyRepository apiKeyRepository;
     private final AdminKeyRepository adminKeyRepository;
     private final PasswordEncoder encoder;
-    
+
     public String generateApiKey (String description, Role role) {
         String value = UUID.randomUUID().toString();
         saveApiKey(value, description, role);
@@ -36,9 +38,9 @@ public class ApiKeyService {
             apiKeyRepository.save(new ApiKey(encodedValue, description));
         }
     }
-    
+
     public void validateApiKey (String value, Role role) throws IncorrectApiKeyValue {
-        if (value == null || value.trim().isEmpty()) {
+        if (isNull(value) || value.trim().isEmpty()) {
             throw new IncorrectApiKeyValue();
         }
         try {
@@ -46,6 +48,7 @@ public class ApiKeyService {
         } catch (IllegalArgumentException e) {
             throw new IncorrectApiKeyValue();
         }
+
         if (existsInAdminKeyBase(value)) { // Admin can access all endpoint
             return;
         }
