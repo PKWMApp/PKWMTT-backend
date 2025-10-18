@@ -1,5 +1,6 @@
 package org.pkwmtt.security.moderator.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.studentCodes.StudentCodeService;
@@ -17,40 +18,44 @@ import java.util.List;
 @RequestMapping("/moderator")
 @RequiredArgsConstructor
 public class ModeratorController {
-
+    
     private final ModeratorService moderatorService;
     private final StudentCodeService studentCodeService;
-
+    
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody AuthDto auth) {
         return ResponseEntity.ok(moderatorService.generateTokenForModerator(auth.getPassword()));
     }
-
+    
     @PostMapping("/refresh")
-    public ResponseEntity<JwtAuthenticationDto> refresh(@RequestBody RefreshRequestDto requestDto){
+    public ResponseEntity<JwtAuthenticationDto> refresh (@RequestBody RefreshRequestDto requestDto) {
         return ResponseEntity.ok(moderatorService.refresh(requestDto));
     }
-
+    
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody RefreshRequestDto requestDto){
+    public ResponseEntity<Void> logout (@RequestBody RefreshRequestDto requestDto) {
         moderatorService.logout(requestDto);
         return ResponseEntity.noContent().build();
     }
-
+    
     @PostMapping("/users")
-    public ResponseEntity<Void> addUser (@RequestBody StudentCodeRequest studentCodeRequest) {
+    public ResponseEntity<Void> addUser (@RequestBody StudentCodeRequest studentCodeRequest)
+      throws JsonProcessingException {
         studentCodeService.sendOtpCode(studentCodeRequest);
         return ResponseEntity.noContent().build();
     }
-
+    
     @PostMapping("/multiple-users")
-    public ResponseEntity<Void> addMultipleUser (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
-        studentCodeService.sendOTPCodesForManyGroups(studentCodeRequests);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> addMultipleUser (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
+        var failures = studentCodeService.sendOTPCodesForManyGroups(studentCodeRequests);
+        if (failures == null || failures.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(207).body(failures);
     }
-
+    
     @GetMapping("/users")
-    public ResponseEntity<List<Representative>> getAllUsers() {
+    public ResponseEntity<List<Representative>> getAllUsers () {
         return ResponseEntity.ok(moderatorService.getUsers());
     }
 }

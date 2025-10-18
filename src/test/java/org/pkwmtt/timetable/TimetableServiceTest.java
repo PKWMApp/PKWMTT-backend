@@ -87,7 +87,7 @@ class TimetableServiceTest extends TestConfig {
     }
     
     @Test
-    public void shouldReturnSortedGeneralGroupList () {
+    public void shouldReturnSortedGeneralGroupList () throws JsonProcessingException {
         //given
         var expectedResult = List.of("11A1", "11K2", "12K1", "12K2", "12K3");
         //when
