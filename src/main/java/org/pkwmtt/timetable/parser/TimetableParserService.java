@@ -115,11 +115,16 @@ public class TimetableParserService {
                     
                     TypeOfWeek typeOfWeek;
                     
-                    if (isNameNotOdd(name)) {
-                        typeOfWeek = isNameNotEven(name) ? TypeOfWeek.BOTH : TypeOfWeek.EVEN;
-                    } else {
-                        typeOfWeek = isNameNotEven(name) ? TypeOfWeek.ODD : TypeOfWeek.BOTH;
-                    }
+                   boolean notOdd = isNameNotOdd(name);
+                   boolean notEven = isNameNotEven(name);
+                   
+                   if (notOdd == notEven) {
+                       typeOfWeek = TypeOfWeek.BOTH;
+                   } else if (notOdd) {
+                       typeOfWeek = TypeOfWeek.EVEN;
+                   } else {
+                       typeOfWeek = TypeOfWeek.ODD;
+                   }
                     
                     days.get(columnId).add(subject, typeOfWeek);
                 }
