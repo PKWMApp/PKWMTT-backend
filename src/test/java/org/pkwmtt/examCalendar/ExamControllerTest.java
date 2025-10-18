@@ -217,7 +217,7 @@ class ExamControllerTest {
 
     @Test
     void addExamWithBlankDate () throws Exception {
-        //        given
+        //given
         createExampleExamType("Project");
         RequestExamDto requestData = RequestExamDto
           .builder()
@@ -227,10 +227,10 @@ class ExamControllerTest {
           .generalGroups(Set.of("12K2"))
           .subgroups(Set.of("L04"))
           .build();
-        //        when
+        //when
         MvcResult result = assertPostRequest(status().isBadRequest(), requestData);
 
-        //        then
+        //then
         assertResponseMessage("date : must not be null", result);
     }
 

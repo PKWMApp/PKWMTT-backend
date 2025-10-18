@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.pkwmtt.examCalendar.adnotations.CorrectFutureDate;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -20,8 +21,7 @@ public class RequestExamDto {
     @Size(max = 255, message = "max size of field is 255")
     private String description;
 
-    @Future(message = "Date must be in the future")
-    @NotNull
+    @CorrectFutureDate
     private LocalDateTime date;
 
     @NotNull
