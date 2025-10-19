@@ -41,6 +41,8 @@ public class StudentCodeService {
     private final JwtAuthenticationService jwtAuthenticationService;
     private final TimetableService timetableService;
     
+    //TODO increase usage counter
+    
     public JwtAuthenticationDto generateTokenForUser (String code)
       throws StudentCodeNotFoundException, WrongStudentCodeFormatException, UserNotFoundException {
         var superiorGroup = this.getSuperiorGroupAssignedToCode(code);

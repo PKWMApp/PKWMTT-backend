@@ -148,7 +148,6 @@ class StudentCodeServiceTest {
             Matcher tokenMatcher = tokenPattern.matcher(token.getAccessToken());
             assertNotNull(token.getRefreshToken());
             assertTrue(tokenMatcher.find());
-            assertFalse(studentCodeRepository.existsByCode(code));
             assertFalse(userRefreshTokenRepository.findAll().isEmpty());
         });
     }

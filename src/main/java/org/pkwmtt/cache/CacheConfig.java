@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Configuration
 @EnableCaching
-@EnableScheduling
 public class CacheConfig {
     
     @Bean
