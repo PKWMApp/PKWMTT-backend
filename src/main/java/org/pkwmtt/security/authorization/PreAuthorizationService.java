@@ -3,7 +3,7 @@ package org.pkwmtt.security.authorization;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
-import org.pkwmtt.security.auhentication.authenticationToken.JwtAuthenticationToken;
+import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

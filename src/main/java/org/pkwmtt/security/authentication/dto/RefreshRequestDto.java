@@ -1,4 +1,4 @@
-package org.pkwmtt.security.auhentication.dto;
+package org.pkwmtt.security.authentication.dto;
 
 import lombok.Getter;
 

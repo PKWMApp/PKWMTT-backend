@@ -9,7 +9,7 @@ import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.moderator.ModeratorRepository;
-import org.pkwmtt.security.auhentication.authenticationToken.JwtAuthenticationToken;
+import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
 import org.pkwmtt.security.jwt.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,4 +1,4 @@
-package org.pkwmtt.security.auhentication.authenticationToken;
+package org.pkwmtt.security.authentication.authenticationToken;
 
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

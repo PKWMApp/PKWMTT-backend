@@ -14,7 +14,7 @@ import org.pkwmtt.exceptions.StudentCodeNotFoundException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
 import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.pkwmtt.studentCodes.repository.StudentCodeRepository;
-import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.jwt.refreshToken.repository.UserRefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;

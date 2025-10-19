@@ -1,4 +1,4 @@
-package org.pkwmtt.security.auhentication;
+package org.pkwmtt.security.authentication;
 
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.StudentCodeNotFoundException;
@@ -6,8 +6,8 @@ import org.pkwmtt.exceptions.UserNotFoundException;
 import org.pkwmtt.exceptions.WrongOTPFormatException;
 import org.pkwmtt.studentCodes.StudentCodeService;
 import org.pkwmtt.studentCodes.dto.StudentCodeDTO;
-import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
+import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.authentication.dto.RefreshRequestDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
