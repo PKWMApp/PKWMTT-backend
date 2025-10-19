@@ -1,4 +1,4 @@
-package org.pkwmtt.security.moderator;
+package org.pkwmtt.moderator;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

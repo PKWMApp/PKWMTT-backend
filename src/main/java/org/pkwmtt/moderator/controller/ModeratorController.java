@@ -1,4 +1,4 @@
-package org.pkwmtt.security.moderator.controller;
+package org.pkwmtt.moderator.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -7,8 +7,8 @@ import org.pkwmtt.studentCodes.StudentCodeService;
 import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
-import org.pkwmtt.security.moderator.ModeratorService;
-import org.pkwmtt.security.moderator.dto.AuthDto;
+import org.pkwmtt.moderator.ModeratorService;
+import org.pkwmtt.moderator.dto.AuthDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

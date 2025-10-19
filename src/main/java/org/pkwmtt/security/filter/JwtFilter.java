@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token.filter;
+package org.pkwmtt.security.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,7 +8,7 @@ import lombok.NonNull;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
-import org.pkwmtt.security.moderator.ModeratorRepository;
+import org.pkwmtt.moderator.ModeratorRepository;
 import org.pkwmtt.security.token.JwtAuthenticationToken;
 import org.pkwmtt.security.token.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package org.pkwmtt.security.admin;
+package org.pkwmtt.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.enums.Role;

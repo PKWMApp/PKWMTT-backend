@@ -2,7 +2,7 @@ package org.pkwmtt.security.token.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.pkwmtt.security.moderator.Moderator;
+import org.pkwmtt.moderator.Moderator;
 
 import java.time.LocalDateTime;
 

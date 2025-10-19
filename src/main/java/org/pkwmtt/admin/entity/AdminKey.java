@@ -1,4 +1,4 @@
-package org.pkwmtt.security.admin.entity;
+package org.pkwmtt.admin.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

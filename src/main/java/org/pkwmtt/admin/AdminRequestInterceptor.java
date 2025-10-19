@@ -1,4 +1,4 @@
-package org.pkwmtt.security.admin;
+package org.pkwmtt.admin;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

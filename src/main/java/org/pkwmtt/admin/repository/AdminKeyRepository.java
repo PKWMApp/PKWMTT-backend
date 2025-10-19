@@ -1,6 +1,6 @@
-package org.pkwmtt.security.admin.repository;
+package org.pkwmtt.admin.repository;
 
-import org.pkwmtt.security.admin.entity.AdminKey;
+import org.pkwmtt.admin.entity.AdminKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdminKeyRepository extends JpaRepository<AdminKey, Integer> {

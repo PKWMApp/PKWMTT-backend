@@ -4,7 +4,7 @@ package org.pkwmtt.studentCodes;
 import com.mysql.cj.exceptions.WrongArgumentException;
 import org.pkwmtt.exceptions.*;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
-import org.pkwmtt.security.moderator.controller.ModeratorController;
+import org.pkwmtt.moderator.controller.ModeratorController;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

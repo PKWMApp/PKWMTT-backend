@@ -1,4 +1,4 @@
-package org.pkwmtt.security.moderator.controller;
+package org.pkwmtt.moderator.controller;
 
 import org.pkwmtt.exceptions.SpecifiedGeneralGroupDoesntExistsException;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
