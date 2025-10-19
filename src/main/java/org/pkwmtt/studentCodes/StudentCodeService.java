@@ -13,12 +13,12 @@ import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.exceptions.*;
 import org.pkwmtt.mail.EmailService;
 import org.pkwmtt.mail.dto.MailDTO;
-import org.pkwmtt.security.token.JwtService;
+import org.pkwmtt.security.jwt.JwtService;
 import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.pkwmtt.studentCodes.repository.StudentCodeRepository;
-import org.pkwmtt.security.auhentication.JwtAuthenticationService;
-import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.token.dto.RepresentativeDTO;
+import org.pkwmtt.security.authentication.JwtAuthenticationService;
+import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.stereotype.Service;
 
