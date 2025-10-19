@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token.utils;
+package org.pkwmtt.security.jwt.utils;
 
 import lombok.Getter;
 import org.springframework.core.env.Environment;

@@ -7,11 +7,11 @@ import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.auhentication.dto.RefreshRequestDto;
-import org.pkwmtt.security.token.JwtService;
-import org.pkwmtt.security.token.dto.RepresentativeDTO;
-import org.pkwmtt.security.token.entity.RefreshToken;
-import org.pkwmtt.security.token.entity.UserRefreshToken;
-import org.pkwmtt.security.token.repository.UserRefreshTokenRepository;
+import org.pkwmtt.security.jwt.JwtService;
+import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
+import org.pkwmtt.security.jwt.refreshToken.entity.RefreshToken;
+import org.pkwmtt.security.jwt.refreshToken.entity.UserRefreshToken;
+import org.pkwmtt.security.jwt.refreshToken.repository.UserRefreshTokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

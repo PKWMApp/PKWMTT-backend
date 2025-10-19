@@ -19,7 +19,7 @@ import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.exceptions.*;
-import org.pkwmtt.security.token.JwtAuthenticationToken;
+import org.pkwmtt.security.auhentication.authenticationToken.JwtAuthenticationToken;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.security.core.context.SecurityContextHolder;
 

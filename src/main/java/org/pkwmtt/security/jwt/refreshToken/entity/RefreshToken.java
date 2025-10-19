@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token.entity;
+package org.pkwmtt.security.jwt.refreshToken.entity;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token;
+package org.pkwmtt.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -7,9 +7,9 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
-import org.pkwmtt.security.token.dto.RepresentativeDTO;
-import org.pkwmtt.security.token.entity.RefreshToken;
-import org.pkwmtt.security.token.utils.JwtUtils;
+import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
+import org.pkwmtt.security.jwt.refreshToken.entity.RefreshToken;
+import org.pkwmtt.security.jwt.utils.JwtUtils;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;

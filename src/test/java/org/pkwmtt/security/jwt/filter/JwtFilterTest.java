@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token.filter;
+package org.pkwmtt.security.jwt.filter;
 
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.security.filter.JwtFilter;
-import org.pkwmtt.security.token.JwtService;
+import org.pkwmtt.security.jwt.JwtService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;

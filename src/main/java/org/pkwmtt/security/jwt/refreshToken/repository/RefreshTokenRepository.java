@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token.repository;
+package org.pkwmtt.security.jwt.refreshToken.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;

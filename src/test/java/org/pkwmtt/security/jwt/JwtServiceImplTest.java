@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token;
+package org.pkwmtt.security.jwt;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -10,8 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.enums.Role;
-import org.pkwmtt.security.token.dto.RepresentativeDTO;
-import org.pkwmtt.security.token.utils.JwtUtils;
+import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
+import org.pkwmtt.security.jwt.utils.JwtUtils;
 
 import java.util.Base64;
 import java.util.Date;

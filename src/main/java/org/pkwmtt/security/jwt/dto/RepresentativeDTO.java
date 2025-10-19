@@ -1,4 +1,4 @@
-package org.pkwmtt.security.token.dto;
+package org.pkwmtt.security.jwt.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

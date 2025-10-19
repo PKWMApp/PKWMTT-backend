@@ -1,6 +1,6 @@
-package org.pkwmtt.security.token.repository;
+package org.pkwmtt.security.jwt.refreshToken.repository;
 
-import org.pkwmtt.security.token.entity.UserRefreshToken;
+import org.pkwmtt.security.jwt.refreshToken.entity.UserRefreshToken;
 import org.springframework.stereotype.Repository;
 
 @Repository
