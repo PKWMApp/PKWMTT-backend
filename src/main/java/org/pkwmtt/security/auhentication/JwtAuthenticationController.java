@@ -3,7 +3,7 @@ package org.pkwmtt.security.auhentication;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.exceptions.StudentCodeNotFoundException;
 import org.pkwmtt.exceptions.UserNotFoundException;
-import org.pkwmtt.exceptions.WrongOTPFormatException;
+import org.pkwmtt.exceptions.WrongStudentCodeFormatException;
 import org.pkwmtt.studentCodes.StudentCodeService;
 import org.pkwmtt.studentCodes.dto.StudentCodeDTO;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
@@ -22,7 +22,7 @@ public class JwtAuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody StudentCodeDTO code)
-      throws StudentCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
+      throws StudentCodeNotFoundException, WrongStudentCodeFormatException, UserNotFoundException {
         return ResponseEntity.ok(studentCodeService.generateTokenForUser(code.getOtpCode()));
     }
 

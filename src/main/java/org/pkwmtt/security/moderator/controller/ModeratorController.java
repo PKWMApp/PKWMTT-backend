@@ -41,13 +41,13 @@ public class ModeratorController {
     @PostMapping("/users")
     public ResponseEntity<Void> addUser (@RequestBody StudentCodeRequest studentCodeRequest)
       throws JsonProcessingException {
-        studentCodeService.sendOtpCode(studentCodeRequest);
+        studentCodeService.sendStudentCode(studentCodeRequest);
         return ResponseEntity.noContent().build();
     }
     
     @PostMapping("/multiple-users")
     public ResponseEntity<?> addMultipleUser (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
-        var failures = studentCodeService.sendOTPCodesForManyGroups(studentCodeRequests);
+        var failures = studentCodeService.sendStudentCodes(studentCodeRequests);
         if (failures == null || failures.isEmpty()) {
             return ResponseEntity.noContent().build();
         }

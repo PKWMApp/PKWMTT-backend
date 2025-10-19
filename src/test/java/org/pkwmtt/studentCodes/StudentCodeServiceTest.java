@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.pkwmtt.exceptions.StudentCodeNotFoundException;
-import org.pkwmtt.exceptions.WrongOTPFormatException;
+import org.pkwmtt.exceptions.WrongStudentCodeFormatException;
 import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.pkwmtt.studentCodes.repository.StudentCodeRepository;
 import org.pkwmtt.security.auhentication.dto.JwtAuthenticationDto;
@@ -56,7 +56,7 @@ class StudentCodeServiceTest {
         List<StudentCodeRequest> requests = List.of(new StudentCodeRequest("test2@localhost", "12K"));
         Pattern pattern = Pattern.compile("[A-Z0-9]{6}");
         //when
-        studentCodeService.sendOTPCodesForManyGroups(requests);
+        studentCodeService.sendStudentCodes(requests);
         //then
         assertAll(() -> {
             assertTrue(greenMail.waitForIncomingEmail(1));
@@ -82,7 +82,7 @@ class StudentCodeServiceTest {
         Pattern pattern = Pattern.compile("[A-Z0-9]{6}");
         
         // when
-        var failures = studentCodeService.sendOTPCodesForManyGroups(requests);
+        var failures = studentCodeService.sendStudentCodes(requests);
         
         // then - verify failure for the bad request was collected
         assertFalse(failures.isEmpty());
@@ -106,7 +106,7 @@ class StudentCodeServiceTest {
         );
         
         // when
-        var failures = studentCodeService.sendOTPCodesForManyGroups(requests);
+        var failures = studentCodeService.sendStudentCodes(requests);
 
         // then - verify both failures were collected and contain group names and exception info
         assertNotNull(failures);
@@ -125,7 +125,7 @@ class StudentCodeServiceTest {
         Pattern otpPattern = Pattern.compile("[A-Z0-9]{6}");
         Pattern tokenPattern = Pattern.compile("[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+");
         //when
-        studentCodeService.sendOTPCodesForManyGroups(requests); //generate mail with code
+        studentCodeService.sendStudentCodes(requests); //generate mail with code
         greenMail.waitForIncomingEmail(1); // fetch mail
         MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
         Matcher otpMatcher = otpPattern.matcher(
@@ -155,12 +155,12 @@ class StudentCodeServiceTest {
     
     @Test
     void shouldThrow_WrongOTPFormatException_wrongCharacters () {
-        assertThrows(WrongOTPFormatException.class, () -> studentCodeService.generateTokenForUser("XXXXX#"));
+        assertThrows(WrongStudentCodeFormatException.class, () -> studentCodeService.generateTokenForUser("XXXXX#"));
     }
     
     @Test
     void shouldThrow_WrongOTPFormatException_tooLongCode () {
-        assertThrows(WrongOTPFormatException.class, () -> studentCodeService.generateTokenForUser("X".repeat(7)));
+        assertThrows(WrongStudentCodeFormatException.class, () -> studentCodeService.generateTokenForUser("X".repeat(7)));
     }
     
     @Test

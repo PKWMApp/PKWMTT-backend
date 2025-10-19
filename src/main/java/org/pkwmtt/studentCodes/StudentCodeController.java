@@ -19,7 +19,7 @@ public class StudentCodeController {
     
     @PostMapping("/codes/generate")
     public ResponseEntity<?> generateCodes (@RequestBody List<StudentCodeRequest> request) {
-        var failures = service.sendOTPCodesForManyGroups(request);
+        var failures = service.sendStudentCodes(request);
         if (failures == null || failures.isEmpty()) {
             return ResponseEntity.ok().build();
         }
