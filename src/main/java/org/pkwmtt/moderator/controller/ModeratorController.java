@@ -1,14 +1,13 @@
 package org.pkwmtt.moderator.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.Representative;
-import org.pkwmtt.studentCodes.StudentCodeService;
-import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
-import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.authentication.dto.RefreshRequestDto;
 import org.pkwmtt.moderator.ModeratorService;
 import org.pkwmtt.moderator.dto.AuthDto;
+import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.authentication.dto.RefreshRequestDto;
+import org.pkwmtt.studentCodes.StudentCodeService;
+import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

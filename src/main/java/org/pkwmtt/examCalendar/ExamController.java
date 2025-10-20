@@ -60,15 +60,7 @@ public class ExamController {
         examService.deleteExam(id);
         return ResponseEntity.noContent().build();
     }
-
-    /**
-     * @param id of exam or test
-     * @return 200 ok with single exam or test details
-     */
-//    @GetMapping("/{id}")
-    public ResponseEntity<Exam> getExam(@PathVariable int id) {
-        return ResponseEntity.ok(examService.getExamById(id));
-    }
+    
 
     /**
      * when subgroups isn't null all generalGroups must be form the same year of study. e.g. 12K2, 12K1 is from 12K
