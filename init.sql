@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Paź 20, 2025 at 05:38 PM
+-- Generation Time: Paź 20, 2025 at 06:49 PM
 -- Wersja serwera: 9.4.0
 -- Wersja PHP: 8.2.27
 
@@ -213,9 +213,9 @@ CREATE TABLE `refresh_token` (
 --
 
 CREATE TABLE `representatives` (
-  `representative_id` int NOT NULL,
+  `representative_id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `superior_group_id` int NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -224,7 +224,7 @@ CREATE TABLE `representatives` (
 --
 
 INSERT INTO `representatives` (`representative_id`, `superior_group_id`, `email`, `is_active`) VALUES
-(16, 23, 'mikiflor24@gmail.com', 1);
+('16', 23, 'mikiflor24@gmail.com', 1);
 
 -- --------------------------------------------------------
 
@@ -286,7 +286,7 @@ INSERT INTO `superior_groups` (`superior_group_id`, `name`) VALUES
 CREATE TABLE `user_refresh_tokens` (
   `token_id` bigint NOT NULL,
   `token` char(64) NOT NULL,
-  `representative_id` int NOT NULL,
+  `representative_id` varchar(36) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -300,7 +300,7 @@ CREATE TABLE `user_refresh_tokens` (
 CREATE TABLE `utils_kv` (
   `id` int NOT NULL,
   `property_key` varchar(191) NOT NULL,
-  `value` text,
+  `property_value` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `value_type` varchar(20) NOT NULL DEFAULT 'string',
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -309,8 +309,8 @@ CREATE TABLE `utils_kv` (
 -- Zrzut danych tabeli `utils_kv`
 --
 
-INSERT INTO `utils_kv` (`id`, `property_key`, `value`, `value_type`, `updated_at`) VALUES
-(1, 'endOfSemester', '2026-02-28', 'date', '2025-10-20 17:06:53');
+INSERT INTO `utils_kv` (`id`, `property_key`, `property_value`, `value_type`, `updated_at`) VALUES
+(16, 'endOfSemester', '2026-02-28', 'date', '2025-10-20 18:26:50');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -486,12 +486,6 @@ ALTER TABLE `moderator_refresh_tokens`
   MODIFY `token_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT dla tabeli `representatives`
---
-ALTER TABLE `representatives`
-  MODIFY `representative_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
 -- AUTO_INCREMENT dla tabeli `student_codes`
 --
 ALTER TABLE `student_codes`
@@ -519,7 +513,7 @@ ALTER TABLE `user_refresh_tokens`
 -- AUTO_INCREMENT dla tabeli `utils_kv`
 --
 ALTER TABLE `utils_kv`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Ograniczenia dla zrzutów tabel
@@ -567,7 +561,7 @@ ALTER TABLE `student_codes`
 -- Ograniczenia dla tabeli `user_refresh_tokens`
 --
 ALTER TABLE `user_refresh_tokens`
-  ADD CONSTRAINT `fk_refresh_user` FOREIGN KEY (`representative_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `user_refresh_tokens_ibfk_1` FOREIGN KEY (`representative_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

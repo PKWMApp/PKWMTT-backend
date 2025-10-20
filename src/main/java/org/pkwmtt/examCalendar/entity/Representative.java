@@ -16,7 +16,7 @@ public class Representative {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "representative_id")
-    private Integer representativeId;
+    private String representativeId;
 
     @ManyToOne
     @JoinColumn(name = "superior_group_id", nullable = false)
