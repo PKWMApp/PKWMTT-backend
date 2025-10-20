@@ -1,6 +1,7 @@
 package org.pkwmtt.reports.mapper;
 
 import org.pkwmtt.reports.dto.BugReportDTO;
+import org.pkwmtt.reports.dto.NewBugReportDTO;
 import org.pkwmtt.reports.entities.BugReport;
 
 public class BugReportsMapper {
@@ -21,10 +22,11 @@ public class BugReportsMapper {
         );
     }
     
-    public static BugReport toEntity (BugReportDTO dto) {
+    public static BugReport toEntity (NewBugReportDTO dto) {
         if (dto == null) {
             return null;
         }
+        
         return new BugReport(
           dto.getUserGroups(),
           dto.getDescription(),
