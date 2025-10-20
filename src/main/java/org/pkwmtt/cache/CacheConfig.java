@@ -25,7 +25,7 @@ public class CacheConfig {
     
     @Bean
     public CacheManager cacheManager (Caffeine<Object, Object> caffeine) {
-        log.info("Initializing Caffeine Cache Manager with 12-hour expiration");
+        log.info("Initializing Caffeine Cache Manager with 24-hour expiration");
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         // register caches used across the application so they are created upfront
         cacheManager.setCacheNames(List.of("timetables", "utils"));
