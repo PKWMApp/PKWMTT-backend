@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Order(2)
-@RestControllerAdvice(assignableTypes = {StudentCodeController.class, ModeratorController.class})
+@RestControllerAdvice(assignableTypes = {ModeratorController.class})
 public class StudentCodeExceptionHandler {
     @ExceptionHandler({StudentCodeNotFoundException.class, WrongStudentCodeFormatException.class, UserNotFoundException.class, WrongArgumentException.class, SpecifiedGeneralGroupDoesntExistsException.class, IllegalArgumentException.class})
     public ResponseEntity<ErrorResponseDTO> handleBadRequests (Exception e) {
