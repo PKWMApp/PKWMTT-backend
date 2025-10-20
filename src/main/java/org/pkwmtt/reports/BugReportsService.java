@@ -1,5 +1,6 @@
 package org.pkwmtt.reports;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.pkwmtt.reports.dto.BugReportDTO;
@@ -10,7 +11,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-//TODO Create endpoints for bug reports management
 public class BugReportsService {
     
     private final BugReportRepository bugReportRepository;
@@ -28,6 +28,7 @@ public class BugReportsService {
         bugReportRepository.save(bugReport);
     }
     
+    @Transactional
     public void removeBugReport (int id) {
         bugReportRepository.deleteById(id);
     }

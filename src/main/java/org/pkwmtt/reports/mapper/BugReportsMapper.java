@@ -14,6 +14,7 @@ public class BugReportsMapper {
         }
         
         return new BugReportDTO(
+          src.getReportId(),
           src.getUserGroups(),
           src.getDescription(),
           src.getIssuedAt()
