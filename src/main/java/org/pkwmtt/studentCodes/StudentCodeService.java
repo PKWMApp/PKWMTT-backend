@@ -193,7 +193,7 @@ public class StudentCodeService {
     }
     
     private String generateNewCode () {
-        String AVAILABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+        String AVAILABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder code = new StringBuilder();
         SecureRandom random = new SecureRandom();
         
