@@ -99,7 +99,10 @@ class UtilsServiceTest extends TestConfig {
         repository.save(bad);
         
         // ensure cache is empty
-        cacheInspector.getAllEntries("utils").clear();
+        var cache = cacheManager.getCache("utils");
+        if (cache != null) {
+            cache.clear();
+        }
         // call getter - should attempt to parse, fail, evict and return empty
         Optional<LocalDate> res = utilsService.getEndOfSemester();
         assertTrue(res.isEmpty());
