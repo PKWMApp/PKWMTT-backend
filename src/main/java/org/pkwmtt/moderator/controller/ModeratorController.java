@@ -22,6 +22,7 @@ public class ModeratorController {
     private final ModeratorService moderatorService;
     private final StudentCodeService studentCodeService;
     
+    //todo add username to AuthDto and authenticate by username+password
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody AuthDto auth) {
         return ResponseEntity.ok(moderatorService.generateTokenForModerator(auth.getPassword()));
@@ -39,19 +40,15 @@ public class ModeratorController {
     }
     
     @PostMapping("/users")
-    public ResponseEntity<Void> addUser (@RequestBody StudentCodeRequest studentCodeRequest)
-      throws JsonProcessingException {
-        studentCodeService.sendStudentCode(studentCodeRequest);
-        return ResponseEntity.noContent().build();
-    }
-    
-    @PostMapping("/multiple-users")
-    public ResponseEntity<?> addMultipleUser (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
-        var failures = studentCodeService.sendStudentCodes(studentCodeRequests);
-        if (failures == null || failures.isEmpty()) {
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<?> addUsers (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
+        if (studentCodeRequests == null || studentCodeRequests.isEmpty()) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.status(207).body(failures);
+        
+        var failures = studentCodeService.sendStudentCode(studentCodeRequests);
+        return (failures == null || failures.isEmpty())
+          ? ResponseEntity.noContent().build()
+          : ResponseEntity.status(207).body(failures);
     }
     
     @GetMapping("/users")

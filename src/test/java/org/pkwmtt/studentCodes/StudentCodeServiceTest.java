@@ -56,7 +56,7 @@ class StudentCodeServiceTest {
         List<StudentCodeRequest> requests = List.of(new StudentCodeRequest("test2@localhost", "12K"));
         Pattern pattern = Pattern.compile("[A-Z0-9]{6}");
         //when
-        studentCodeService.sendStudentCodes(requests);
+        studentCodeService.sendStudentCode(requests);
         //then
         assertAll(() -> {
             assertTrue(greenMail.waitForIncomingEmail(1));
@@ -82,7 +82,7 @@ class StudentCodeServiceTest {
         Pattern pattern = Pattern.compile("[A-Z0-9]{6}");
         
         // when
-        var failures = studentCodeService.sendStudentCodes(requests);
+        var failures = studentCodeService.sendStudentCode(requests);
         
         // then - verify failure for the bad request was collected
         assertFalse(failures.isEmpty());
@@ -106,7 +106,7 @@ class StudentCodeServiceTest {
         );
         
         // when
-        var failures = studentCodeService.sendStudentCodes(requests);
+        var failures = studentCodeService.sendStudentCode(requests);
 
         // then - verify both failures were collected and contain group names and exception info
         assertNotNull(failures);
@@ -125,7 +125,7 @@ class StudentCodeServiceTest {
         Pattern otpPattern = Pattern.compile("[A-Z0-9]{6}");
         Pattern tokenPattern = Pattern.compile("[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+");
         //when
-        studentCodeService.sendStudentCodes(requests); //generate mail with code
+        studentCodeService.sendStudentCode(requests); //generate mail with code
         greenMail.waitForIncomingEmail(1); // fetch mail
         MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
         Matcher otpMatcher = otpPattern.matcher(

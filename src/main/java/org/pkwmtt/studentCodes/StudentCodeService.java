@@ -68,7 +68,7 @@ public class StudentCodeService {
           .build();
     }
     
-    public List<SendStudentCodeFailure> sendStudentCodes (List<StudentCodeRequest> requests) {
+    public List<SendStudentCodeFailure> sendStudentCode (List<StudentCodeRequest> requests) {
         // Collect per-group failures and return them to the caller so they can decide what to do.
         var failures = new java.util.ArrayList<SendStudentCodeFailure>();
         for (StudentCodeRequest request : requests) {
