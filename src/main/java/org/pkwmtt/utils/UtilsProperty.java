@@ -19,7 +19,7 @@ public class UtilsProperty {
     @Column(name = "property_key", nullable = false, unique = true, length = 191)
     private String key;
 
-    @Column(name = "value", columnDefinition = "TEXT")
+    @Column(name = "property_value", columnDefinition = "VARCHAR(250)")
     private String value;
 
     @Column(name = "value_type")
