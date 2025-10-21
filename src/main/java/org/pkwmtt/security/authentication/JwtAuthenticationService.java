@@ -40,7 +40,7 @@ public class JwtAuthenticationService {
 
         return JwtAuthenticationDto.builder()
                 .refreshToken(tokenHash)
-                .accessToken(jwtService.generateAccessToken(new RepresentativeDTO(representative)))
+                .accessToken(jwtService.generateAccessToken(representative))
                 .build();
     }
 

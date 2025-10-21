@@ -7,7 +7,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
-import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.security.jwt.refreshToken.entity.RefreshToken;
 import org.pkwmtt.security.jwt.utils.JwtUtils;
 import org.springframework.stereotype.Service;
@@ -31,24 +30,24 @@ public class JwtService {
      * The token contains user's email, group, and role as claims,
      * and is signed with a secret key.
      *
-     * @param user - required user data to include in token claims
+     * @param representative - required user data to include in token claims
      * @return signed JWT token as a String
      */
-    public String generateAccessToken(RepresentativeDTO user) {
+    public String generateAccessToken(Representative representative) {
         return Jwts.builder()
-                .subject(user.getEmail())
-                .claim("group", user.getGroup())
-                .claim("role", user.getRole())
+                .subject(representative.getRepresentativeId().toString())
+                .claim("group", representative.getSuperiorGroup())
+                .claim("role", "ROLE_REPRESENTATIVE")
                 .issuedAt(new Date())
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
                 .compact();
     }
 
-    public String generateAccessToken(UUID uuid) {
+    public String generateModeratorAccessToken(UUID uuid) {
         return Jwts.builder()
                 .subject(uuid.toString())
-                .claim("role", "MODERATOR")
+                .claim("role", "ROLE_MODERATOR")
                 .issuedAt(new Date())
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
@@ -106,7 +105,7 @@ public class JwtService {
      * @param uuid the UUID to compare with the token's subject
      * @return true if the token is valid, false otherwise
      */
-    public Boolean validateAccessToken(String token, String uuid) {
+    public Boolean validateModeratorAccessToken(String token, String uuid) {
         try {
             final String userid = getSubject(token);
             return userid != null

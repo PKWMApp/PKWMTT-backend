@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Builder
@@ -14,9 +16,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "representatives")
 public class Representative {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "representative_id")
-    private String representativeId;
+    private UUID representativeId;
 
     @ManyToOne
     @JoinColumn(name = "superior_group_id", nullable = false)

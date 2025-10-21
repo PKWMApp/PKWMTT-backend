@@ -37,7 +37,7 @@ public class SpringSecurity {
                   .requestMatchers(HttpMethod.DELETE , "/pkwmtt/api/v1/exams").authenticated()
                   .requestMatchers("/moderator/authenticate").permitAll()
                   .requestMatchers("/moderator/refresh").permitAll()
-                  .requestMatchers("/moderator/**").hasAuthority("ROLE_MODERATOR")
+                  .requestMatchers("/moderator/**").hasRole("MODERATOR")
                   .requestMatchers("/**").permitAll()
                   .anyRequest().authenticated()
           )

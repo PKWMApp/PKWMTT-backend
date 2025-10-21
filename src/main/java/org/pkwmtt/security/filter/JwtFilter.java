@@ -82,7 +82,7 @@ public class JwtFilter extends OncePerRequestFilter {
         UUID uuid = UUID.fromString(subject);
         moderatorRepository.findById(uuid).orElseThrow(); // TODO: add exception type
         
-        if (jwtService.validateAccessToken(token, subject)) {
+        if (jwtService.validateModeratorAccessToken(token, subject)) {
             List<SimpleGrantedAuthority> authorities = List.of(
               new SimpleGrantedAuthority("ROLE_" + "MODERATOR")
             );

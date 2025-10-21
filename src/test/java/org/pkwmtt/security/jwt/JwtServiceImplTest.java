@@ -9,12 +9,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.examCalendar.entity.Representative;
+import org.pkwmtt.examCalendar.entity.SuperiorGroup;
 import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.security.jwt.utils.JwtUtils;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,11 +43,8 @@ class JwtServiceImplTest {
     }
 
     @Test
-    void generateAccessToken_shouldCreateNonEmptyAccessToken() {
-        RepresentativeDTO user = new RepresentativeDTO()
-                .setEmail("user@example.com")
-                .setGroup("GROUP1")
-                .setRole(Role.ADMIN);
+    void generateAccessToken_shouldCreateNonEmptyModeratorAccessToken() {
+        Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
@@ -56,10 +55,7 @@ class JwtServiceImplTest {
 
     @Test
     void getUserEmailFromToken_shouldReturnCorrectEmail() {
-        RepresentativeDTO user = new RepresentativeDTO()
-                .setEmail("user@example.com")
-                .setGroup("GROUP1")
-                .setRole(Role.ADMIN);
+        Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
@@ -70,10 +66,7 @@ class JwtServiceImplTest {
 
     @Test
     void extractRoleFromToken_shouldReturnCorrectRole() {
-        RepresentativeDTO user = new RepresentativeDTO()
-                .setEmail("user@example.com")
-                .setGroup("GROUP1")
-                .setRole(Role.ADMIN);
+        Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
@@ -84,10 +77,7 @@ class JwtServiceImplTest {
 
     @Test
     void extractGroupFromToken_shouldReturnCorrectGroup() {
-        RepresentativeDTO user = new RepresentativeDTO()
-                .setEmail("user@example.com")
-                .setGroup("GROUP1")
-                .setRole(Role.ADMIN);
+        Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
@@ -97,54 +87,44 @@ class JwtServiceImplTest {
     }
 
     @Test
-    void validateAccessToken_shouldReturnTrueForValidAccessToken() {
-        RepresentativeDTO userDTO = new RepresentativeDTO()
-                .setEmail("user@example.com")
-                .setGroup("GROUP1")
-                .setRole(Role.ADMIN);
+    void validateAccessToken_shouldReturnTrueForValidModeratorAccessToken() {
+        Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
-        String token = jwtService.generateAccessToken(userDTO);
+        String token = jwtService.generateAccessToken(user);
         Representative mockUser = mock(Representative.class);
         when(mockUser.getEmail()).thenReturn("user@example.com");
         assertTrue(jwtService.validateAccessToken(token, mockUser));
     }
 
     @Test
-    void validateAccessToken_shouldReturnFalseForInvalidEmail() {
-        RepresentativeDTO userDTO = new RepresentativeDTO()
-                .setEmail("user@example.com")
-                .setGroup("GROUP1")
-                .setRole(Role.ADMIN);
+    void validateModeratorAccessToken_shouldReturnFalseForInvalidEmail() {
+        Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
-        String token = jwtService.generateAccessToken(userDTO);
+        String token = jwtService.generateAccessToken(user);
         Representative mockUser = mock(Representative.class);
         when(mockUser.getEmail()).thenReturn("other@example.com");
         assertFalse(jwtService.validateAccessToken(token, mockUser));
     }
 
     @Test
-    void validateAccessToken_shouldReturnFalseForExpiredAccessToken() {
-        RepresentativeDTO user = new RepresentativeDTO()
-                .setEmail("user@example.com")
-                .setGroup("GROUP1")
-                .setRole(Role.ADMIN);
+    void validateAccessToken_shouldReturnFalseForExpiredModeratorAccessToken() {
+        Representative user = getExampleRepresentative();
 
         long pastExpiration = System.currentTimeMillis() - 1000;
         String expiredToken = Jwts.builder()
-                .subject(user.getEmail())
-                .claim("group", user.getGroup())
-                .claim("role", user.getRole())
+                .subject(user.getRepresentativeId().toString())
+                .claim("group", user.getSuperiorGroup())
+                .claim("role", "ROLE_REPRESENTATIVE")
                 .issuedAt(new Date(System.currentTimeMillis() - 2000))
                 .expiration(new Date(pastExpiration))
                 .signWith(jwtService.decodeSecretKey())
                 .compact();
 
         Representative mockUser = mock(Representative.class);
-//        when(mockUser.getEmail()).thenReturn("user@example.com");
 
         assertFalse(jwtService.validateAccessToken(expiredToken, mockUser));
     }
@@ -153,5 +133,14 @@ class JwtServiceImplTest {
     void getUserEmailFromToken_shouldThrowExceptionForInvalidToken() {
         String invalidToken = "invalid.token.value";
         assertThrows(JwtException.class, () -> jwtService.getSubject(invalidToken));
+    }
+
+    private static Representative getExampleRepresentative() {
+        return Representative.builder()
+                .representativeId(UUID.fromString("11111111-2222-3333-4444-555555555555"))
+                .email("user@example.com")
+                .superiorGroup(
+                        SuperiorGroup.builder().name("GROUP1").build()
+                ).build();
     }
 }
