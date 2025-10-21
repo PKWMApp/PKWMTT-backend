@@ -21,7 +21,7 @@ public class ModeratorController {
     private final ModeratorService moderatorService;
     private final StudentCodeService studentCodeService;
     
-    //todo add username to AuthDto and authenticate by username+password
+    //username currently not used
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody AuthDto auth) {
         return ResponseEntity.ok(moderatorService.generateTokenForModerator(auth.getPassword()));
