@@ -2,10 +2,13 @@ package org.pkwmtt.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.enums.Role;
+import org.pkwmtt.reports.BugReportsService;
+import org.pkwmtt.reports.dto.BugReportDTO;
 import org.pkwmtt.security.apiKey.ApiKeyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -14,11 +17,8 @@ import java.util.Map;
 public class AdminController {
     private final ApiKeyService service;
     private final AdminService adminService;
+    private final BugReportsService bugReportsService;
     
-    @GetMapping("")
-    public String adminPanel () {
-        return "ADMIN";
-    }
     
     @PostMapping("/api/keys/generate")
     public String generateApiKey (@RequestParam(name = "d") String description,
@@ -36,5 +36,15 @@ public class AdminController {
         return ResponseEntity.ok(adminService.addModerator());
     }
     
+    @GetMapping("/bugs/reports")
+    public ResponseEntity<List<BugReportDTO>> getBugReports () {
+        return ResponseEntity.ok(bugReportsService.getAllBugReports());
+    }
+    
+    @DeleteMapping("/bugs/reports")
+    public ResponseEntity<Void> deleteBugReport (@RequestParam(name = "id") int id) {
+        bugReportsService.removeBugReport(id);
+        return ResponseEntity.ok().build();
+    }
     
 }

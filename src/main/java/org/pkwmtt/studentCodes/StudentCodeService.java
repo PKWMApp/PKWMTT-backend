@@ -41,93 +41,127 @@ public class StudentCodeService {
     private final JwtAuthenticationService jwtAuthenticationService;
     private final TimetableService timetableService;
     
+    //TODO increase usage counter
+    
     public JwtAuthenticationDto generateTokenForUser (String code)
-      throws StudentCodeNotFoundException, WrongOTPFormatException, UserNotFoundException {
+      throws StudentCodeNotFoundException, WrongStudentCodeFormatException, UserNotFoundException {
         var superiorGroup = this.getSuperiorGroupAssignedToCode(code);
         var representative = representativeRepository
           .findBySuperiorGroup(superiorGroup)
           .orElseThrow(() -> new UserNotFoundException("No representative is assigned to this code."));
         
         var userEmail = representative.getEmail();
-        String token = jwtService.generateAccessToken(new RepresentativeDTO()
-                                                        .setEmail(userEmail)
-                                                        .setRole(Role.REPRESENTATIVE)
-                                                        .setGroup(superiorGroup.getName()));
-        studentCodeRepository.deleteByCode(code);
-        return JwtAuthenticationDto.builder()
+        
+        String token = jwtService.generateAccessToken(
+          new RepresentativeDTO()
+            .setEmail(userEmail)
+            .setRole(Role.REPRESENTATIVE)
+            .setGroup(superiorGroup.getName())
+        );
+        
+        var refreshToken = jwtAuthenticationService.getNewUserRefreshToken(representative);
+        
+        return JwtAuthenticationDto
+          .builder()
           .accessToken(token)
-          .refreshToken(jwtAuthenticationService.getNewUserRefreshToken(representative))
+          .refreshToken(refreshToken)
           .build();
     }
     
-    public List<SendOtpFailure> sendOTPCodesForManyGroups (List<StudentCodeRequest> requests) {
+    public List<SendStudentCodeFailure> sendStudentCode (List<StudentCodeRequest> requests) {
         // Collect per-group failures and return them to the caller so they can decide what to do.
-        var failures = new java.util.ArrayList<SendOtpFailure>();
+        var failures = new java.util.ArrayList<SendStudentCodeFailure>();
         for (StudentCodeRequest request : requests) {
             try {
-                sendOtpCode(request);
+                sendStudentCode(request);
             } catch (Exception e) {
                 String group = request.getSuperiorGroupName();
                 String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
                 reason = reason.replaceAll("\\r?\\n", " ");
-                failures.add(new SendOtpFailure(group, reason, e.getClass().getSimpleName()));
+                failures.add(new SendStudentCodeFailure(group, reason, e.getClass().getSimpleName()));
             }
         }
         
         return failures;
     }
     
-    public void sendOtpCode (StudentCodeRequest request)
+    public void sendStudentCode (StudentCodeRequest request)
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException, IllegalArgumentException, JsonProcessingException {
         var code = generateNewCode();
         var mail = createMail(request, code);
         var groupName = request.getSuperiorGroupName();
-        var groupNameLength = groupName.length();
         
-        if (groupNameLength > 3 && Character.isDigit(
-          groupName.charAt(groupNameLength - 1))) { //Check general group name
-            throw new WrongArgumentException(
-              "Wrong general group provided. Make sure you are not providing subgroup. (f.e 12K1 -> wrong, 12K -> good)");
-        }
+        validateGroupNameFormat(groupName);
         
         if (!generalGroupExists(groupName)) { // Check if general group with provided name exists
             throw new SpecifiedGeneralGroupDoesntExistsException();
         }
         
+        var superiorGroup = findOrCreateSuperiorGroup(groupName);
+        ensureNoExistingRepresentativeByEmail(request.getEmail());
+        
+        var representative = buildRepresentative(request.getEmail(), superiorGroup.get());
+        replaceExistingRepresentativeForGroup(superiorGroup.get());
+        representativeRepository.save(representative);
+        studentCodeRepository.save(new StudentCode(code, superiorGroup.get()));
+        
+        sendEmailOrThrow(mail, groupName);
+    }
+    
+    private void validateGroupNameFormat (String groupName) throws WrongArgumentException {
+        var groupNameLength = groupName.length();
+        if (groupNameLength > 3 && Character.isDigit(
+          groupName.charAt(groupNameLength - 1))) { //Check general group name
+            throw new WrongArgumentException(
+              "Wrong general group provided. Make sure you are not providing subgroup. (f.e 12K1 -> wrong, 12K -> good)");
+        }
+    }
+    
+    private Optional<SuperiorGroup> findOrCreateSuperiorGroup (String groupName) {
         var superiorGroup = superiorGroupRepository.findByName(groupName);
         if (superiorGroup.isPresent()) {
-            if (studentCodeRepository.existsBySuperiorGroup(
-              superiorGroup.get())) {
+            if (studentCodeRepository.existsBySuperiorGroup(superiorGroup.get())) {
                 studentCodeRepository.deleteBySuperiorGroup(superiorGroup.get());
             }
+            return superiorGroup;
         } else {
-            superiorGroup = Optional.of(superiorGroupRepository.save(new SuperiorGroup(null, groupName)));
+            return Optional.of(superiorGroupRepository.save(new SuperiorGroup(null, groupName)));
         }
-        var representativeByEmail = representativeRepository.findByEmail(request.getEmail());
+    }
+    
+    private void ensureNoExistingRepresentativeByEmail (String email) {
+        var representativeByEmail = representativeRepository.findByEmail(email);
         if (representativeByEmail.isPresent()) {
             throw new UserAlreadyAssignedException(
-              "Representative with this email is already assigned group.");
+              "Representative with email: " + email + " already has assigned different group.");
         }
+    }
+    
+    private void sendEmailOrThrow (MailDTO mail, String groupName) throws MailCouldNotBeSendException {
         try {
             emailService.send(mail);
         } catch (MessagingException e) {
             throw new MailCouldNotBeSendException("Couldn't send mail for group: " + groupName);
         }
-        var representative = Representative
+    }
+    
+    private Representative buildRepresentative (String email, SuperiorGroup superiorGroup) {
+        return Representative
           .builder()
-          .email(request.getEmail())
-          .superiorGroup(superiorGroup.get())
+          .email(email)
+          .superiorGroup(superiorGroup)
           .isActive(true)
           .build();
+    }
+    
+    private void replaceExistingRepresentativeForGroup (SuperiorGroup superiorGroup) {
         representativeRepository
-          .findBySuperiorGroup(superiorGroup.get())
+          .findBySuperiorGroup(superiorGroup)
           .ifPresent(value -> representativeRepository.deleteRepresentativeByEmail(value.getEmail()));
-        representativeRepository.save(representative);
-        studentCodeRepository.save(new StudentCode(code, superiorGroup.get()));
     }
     
     private SuperiorGroup getSuperiorGroupAssignedToCode (String code)
-      throws StudentCodeNotFoundException, WrongOTPFormatException {
+      throws StudentCodeNotFoundException, WrongStudentCodeFormatException {
         this.validateCode(code);
         Optional<StudentCode> result = studentCodeRepository.findByCode(code);
         if (result.isEmpty()) {
@@ -136,9 +170,9 @@ public class StudentCodeService {
         return result.get().getSuperiorGroup();
     }
     
-    private void validateCode (String code) throws WrongOTPFormatException {
+    private void validateCode (String code) throws WrongStudentCodeFormatException {
         if (code.length() != 6) {
-            throw new WrongOTPFormatException("Code should be 6 characters long.");
+            throw new WrongStudentCodeFormatException("Code should be 6 characters long.");
         }
         
         String regex = "^[A-Z0-9]{6}$";
@@ -146,7 +180,7 @@ public class StudentCodeService {
         Matcher matcher = pattern.matcher(code);
         
         if (!matcher.find()) {
-            throw new WrongOTPFormatException("Wrong format of provided code.");
+            throw new WrongStudentCodeFormatException("Wrong format of provided code.");
         }
     }
     
@@ -159,14 +193,14 @@ public class StudentCodeService {
     }
     
     private String generateNewCode () {
-        String availableCharacters = "ABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+        String AVAILABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder code = new StringBuilder();
         SecureRandom random = new SecureRandom();
         
         do {
             code.setLength(0);
             for (int i = 0; i < 6; i++) {
-                code.append(availableCharacters.charAt(random.nextInt(availableCharacters.length())));
+                code.append(AVAILABLE_CHARS.charAt(random.nextInt(AVAILABLE_CHARS.length())));
             }
         } while (studentCodeRepository.findByCode(code.toString()).isPresent());
         
@@ -174,13 +208,16 @@ public class StudentCodeService {
     }
     
     private boolean generalGroupExists (String name) throws JsonProcessingException {
-        Set<String> list = timetableService.getGeneralGroupList().stream().map(item -> {
-            var lastIndex = item.length() - 1;
-            if (Character.isDigit(item.charAt(lastIndex))) {
-                return item.substring(0, lastIndex);
-            }
-            return item;
-        }).collect(Collectors.toSet());
+        Set<String> list = timetableService
+          .getGeneralGroupList()
+          .stream()
+          .map(item -> {
+              var lastIndex = item.length() - 1;
+              if (Character.isDigit(item.charAt(lastIndex))) {
+                  return item.substring(0, lastIndex);
+              }
+              return item;
+          }).collect(Collectors.toSet());
         
         return list.contains(name);
     }

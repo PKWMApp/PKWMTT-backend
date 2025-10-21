@@ -1,6 +1,5 @@
 package org.pkwmtt.examCalendar;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ public class ExamController {
      * @return 201 created with URI to GET method which returns created resource
      */
     @PostMapping("")
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> addExam(@RequestBody @Valid RequestExamDto requestExamDto){
         int id = examService.addExam(requestExamDto);
         URI uri = ServletUriComponentsBuilder
@@ -48,7 +46,6 @@ public class ExamController {
      * @return 204 no content
      */
     @PutMapping("/{id}")
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> modifyExam(@PathVariable @Positive int id, @RequestBody @Valid RequestExamDto requestExamDto) {
         examService.modifyExam(requestExamDto, id);
         return ResponseEntity.noContent().build();
@@ -59,20 +56,11 @@ public class ExamController {
      * @return 204 no content
      */
     @DeleteMapping("/{id}")
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> deleteExam(@PathVariable int id) {
         examService.deleteExam(id);
         return ResponseEntity.noContent().build();
     }
-
-    /**
-     * @param id of exam or test
-     * @return 200 ok with single exam or test details
-     */
-//    @GetMapping("/{id}")
-    public ResponseEntity<Exam> getExam(@PathVariable int id) {
-        return ResponseEntity.ok(examService.getExamById(id));
-    }
+    
 
     /**
      * when subgroups isn't null all generalGroups must be form the same year of study. e.g. 12K2, 12K1 is from 12K

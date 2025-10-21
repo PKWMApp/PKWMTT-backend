@@ -1,14 +1,13 @@
 package org.pkwmtt.moderator.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.Representative;
-import org.pkwmtt.studentCodes.StudentCodeService;
-import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
-import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.authentication.dto.RefreshRequestDto;
 import org.pkwmtt.moderator.ModeratorService;
 import org.pkwmtt.moderator.dto.AuthDto;
+import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
+import org.pkwmtt.security.authentication.dto.RefreshRequestDto;
+import org.pkwmtt.studentCodes.StudentCodeService;
+import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +21,7 @@ public class ModeratorController {
     private final ModeratorService moderatorService;
     private final StudentCodeService studentCodeService;
     
+    //todo add username to AuthDto and authenticate by username+password
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationDto> authenticate (@RequestBody AuthDto auth) {
         return ResponseEntity.ok(moderatorService.generateTokenForModerator(auth.getPassword()));
@@ -39,19 +39,15 @@ public class ModeratorController {
     }
     
     @PostMapping("/users")
-    public ResponseEntity<Void> addUser (@RequestBody StudentCodeRequest studentCodeRequest)
-      throws JsonProcessingException {
-        studentCodeService.sendOtpCode(studentCodeRequest);
-        return ResponseEntity.noContent().build();
-    }
-    
-    @PostMapping("/multiple-users")
-    public ResponseEntity<?> addMultipleUser (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
-        var failures = studentCodeService.sendOTPCodesForManyGroups(studentCodeRequests);
-        if (failures == null || failures.isEmpty()) {
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<?> addUsers (@RequestBody List<StudentCodeRequest> studentCodeRequests) {
+        if (studentCodeRequests == null || studentCodeRequests.isEmpty()) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.status(207).body(failures);
+        
+        var failures = studentCodeService.sendStudentCode(studentCodeRequests);
+        return (failures == null || failures.isEmpty())
+          ? ResponseEntity.noContent().build()
+          : ResponseEntity.status(207).body(failures);
     }
     
     @GetMapping("/users")

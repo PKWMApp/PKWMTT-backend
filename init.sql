@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Paź 18, 2025 at 10:29 AM
+-- Generation Time: Paź 20, 2025 at 06:49 PM
 -- Wersja serwera: 9.4.0
 -- Wersja PHP: 8.2.27
 
@@ -62,6 +62,19 @@ CREATE TABLE `api_keys` (
 INSERT INTO `api_keys` (`key_id`, `value`, `description`) VALUES
 (4, '$2a$10$uUvJtEEewxJsdUvI5kE0Iuvcv8MeixlfMML.Jx0XicXKT2AtMHP32', 'mobile app'),
 (5, '$2a$10$VuoisZPoCWNBXtdQEEGQXO.T4SK1mQGXeA6JSM1KW4MUQ.JSuy7C2', 'web app');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `bug_reports`
+--
+
+CREATE TABLE `bug_reports` (
+  `report_id` int NOT NULL,
+  `user_groups` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `issued_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -175,7 +188,8 @@ CREATE TABLE `moderator_refresh_tokens` (
 INSERT INTO `moderator_refresh_tokens` (`token_id`, `token`, `moderator_id`, `created`, `expires`) VALUES
 (12, '$2a$10$Jum63nlaN2p/hptSmT1wgu8PMGB6tGY.M3FNLgc/AvJVyXQ/IoaUe', '20caa1cc-4897-471d-a7cf-aa763d569b2e', '2025-10-18 10:13:39', '2026-04-18 10:13:39'),
 (13, '$2a$10$2yKWzWYvurhOVNjXedVNAurzWPY4dXQoJazyhYKyPuJyQZl0QFr2S', '20caa1cc-4897-471d-a7cf-aa763d569b2e', '2025-10-18 10:20:29', '2026-04-18 10:20:29'),
-(14, '$2a$10$Ss8PYurmCzCJyxpgK1aexOA5O7c.w/5HGMkqumOqSKG2A.jlnR3J.', '20caa1cc-4897-471d-a7cf-aa763d569b2e', '2025-10-18 10:20:40', '2026-04-18 10:20:40');
+(14, '$2a$10$Ss8PYurmCzCJyxpgK1aexOA5O7c.w/5HGMkqumOqSKG2A.jlnR3J.', '20caa1cc-4897-471d-a7cf-aa763d569b2e', '2025-10-18 10:20:40', '2026-04-18 10:20:40'),
+(15, '$2a$10$zwdV/CEisb3j4rQb2c1Vu.LhDx2/z8GQv4ZXQnpJz6u6CTKQgXuoi', '20caa1cc-4897-471d-a7cf-aa763d569b2e', '2025-10-18 10:32:42', '2026-04-18 10:32:42');
 
 -- --------------------------------------------------------
 
@@ -199,9 +213,9 @@ CREATE TABLE `refresh_token` (
 --
 
 CREATE TABLE `representatives` (
-  `representative_id` int NOT NULL,
+  `representative_id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `superior_group_id` int NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -210,7 +224,7 @@ CREATE TABLE `representatives` (
 --
 
 INSERT INTO `representatives` (`representative_id`, `superior_group_id`, `email`, `is_active`) VALUES
-(15, 23, 'bisiri2869@capiena.com', 1);
+('16', 23, 'mikiflor24@gmail.com', 1);
 
 -- --------------------------------------------------------
 
@@ -226,6 +240,13 @@ CREATE TABLE `student_codes` (
   `usage_count` int NOT NULL,
   `usage_limit` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Zrzut danych tabeli `student_codes`
+--
+
+INSERT INTO `student_codes` (`student_code_id`, `code`, `expire`, `superior_group_id`, `usage_count`, `usage_limit`) VALUES
+(9, 'MBN4T1', '2025-10-19 10:33:19', 23, 0, 99);
 
 -- --------------------------------------------------------
 
@@ -265,10 +286,31 @@ INSERT INTO `superior_groups` (`superior_group_id`, `name`) VALUES
 CREATE TABLE `user_refresh_tokens` (
   `token_id` bigint NOT NULL,
   `token` char(64) NOT NULL,
-  `representative_id` int NOT NULL,
+  `representative_id` varchar(36) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `utils_kv`
+--
+
+CREATE TABLE `utils_kv` (
+  `id` int NOT NULL,
+  `property_key` varchar(191) NOT NULL,
+  `property_value` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `value_type` varchar(20) NOT NULL DEFAULT 'string',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Zrzut danych tabeli `utils_kv`
+--
+
+INSERT INTO `utils_kv` (`id`, `property_key`, `property_value`, `value_type`, `updated_at`) VALUES
+(16, 'endOfSemester', '2026-02-28', 'date', '2025-10-20 18:26:50');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -287,6 +329,12 @@ ALTER TABLE `admin_keys`
 ALTER TABLE `api_keys`
   ADD PRIMARY KEY (`key_id`),
   ADD UNIQUE KEY `unique_value` (`value`);
+
+--
+-- Indeksy dla tabeli `bug_reports`
+--
+ALTER TABLE `bug_reports`
+  ADD PRIMARY KEY (`report_id`);
 
 --
 -- Indeksy dla tabeli `events`
@@ -373,6 +421,13 @@ ALTER TABLE `user_refresh_tokens`
   ADD KEY `idx_representative_id` (`representative_id`);
 
 --
+-- Indeksy dla tabeli `utils_kv`
+--
+ALTER TABLE `utils_kv`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `property_key` (`property_key`);
+
+--
 -- AUTO_INCREMENT dla zrzuconych tabel
 --
 
@@ -387,6 +442,12 @@ ALTER TABLE `admin_keys`
 --
 ALTER TABLE `api_keys`
   MODIFY `key_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT dla tabeli `bug_reports`
+--
+ALTER TABLE `bug_reports`
+  MODIFY `report_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT dla tabeli `events`
@@ -422,19 +483,13 @@ ALTER TABLE `exam_types`
 -- AUTO_INCREMENT dla tabeli `moderator_refresh_tokens`
 --
 ALTER TABLE `moderator_refresh_tokens`
-  MODIFY `token_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
---
--- AUTO_INCREMENT dla tabeli `representatives`
---
-ALTER TABLE `representatives`
-  MODIFY `representative_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `token_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT dla tabeli `student_codes`
 --
 ALTER TABLE `student_codes`
-  MODIFY `student_code_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `student_code_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT dla tabeli `student_groups`
@@ -453,6 +508,12 @@ ALTER TABLE `superior_groups`
 --
 ALTER TABLE `user_refresh_tokens`
   MODIFY `token_id` bigint NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT dla tabeli `utils_kv`
+--
+ALTER TABLE `utils_kv`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Ograniczenia dla zrzutów tabel
@@ -500,7 +561,7 @@ ALTER TABLE `student_codes`
 -- Ograniczenia dla tabeli `user_refresh_tokens`
 --
 ALTER TABLE `user_refresh_tokens`
-  ADD CONSTRAINT `fk_refresh_user` FOREIGN KEY (`representative_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `user_refresh_tokens_ibfk_1` FOREIGN KEY (`representative_id`) REFERENCES `representatives` (`representative_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

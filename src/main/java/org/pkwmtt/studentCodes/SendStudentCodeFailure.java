@@ -9,6 +9,6 @@ package org.pkwmtt.studentCodes;
  * @param reason            Short, single-line reason for the failure (safe for display).
  * @param exceptionClass    Simple name of the exception class that was thrown (e.g. MailCouldNotBeSendException).
  */
-public record SendOtpFailure(String superiorGroupName, String reason, String exceptionClass) {
+public record SendStudentCodeFailure(String superiorGroupName, String reason, String exceptionClass) {
 }
 
