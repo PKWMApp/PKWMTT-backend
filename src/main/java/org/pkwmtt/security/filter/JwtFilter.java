@@ -5,11 +5,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.moderator.ModeratorRepository;
 import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
+import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken2;
 import org.pkwmtt.security.jwt.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,16 +27,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     
-    @Autowired
-    JwtService jwtService;
-    
-    @Autowired
-    RepresentativeRepository representativeRepository;
-    
-    @Autowired
-    ModeratorRepository moderatorRepository;
+    private final JwtService jwtService;
+
+    private final RepresentativeRepository representativeRepository;
+
+    private final ModeratorRepository moderatorRepository;
     
     /**
      * Filters incoming HTTP requests to validate JWT tokens.
@@ -66,6 +67,8 @@ public class JwtFilter extends OncePerRequestFilter {
         
         if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             String role = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
+
+//            Authorization auth = new JwtAuthenticationToken();
             
             
             if (role.equals("MODERATOR")) {
@@ -110,7 +113,7 @@ public class JwtFilter extends OncePerRequestFilter {
             );
             
             UsernamePasswordAuthenticationToken authToken =
-              new JwtAuthenticationToken(
+              new JwtAuthenticationToken2(
                 representative.getEmail(),
                 authorities,
                 jwtService.extractClaim(token, claims -> claims.get("group", String.class))

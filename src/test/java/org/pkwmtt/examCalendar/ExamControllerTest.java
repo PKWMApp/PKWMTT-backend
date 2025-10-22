@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.pkwmtt.examCalendar.dto.RequestExamDto;
 import org.pkwmtt.examCalendar.entity.Exam;
 import org.pkwmtt.examCalendar.entity.ExamType;
@@ -16,7 +15,7 @@ import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.security.config.NoSecurityConfig;
-import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
+import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken2;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -85,7 +84,7 @@ class ExamControllerTest {
 
     @BeforeEach
     void setupSecurityContext() {
-        JwtAuthenticationToken auth = new JwtAuthenticationToken(
+        JwtAuthenticationToken2 auth = new JwtAuthenticationToken2(
                 "user@example.com",
                 Collections.emptyList(),
                 "12K"

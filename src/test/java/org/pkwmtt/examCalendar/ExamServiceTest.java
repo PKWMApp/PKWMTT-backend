@@ -19,7 +19,7 @@ import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.examCalendar.repository.ExamTypeRepository;
 import org.pkwmtt.examCalendar.repository.GroupRepository;
 import org.pkwmtt.exceptions.*;
-import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
+import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken2;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -52,7 +52,7 @@ class ExamServiceTest {
     
     @BeforeEach
     void setupSecurityContextHolder () {
-        JwtAuthenticationToken token = new JwtAuthenticationToken(
+        JwtAuthenticationToken2 token = new JwtAuthenticationToken2(
           "user@example.com",
           Collections.emptyList(),
           "12K"

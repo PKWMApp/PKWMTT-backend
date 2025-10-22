@@ -3,7 +3,7 @@ package org.pkwmtt.security.authorization;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.repository.ExamRepository;
 import org.pkwmtt.exceptions.NoSuchElementWithProvidedIdException;
-import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
+import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken2;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,7 +65,7 @@ public class PreAuthorizationService {
      */
     private String getUserGroup() throws AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication))
+        if (!(authentication instanceof JwtAuthenticationToken2 jwtAuthentication))
             throw new AccessDeniedException("You don't have permission to access this group");
 
         String group = jwtAuthentication.getExamGroup();
