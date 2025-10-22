@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.SuperiorGroup;
 import org.pkwmtt.examCalendar.entity.StudentCode;
 import org.pkwmtt.examCalendar.entity.Representative;
-import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.examCalendar.repository.SuperiorGroupRepository;
 import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.exceptions.*;
@@ -18,7 +17,6 @@ import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.pkwmtt.studentCodes.repository.StudentCodeRepository;
 import org.pkwmtt.security.authentication.JwtAuthenticationService;
 import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.stereotype.Service;
 

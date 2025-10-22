@@ -10,8 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.examCalendar.entity.SuperiorGroup;
-import org.pkwmtt.examCalendar.enums.Role;
-import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.security.jwt.utils.JwtUtils;
 
 import java.util.Base64;
@@ -54,14 +52,14 @@ class JwtServiceImplTest {
     }
 
     @Test
-    void getUserEmailFromToken_shouldReturnCorrectEmail() {
+    void getUserIdFromToken_shouldReturnCorrectId() {
         Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
 
         String token = jwtService.generateAccessToken(user);
-        String email = jwtService.getSubject(token);
-        assertEquals("user@example.com", email);
+        String id = jwtService.getSubject(token);
+        assertEquals("11111111-2222-3333-4444-555555555555", id);
     }
 
     @Test
@@ -72,7 +70,7 @@ class JwtServiceImplTest {
 
         String token = jwtService.generateAccessToken(user);
         String roleClaim = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
-        assertEquals("ADMIN", roleClaim);
+        assertEquals("ROLE_REPRESENTATIVE", roleClaim);
     }
 
     @Test
@@ -94,7 +92,7 @@ class JwtServiceImplTest {
 
         String token = jwtService.generateAccessToken(user);
         Representative mockUser = mock(Representative.class);
-        when(mockUser.getEmail()).thenReturn("user@example.com");
+        when(mockUser.getRepresentativeId()).thenReturn(UUID.fromString("11111111-2222-3333-4444-555555555555"));
         assertTrue(jwtService.validateAccessToken(token, mockUser));
     }
 
@@ -106,7 +104,7 @@ class JwtServiceImplTest {
 
         String token = jwtService.generateAccessToken(user);
         Representative mockUser = mock(Representative.class);
-        when(mockUser.getEmail()).thenReturn("other@example.com");
+        when(mockUser.getRepresentativeId()).thenReturn(UUID.fromString("22222222-2222-2222-2222-555555555555"));
         assertFalse(jwtService.validateAccessToken(token, mockUser));
     }
 

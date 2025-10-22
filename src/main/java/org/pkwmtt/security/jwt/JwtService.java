@@ -36,7 +36,7 @@ public class JwtService {
     public String generateAccessToken(Representative representative) {
         return Jwts.builder()
                 .subject(representative.getRepresentativeId().toString())
-                .claim("group", representative.getSuperiorGroup())
+                .claim("group", representative.getSuperiorGroup().getName())
                 .claim("role", "ROLE_REPRESENTATIVE")
                 .issuedAt(new Date())
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
@@ -88,9 +88,9 @@ public class JwtService {
      */
     public Boolean validateAccessToken(String token, Representative user) {
         try {
-            final String userEmail = getSubject(token);
-            return userEmail != null
-                    && userEmail.equals(user.getEmail())
+            final String userId = getSubject(token);
+            return userId != null
+                    && userId.equals(user.getRepresentativeId().toString())
                     && !isTokenExpired(token);
         } catch (JwtException | IllegalArgumentException e) {
             return false;
