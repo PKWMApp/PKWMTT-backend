@@ -162,6 +162,7 @@ public class TimetableService {
         
         //Get user's schedule
         List<DayOfWeekDTO> schedule = cachedService.getGeneralGroupSchedule(generalGroupName).getData();
+        
         //Go through schedule and extract customSubject details
         List<CustomSubjectDetails> customSubjectsDetails = createListOfCustomSchedulesDetails(
           generalGroupName, customSubjectFilters, schedule);
@@ -448,6 +449,28 @@ public class TimetableService {
         });
         
         return subjectSet.stream().toList();
+    }
+    
+    /**
+     * Return a filtered list of custom subject names for the specified general group.
+     *
+     * <p>This method collects normalized subject names from the group's schedule and
+     * returns only those that match a small set of predefined cross-group/custom subjects
+     * (currently: "niemiecki", "J ang", "WF hala"). The matching is case-sensitive
+     * and relies on the normalization performed by {@link #getListOfSubjects(String)}.
+     *
+     * @param generalGroupName group whose schedule will be scanned
+     * @return list of matching custom subject names
+     * @throws JsonProcessingException when timetable parsing or retrieval fails
+     */
+    public List<String> getListOfCustomSubjects (String generalGroupName) throws JsonProcessingException {
+        return getListOfSubjects(generalGroupName).stream().filter(
+          subject -> !(
+            subject.contains("niemiecki") ||
+              subject.contains("J ang") ||
+              subject.contains("WF hala")
+          )
+        ).toList();
     }
     
     /**
