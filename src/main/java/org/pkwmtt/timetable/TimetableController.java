@@ -189,8 +189,6 @@ public class TimetableController {
     public ResponseEntity<List<String>> getListOfCustomSubjects (@PathVariable String generalGroupName)
       throws JsonProcessingException {
         var response = service.getListOfCustomSubjects(generalGroupName);
-        
-        
         return ResponseEntity.ok(response);
     }
     
