@@ -1,4 +1,4 @@
-# ⚙ Trybik — Backend (PKWM App Server)
+# ⚙ Trybik — Backend
 
 Trybik (Server) – timetable, exam calendar & ECTS calculator for students of Mechanical Engineering @ Cracow University of Technology
 
