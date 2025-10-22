@@ -97,7 +97,7 @@ class JwtServiceImplTest {
     }
 
     @Test
-    void validateModeratorAccessToken_shouldReturnFalseForInvalidEmail() {
+    void validateAccessToken_shouldReturnFalseForInvalidEmail() {
         Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));

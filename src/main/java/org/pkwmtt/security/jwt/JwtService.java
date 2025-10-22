@@ -80,24 +80,6 @@ public class JwtService {
     }
 
     /**
-     * Validate a JWT token.
-     * Attempts to parse the token; if parsing fails, the token is considered invalid.
-     *
-     * @param token JWT token string to validate
-     * @return true if the token is valid, false otherwise
-     */
-    public Boolean validateAccessToken(String token, Representative user) {
-        try {
-            final String userId = getSubject(token);
-            return userId != null
-                    && userId.equals(user.getRepresentativeId().toString())
-                    && !isTokenExpired(token);
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-    
-    /**
      * Validates an access token by checking if the token's subject matches the provided UUID
      * and if the token has not expired.
      *
@@ -105,17 +87,27 @@ public class JwtService {
      * @param uuid the UUID to compare with the token's subject
      * @return true if the token is valid, false otherwise
      */
-    public Boolean validateModeratorAccessToken(String token, String uuid) {
+    public Boolean validateAccessToken(String token, String uuid) {
         try {
-            final String userid = getSubject(token);
-            return userid != null
-                    && userid.equals(uuid)
+            final String userId = getSubject(token);
+            return userId != null
+                    && userId.equals(uuid)
                     && !isTokenExpired(token);
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
+    /**
+     * Validate a JWT token.
+     * Attempts to parse the token; if parsing fails, the token is considered invalid.
+     *
+     * @param token JWT token string to validate
+     * @return true if the token is valid, false otherwise
+     */
+    public Boolean validateAccessToken(String token, Representative user) {
+        return validateAccessToken(token, user.getRepresentativeId().toString());
+    }
 
     /**
      * Extracts the user identifier (email) from a JWT token.
