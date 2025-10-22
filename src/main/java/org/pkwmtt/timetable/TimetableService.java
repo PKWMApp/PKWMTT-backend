@@ -455,8 +455,8 @@ public class TimetableService {
      * Return a filtered list of custom subject names for the specified general group.
      *
      * <p>This method collects normalized subject names from the group's schedule and
-     * returns only those that match a small set of predefined cross-group/custom subjects
-     * (currently: "niemiecki", "J ang", "WF hala"). The matching is case-sensitive
+     * returns all except those that match a small set of predefined cross-group/custom subjects
+     * (currently: "niemiecki", "J ang", "WF hala"). The exclusion is case-sensitive
      * and relies on the normalization performed by {@link #getListOfSubjects(String)}.
      *
      * @param generalGroupName group whose schedule will be scanned
