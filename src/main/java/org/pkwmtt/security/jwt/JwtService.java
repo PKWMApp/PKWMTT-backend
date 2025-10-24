@@ -87,17 +87,17 @@ public class JwtService {
      * @param uuid the UUID to compare with the token's subject
      * @return true if the token is valid, false otherwise
      */
-////    FIXME: XDDD
-//    public Boolean validateAccessToken(String token, String uuid) {
-//        try {
-//            final String userId = getSubject(token);
-//            return userId != null
-//                    && userId.equals(uuid)
-//                    && !isTokenExpired(token);
-//        } catch (JwtException | IllegalArgumentException e) {
-//            return false;
-//        }
-//    }
+//    FIXME: XDDD
+    public Boolean validateAccessToken(String token, UUID uuid) {
+        try {
+            final String userId = getSubject(token);
+            return userId != null
+                    && userId.equals(uuid.toString())
+                    && !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
 
     /**
      * Validate a JWT token.
@@ -106,9 +106,9 @@ public class JwtService {
      * @param token JWT token string to validate
      * @return true if the token is valid, false otherwise
      */
-//    public Boolean validateAccessToken(String token, Representative user) {
-//        return validateAccessToken(token, user.getRepresentativeId().toString());
-//    }
+    public Boolean validateAccessToken(String token, Representative user) {
+        return validateAccessToken(token, user.getRepresentativeId());
+    }
 
     /**
      * Extracts the user identifier (email) from a JWT token.

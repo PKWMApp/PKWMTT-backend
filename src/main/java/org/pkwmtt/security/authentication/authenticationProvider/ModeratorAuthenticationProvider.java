@@ -1,6 +1,5 @@
 package org.pkwmtt.security.authentication.authenticationProvider;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
 import org.pkwmtt.security.jwt.JwtService;

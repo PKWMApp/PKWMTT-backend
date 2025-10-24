@@ -1,5 +1,7 @@
 package org.pkwmtt.security.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.IncorrectClaimException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
@@ -141,4 +143,23 @@ class JwtServiceImplTest {
                         SuperiorGroup.builder().name("GROUP1").build()
                 ).build();
     }
+
+    @Test
+    void shouldThrowWhenTokenExpired(){
+        Representative user = getExampleRepresentative();
+
+        long pastExpiration = System.currentTimeMillis() - 1000;
+        String expiredToken = Jwts.builder()
+                .subject(user.getRepresentativeId().toString())
+                .claim("group", user.getSuperiorGroup())
+                .claim("role", "ROLE_REPRESENTATIVE")
+                .issuedAt(new Date(System.currentTimeMillis() - 2000))
+                .expiration(new Date(pastExpiration))
+                .signWith(jwtService.decodeSecretKey())
+                .compact();
+
+        RuntimeException exception = assertThrows(ExpiredJwtException.class, () -> jwtService.getSubject(expiredToken));
+        assertEquals("JWT expired", exception.getMessage().substring(0, 11));
+    }
+
 }
