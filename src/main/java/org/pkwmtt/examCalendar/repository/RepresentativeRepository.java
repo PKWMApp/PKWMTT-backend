@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface RepresentativeRepository extends JpaRepository<Representative, Integer> {
+public interface RepresentativeRepository extends JpaRepository<Representative, UUID> {
     Optional<Representative> findByEmail (String email);
     
     Optional<Representative> findBySuperiorGroup (SuperiorGroup superiorGroup);

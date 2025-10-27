@@ -5,10 +5,11 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-    private String principal;
+    private UUID principal;
     private String jwtToken;
     private String group;
 
@@ -32,7 +33,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
      * @param authorities
      * @param group
      */
-    public JwtAuthenticationToken(String principal, Collection<? extends GrantedAuthority> authorities, String group) {
+    public JwtAuthenticationToken(UUID principal, Collection<? extends GrantedAuthority> authorities, String group) {
         super(authorities);
         this.principal = principal;
         this.jwtToken = null;
@@ -47,7 +48,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
      * @param principal
      * @param authorities
      */
-    public JwtAuthenticationToken(String principal, Collection<? extends GrantedAuthority> authorities) {
+    public JwtAuthenticationToken(UUID principal, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         this.jwtToken = null;

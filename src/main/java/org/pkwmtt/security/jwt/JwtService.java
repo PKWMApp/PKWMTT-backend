@@ -79,36 +79,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(decodedKey);
     }
 
-    /**
-     * Validates an access token by checking if the token's subject matches the provided UUID
-     * and if the token has not expired.
-     *
-     * @param token the JWT token string to validate
-     * @param uuid the UUID to compare with the token's subject
-     * @return true if the token is valid, false otherwise
-     */
-//    FIXME: XDDD
-    public Boolean validateAccessToken(String token, UUID uuid) {
-        try {
-            final String userId = getSubject(token);
-            return userId != null
-                    && userId.equals(uuid.toString())
-                    && !isTokenExpired(token);
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Validate a JWT token.
-     * Attempts to parse the token; if parsing fails, the token is considered invalid.
-     *
-     * @param token JWT token string to validate
-     * @return true if the token is valid, false otherwise
-     */
-    public Boolean validateAccessToken(String token, Representative user) {
-        return validateAccessToken(token, user.getRepresentativeId());
-    }
 
     /**
      * Extracts the user identifier (email) from a JWT token.
