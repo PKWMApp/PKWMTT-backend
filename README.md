@@ -124,17 +124,13 @@ This project is licensed under the MIT License. See [LICENSE](./LICENSE) for det
 
 - Issues: https://github.com/TrybikDevelopers/Trybik-backend/issues
 - Organization: https://github.com/TrybikDevelopers
-
+- Email: support@trybik.app
+- 
 If you have questions about API usage or want to report bugs, please open an issue with reproduction steps and relevant logs.
 
 ---
 
 ## 🌐 Related Projects
 
-- Frontend / mobile apps (if maintained under the TrybikDevelopers organization) — check the organization repositories for matching frontend projects.
+- Frontend / mobile apps — check the organization repositories for matching frontend projects.
 
----
-
-## 📸 Screenshots
-
-Add screenshots or API examples here if helpful.
