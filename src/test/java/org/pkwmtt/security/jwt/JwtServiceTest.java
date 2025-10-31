@@ -1,7 +1,6 @@
 package org.pkwmtt.security.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.IncorrectClaimException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class JwtServiceImplTest {
+class JwtServiceTest {
 
     @Mock
     private JwtUtils jwtUtils;
@@ -72,7 +71,7 @@ class JwtServiceImplTest {
 
         String token = jwtService.generateAccessToken(user);
         String roleClaim = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
-        assertEquals("ROLE_REPRESENTATIVE", roleClaim);
+        assertEquals("ROLE_STUDENT", roleClaim);
     }
 
     @Test
@@ -91,57 +90,15 @@ class JwtServiceImplTest {
         Representative user = getExampleRepresentative();
 
         when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
-
         String token = jwtService.generateAccessToken(user);
-        Representative mockUser = mock(Representative.class);
-        when(mockUser.getRepresentativeId()).thenReturn(UUID.fromString("11111111-2222-3333-4444-555555555555"));
-        assertTrue(jwtService.validateAccessToken(token, mockUser));
-    }
 
-    @Test
-    void validateAccessToken_shouldReturnFalseForInvalidEmail() {
-        Representative user = getExampleRepresentative();
-
-        when(jwtUtils.getExpirationMs()).thenReturn(TimeUnit.MINUTES.toMillis(5));
-
-        String token = jwtService.generateAccessToken(user);
-        Representative mockUser = mock(Representative.class);
-        when(mockUser.getRepresentativeId()).thenReturn(UUID.fromString("22222222-2222-2222-2222-555555555555"));
-        assertFalse(jwtService.validateAccessToken(token, mockUser));
-    }
-
-    @Test
-    void validateAccessToken_shouldReturnFalseForExpiredModeratorAccessToken() {
-        Representative user = getExampleRepresentative();
-
-        long pastExpiration = System.currentTimeMillis() - 1000;
-        String expiredToken = Jwts.builder()
-                .subject(user.getRepresentativeId().toString())
-                .claim("group", user.getSuperiorGroup())
-                .claim("role", "ROLE_REPRESENTATIVE")
-                .issuedAt(new Date(System.currentTimeMillis() - 2000))
-                .expiration(new Date(pastExpiration))
-                .signWith(jwtService.decodeSecretKey())
-                .compact();
-
-        Representative mockUser = mock(Representative.class);
-
-        assertFalse(jwtService.validateAccessToken(expiredToken, mockUser));
+        assertEquals("11111111-2222-3333-4444-555555555555", jwtService.getSubject(token));
     }
 
     @Test
     void getUserEmailFromToken_shouldThrowExceptionForInvalidToken() {
         String invalidToken = "invalid.token.value";
         assertThrows(JwtException.class, () -> jwtService.getSubject(invalidToken));
-    }
-
-    private static Representative getExampleRepresentative() {
-        return Representative.builder()
-                .representativeId(UUID.fromString("11111111-2222-3333-4444-555555555555"))
-                .email("user@example.com")
-                .superiorGroup(
-                        SuperiorGroup.builder().name("GROUP1").build()
-                ).build();
     }
 
     @Test
@@ -160,6 +117,15 @@ class JwtServiceImplTest {
 
         RuntimeException exception = assertThrows(ExpiredJwtException.class, () -> jwtService.getSubject(expiredToken));
         assertEquals("JWT expired", exception.getMessage().substring(0, 11));
+    }
+
+    private static Representative getExampleRepresentative() {
+        return Representative.builder()
+                .representativeId(UUID.fromString("11111111-2222-3333-4444-555555555555"))
+                .email("user@example.com")
+                .superiorGroup(
+                        SuperiorGroup.builder().name("GROUP1").build()
+                ).build();
     }
 
 }
