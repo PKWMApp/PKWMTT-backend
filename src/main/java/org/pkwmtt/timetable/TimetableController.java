@@ -92,23 +92,21 @@ public class TimetableController {
                                                                                    @RequestParam(required = false, name = "sub") List<String> subgroups,
                                                                                    @RequestBody(required = false) List<CustomSubjectFilterDTO> customSubjects)
       throws WebPageContentNotAvailableException, SpecifiedGeneralGroupDoesntExistsException, SpecifiedSubGroupDoesntExistsException, JsonProcessingException {
-        var areSubgroupsProvided = !(isNull(subgroups) || subgroups.isEmpty());
-        var areCustomSubjectsProvided = !(isNull(customSubjects) || customSubjects.isEmpty());
+        boolean hasSubgroups = subgroups != null && !subgroups.isEmpty();
         
-        if (areSubgroupsProvided) {
-            if (!areCustomSubjectsProvided) {
-                customSubjects = new ArrayList<>();
-            }
-            
-            return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
-              generalGroupName,
-              subgroups,
-              customSubjects
-            ));
-            
+        if (!hasSubgroups) {
+            return ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
         }
-        // If no subgroups are provided, return cached timetable for the general group.
-        return ResponseEntity.ok(cachedService.getGeneralGroupSchedule(generalGroupName));
+        
+        if (customSubjects == null || customSubjects.isEmpty()) {
+            customSubjects = new ArrayList<>();
+        }
+        
+        return ResponseEntity.ok(service.getFilteredGeneralGroupSchedule(
+          generalGroupName,
+          subgroups,
+          customSubjects
+        ));
     }
     
     /**
@@ -153,6 +151,7 @@ public class TimetableController {
         return ResponseEntity.ok(service.getAvailableSubGroups(generalGroupName));
     }
     
+    
     /**
      * Returns available subgroups for a specific subject within a general group.
      *
@@ -184,6 +183,13 @@ public class TimetableController {
     public ResponseEntity<List<String>> getListOfSubjects (@PathVariable String generalGroupName)
       throws JsonProcessingException {
         return ResponseEntity.ok(service.getListOfSubjects(generalGroupName));
+    }
+    
+    @GetMapping("/{generalGroupName}/list/custom")
+    public ResponseEntity<List<String>> getListOfCustomSubjects (@PathVariable String generalGroupName)
+      throws JsonProcessingException {
+        var response = service.getListOfCustomSubjects(generalGroupName);
+        return ResponseEntity.ok(response);
     }
     
 }

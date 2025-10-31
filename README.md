@@ -1,19 +1,19 @@
-# 🚀 PKWM App Backend
+# ⚙ Trybik — Backend
 
-Backend for the PKWM mobile app, providing timetable, exam calendar, and ECTS calculator services for students of Mechanical Engineering at Cracow University of Technology.
+Trybik (Server) – timetable, exam calendar & ECTS calculator for students of Mechanical Engineering @ Cracow University of Technology
 
 ---
 
 ## 📦 Tech Stack
 
-- **Framework:** Java Spring Boot 3.5+
-- **Language:** Java 21
-- **Database:** MySQL (H2 for tests)
-- **Authentication:** JWT (JSON Web Tokens)
-- **API Docs:** Swagger (OpenAPI)
-- **Caching:** Caffeine
-- **Project Management:** Maven
-- **Containerization:** Docker
+- Framework: Java Spring Boot 3.5+
+- Language: Java 21
+- Database: MySQL (H2 used for tests)
+- Authentication: JWT (JSON Web Tokens)
+- API Docs: Swagger / OpenAPI
+- Caching: Caffeine
+- Build / Project: Maven (mvn / ./mvnw)
+- Containerization: Docker
 
 ---
 
@@ -21,94 +21,116 @@ Backend for the PKWM mobile app, providing timetable, exam calendar, and ECTS ca
 
 ### 1. Clone the repository
 
-```shell
-git clone https://github.com/PKTTTeam/PKWMTT-backend.git
-cd PKWMTT-backend
+```bash
+git clone https://github.com/TrybikDevelopers/Trybik-backend.git
+cd Trybik-backend
 ```
 
 ### 2. Build the project
 
-```shell
+If the Maven wrapper is present:
+
+```bash
 ./mvnw clean package
+```
+
+Or with your system Maven:
+
+```bash
+mvn clean package
 ```
 
 ### 3. Run with Docker
 
-```shell
-docker build -t pkwmtt-backend .
-docker run -d --name pkwmtt-backend -p 8080:8080 pkwmtt-backend
+Build and run locally:
+
+```bash
+docker build -t trybik-backend .
+docker run -d --name trybik-backend -p 8080:8080 trybik-backend
 ```
 
-Or pull the latest image:
+If an official container image is published (check the Releases or container registry), you can pull and run:
 
-```shell
-docker pull ghcr.io/pkttteam/pkwmtt-backend:latest
-docker run -d --name pkwmtt-backend -p 8080:8080 ghcr.io/pkttteam/pkwmtt-backend:latest
+```bash
+docker pull ghcr.io/trybikdevelopers/trybik-backend:latest
+docker run -d --name trybik-backend -p 8080:8080 ghcr.io/trybikdevelopers/trybik-backend:latest
 ```
 
 ---
 
 ## 📮 API Overview
 
-The backend exposes RESTful endpoints for:
+This backend exposes RESTful endpoints for:
 
-- Timetable management (by group, with filters)
-- Exam calendar and types
+- Timetable management (by study group, with filters)
+- Exam calendar and exam types
 - ECTS calculator
 - Group and subject listings
+- (Other endpoints may exist — check the controller packages / OpenAPI docs)
 
-All endpoints use JWT authentication. Example headers:
+Authentication
+- Endpoints are protected using JWT tokens.
+- Example header:
 
 ```
 Authorization: Bearer <token>
 Content-Type: application/json
 ```
 
-API documentation (Swagger UI) is available at:  
-`http://localhost:8080/swagger-ui/index.html` (if enabled)
+API documentation (Swagger UI / OpenAPI) is usually available at:
+`http://localhost:8080/swagger-ui/index.html` or `http://localhost:8080/v3/api-docs` (if Swagger/OpenAPI is enabled in configuration).
 
 ---
 
 ## 🧪 Testing
 
-Run all tests:
+Run unit and integration tests:
 
-```shell
+```bash
 ./mvnw test
+# or
+mvn test
 ```
+
+The project may use H2 for tests — check test configuration files for details.
 
 ---
 
 ## 🤝 Contributing
 
+We welcome contributions!
+
 1. Fork the repository
 2. Create a new branch: `git checkout -b feature/your-feature`
-3. Make your changes
-4. Commit and push: `git commit -m "feat: your message" && git push`
-5. Open a pull request
+3. Make your changes and add tests where appropriate
+4. Commit and push:
+   ```bash
+   git commit -m "feat: short description"
+   git push origin feature/your-feature
+   ```
+5. Open a pull request against the main branch and describe your changes
+
+Please follow the existing code style and include tests for new behavior when possible.
 
 ---
 
 ## 📄 License
 
-MIT License. See [LICENSE](./LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
 
 ---
 
-## 💬 Contact
+## 💬 Contact / Support
 
-- Issues: [GitHub Issues](https://github.com/PKWMApp/PKWMTT-backend/issues)
-- Team: [@PKWMApp](https://github.com/PKWMApp)
+- Issues: https://github.com/TrybikDevelopers/Trybik-backend/issues
+- Organization: https://github.com/TrybikDevelopers
+- Email: support@trybik.app
+- 
+If you have questions about API usage or want to report bugs, please open an issue with reproduction steps and relevant logs.
 
 ---
 
 ## 🌐 Related Projects
 
-- [PKWM Mobile App](https://github.com/PKWMApp/PKWMTT-frontend-mobile)
-- [PKWM Web App](https://github.com/PKWMApp/PKWMTT-frontend-web)
+- Frontend / mobile apps — check the organization repositories for matching frontend projects.
 
----
-
-## 📸 Screenshots
-
-*(Add screenshots here if desired)*
