@@ -2,6 +2,7 @@ package org.pkwmtt.security.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.security.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,7 @@ public class SpringSecurity {
                   .requestMatchers(HttpMethod.DELETE , "/pkwmtt/api/v1/exams").authenticated()
                   .requestMatchers("/moderator/authenticate").permitAll()
                   .requestMatchers("/moderator/refresh").permitAll()
-                  .requestMatchers("/moderator/**").hasRole("MODERATOR")
+                  .requestMatchers("/moderator/**").hasRole(Role.MODERATOR.toString())
                   .requestMatchers("/**").permitAll()
                   .anyRequest().authenticated()
           )

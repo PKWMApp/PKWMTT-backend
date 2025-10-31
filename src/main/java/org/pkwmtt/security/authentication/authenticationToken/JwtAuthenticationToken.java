@@ -11,12 +11,13 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     private UUID principal;
     private String jwtToken;
-    private String group;
+    private String superiorGroup;
 
 
     /**
      * This constructor can be safely used by any code that wishes to create a JwtAuthenticationToken,
      * as the isAuthenticated() will return false
+     *
      * @param jwtToken
      */
     public JwtAuthenticationToken(String jwtToken) {
@@ -29,15 +30,16 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
      * This constructor should only be used by AuthenticationManager or AuthenticationProvider
      * implementations that are satisfied with producing a trusted (i.e. isAuthenticated() = true)
      * authentication token. It refers to users with authorities for specific group only
+     *
      * @param principal
      * @param authorities
-     * @param group
+     * @param superiorGroup
      */
-    public JwtAuthenticationToken(UUID principal, Collection<? extends GrantedAuthority> authorities, String group) {
+    public JwtAuthenticationToken(UUID principal, Collection<? extends GrantedAuthority> authorities, String superiorGroup) {
         super(authorities);
         this.principal = principal;
         this.jwtToken = null;
-        this.group = group;
+        this.superiorGroup = superiorGroup;
         super.setAuthenticated(true);
     }
 
@@ -45,6 +47,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
      * This constructor should only be used by AuthenticationManager or AuthenticationProvider
      * implementations that are satisfied with producing a trusted (i.e. isAuthenticated() = true)
      * authentication token. It refers to users without authorities for specific groups
+     *
      * @param principal
      * @param authorities
      */
@@ -52,7 +55,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         super(authorities);
         this.principal = principal;
         this.jwtToken = null;
-        this.group = null;
+        this.superiorGroup = null;
         super.setAuthenticated(true);
     }
 
@@ -72,9 +75,9 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         this.jwtToken = null;
     }
 
-//    TODO: adjust for authorization
+    //    TODO: adjust for authorization
     public boolean compareGroups(String generalGroup) {
         String provided = GroupMapper.trimLastDigit(generalGroup);
-        return this.group.equals(provided);
+        return this.superiorGroup.equals(provided);
     }
 }

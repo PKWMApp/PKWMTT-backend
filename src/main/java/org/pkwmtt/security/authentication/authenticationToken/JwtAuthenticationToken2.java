@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 //TODO: delete
+@Deprecated
 public class JwtAuthenticationToken2 extends UsernamePasswordAuthenticationToken {
 
     @Getter

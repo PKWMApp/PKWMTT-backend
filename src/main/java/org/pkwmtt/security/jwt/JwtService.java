@@ -37,7 +37,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(representative.getRepresentativeId().toString())
                 .claim("group", representative.getSuperiorGroup().getName())
-                .claim("role", "ROLE_REPRESENTATIVE")
+                .claim("role", "ROLE_STUDENT") //TODO: enum
                 .issuedAt(new Date())
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
@@ -47,7 +47,7 @@ public class JwtService {
     public String generateModeratorAccessToken(UUID uuid) {
         return Jwts.builder()
                 .subject(uuid.toString())
-                .claim("role", "ROLE_MODERATOR")
+                .claim("role", "ROLE_MODERATOR") //TODO: enum
                 .issuedAt(new Date())
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())

@@ -4,7 +4,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
 import org.pkwmtt.security.jwt.JwtService;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -23,10 +22,9 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class RepresentativeAuthenticationProvider implements AuthenticationProvider {
+public class StudentAuthenticationProvider implements AuthenticationProvider {
 
     private final JwtService jwtService;
-    private final RepresentativeRepository representativeRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -36,17 +34,17 @@ public class RepresentativeAuthenticationProvider implements AuthenticationProvi
         String token = auth.getCredentials();
 
 //        verify token and data
-        try{
-            if(!Objects.equals(
+        try {
+            if (!Objects.equals(
                     jwtService.extractClaim(token, claims -> claims.get("role", String.class)),
-                    "ROLE_REPRESENTATIVE")
+                    "ROLE_STUDENT")
             )
                 return null;
         } catch (ExpiredJwtException e) {
             throw new CredentialsExpiredException("Token has expired");
         } catch (SignatureException e) {
             throw new BadCredentialsException("Invalid JWT token");
-        } catch (JwtException e){
+        } catch (JwtException e) {
             throw new AuthenticationServiceException("Authentication failed");
         }
 
@@ -54,14 +52,8 @@ public class RepresentativeAuthenticationProvider implements AuthenticationProvi
         UUID subject = UUID.fromString(jwtService.getSubject(token));
         String superiorGroup = jwtService.extractClaim(token, claims -> claims.get("group", String.class));
 
-//        Use this code if superiorGroup is no longer included in the access token's claims
-//        Representative representative = representativeRepository.findById(subject)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//        String superiorGroup = representative.getSuperiorGroup().getName();
-
-
 //        authentication successful
-        GrantedAuthority role = new SimpleGrantedAuthority("ROLE_REPRESENTATIVE");
+        GrantedAuthority role = new SimpleGrantedAuthority("ROLE_STUDENT");
         return new JwtAuthenticationToken(subject, Collections.singletonList(role), superiorGroup);
     }
 

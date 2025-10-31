@@ -4,7 +4,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.moderator.ModeratorRepository;
 import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
 import org.pkwmtt.security.jwt.JwtService;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,7 +25,6 @@ import java.util.UUID;
 public class ModeratorAuthenticationProvider implements AuthenticationProvider {
 
     private final JwtService jwtService;
-    private final ModeratorRepository moderatorRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -36,8 +34,8 @@ public class ModeratorAuthenticationProvider implements AuthenticationProvider {
         String token = auth.getCredentials();
 
 //        verify token and data
-        try{
-            if(!Objects.equals(
+        try {
+            if (!Objects.equals(
                     jwtService.extractClaim(token, claims -> claims.get("role", String.class)),
                     "ROLE_MODERATOR")
             )
@@ -46,14 +44,12 @@ public class ModeratorAuthenticationProvider implements AuthenticationProvider {
             throw new CredentialsExpiredException("Token has expired");
         } catch (SignatureException e) {
             throw new BadCredentialsException("Invalid JWT token");
-        } catch (JwtException e){
+        } catch (JwtException e) {
             throw new AuthenticationServiceException("Authentication failed");
         }
 
 //        verify user
         UUID subject = UUID.fromString(jwtService.getSubject(token));
-//        moderator was verified when token was generated
-//        moderatorRepository.findById(subject).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 //        authentication successful
         GrantedAuthority role = new SimpleGrantedAuthority("ROLE_MODERATOR");
