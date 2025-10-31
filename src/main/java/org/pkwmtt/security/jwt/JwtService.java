@@ -90,25 +90,6 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /**
-     * Extracts the expiration date from a JWT token.
-     *
-     * @param token JWT token string
-     * @return expiration date of the token
-     */
-    private Date getExpirationDateFromToken(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    /**
-     * Checks whether a JWT token has expired.
-     *
-     * @param token JWT token string
-     * @return true if the token is expired, false otherwise
-     */
-    private boolean isTokenExpired(String token){
-        return getExpirationDateFromToken(token).before(new Date());
-    }
 
     /**
      * Extracts a specific claim from a JWT token using a claim resolver function.
