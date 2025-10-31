@@ -1,5 +1,6 @@
 package org.pkwmtt.security.authentication.authenticationToken;
 
+import lombok.Getter;
 import org.pkwmtt.examCalendar.mapper.GroupMapper;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     private UUID principal;
     private String jwtToken;
+    @Getter
     private String superiorGroup;
 
 
