@@ -2,6 +2,7 @@ package org.pkwmtt.security.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.security.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,12 +33,12 @@ public class SpringSecurity {
           .cors(withDefaults())
           .csrf(AbstractHttpConfigurer::disable)
           .authorizeHttpRequests(auth -> auth
-                  .requestMatchers(HttpMethod.POST , "/pkwmtt/api/v1/exams").authenticated()
-                  .requestMatchers(HttpMethod.PUT , "/pkwmtt/api/v1/exams").authenticated()
-                  .requestMatchers(HttpMethod.DELETE , "/pkwmtt/api/v1/exams").authenticated()
+                  .requestMatchers(HttpMethod.POST , "/pkwmtt/api/v1/exams").hasRole("STUDENT")
+                  .requestMatchers(HttpMethod.PUT , "/pkwmtt/api/v1/exams").hasRole("STUDENT")
+                  .requestMatchers(HttpMethod.DELETE , "/pkwmtt/api/v1/exams").hasRole("STUDENT")
                   .requestMatchers("/moderator/authenticate").permitAll()
                   .requestMatchers("/moderator/refresh").permitAll()
-                  .requestMatchers("/moderator/**").hasAuthority("ROLE_MODERATOR")
+                  .requestMatchers("/moderator/**").hasRole(Role.MODERATOR.toString())
                   .requestMatchers("/**").permitAll()
                   .anyRequest().authenticated()
           )

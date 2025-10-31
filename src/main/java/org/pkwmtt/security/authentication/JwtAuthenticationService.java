@@ -8,7 +8,6 @@ import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.authentication.dto.RefreshRequestDto;
 import org.pkwmtt.security.jwt.JwtService;
-import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.security.jwt.refreshToken.entity.RefreshToken;
 import org.pkwmtt.security.jwt.refreshToken.entity.UserRefreshToken;
 import org.pkwmtt.security.jwt.refreshToken.repository.UserRefreshTokenRepository;
@@ -40,7 +39,7 @@ public class JwtAuthenticationService {
 
         return JwtAuthenticationDto.builder()
                 .refreshToken(tokenHash)
-                .accessToken(jwtService.generateAccessToken(new RepresentativeDTO(representative)))
+                .accessToken(jwtService.generateAccessToken(representative))
                 .build();
     }
 

@@ -24,9 +24,10 @@ public class PreAuthorizationService {
 
     /**
      * verifies if user has authorities to add new resource
+     *
      * @param newGroups set of provided groups
      */
-    public boolean verifyGroupPermissionsForNewResource(Set<String> newGroups){
+    public boolean verifyGroupPermissionsForNewResource(Set<String> newGroups) {
         String userGroup = getUserGroup();
         return extractSuperiorGroup(newGroups).equals(userGroup);
     }
@@ -34,10 +35,11 @@ public class PreAuthorizationService {
     /**
      * verifies if user has authorities to modify existing resource
      * also check if resource exists
+     *
      * @param examId id of existing resource
      * @throws NoSuchElementWithProvidedIdException when resource don't exist
      */
-    public boolean verifyGroupPermissionsForExistingResource(Integer examId) throws  NoSuchElementWithProvidedIdException {
+    public boolean verifyGroupPermissionsForExistingResource(Integer examId) throws NoSuchElementWithProvidedIdException {
         String userGroup = getUserGroup();
         Set<String> generalGroupsOfExam = examRepository.findGroupsByExamId(examId)
                 .stream()
@@ -50,11 +52,12 @@ public class PreAuthorizationService {
     /**
      * verifies if user had authorities to replace existing resource with new one
      * also check if modified exam exists
+     *
      * @param newGroups set of groups of new resource
-     * @param examId id of existing resource
+     * @param examId    id of existing resource
      * @throws NoSuchElementWithProvidedIdException when resource don't exist
      */
-    public boolean verifyGroupPermissionsForModifiedResource(Set<String> newGroups, Integer examId) throws NoSuchElementWithProvidedIdException{
+    public boolean verifyGroupPermissionsForModifiedResource(Set<String> newGroups, Integer examId) throws NoSuchElementWithProvidedIdException {
         examRepository.findById(examId).orElseThrow(() -> new NoSuchElementWithProvidedIdException(examId));
         return verifyGroupPermissionsForNewResource(newGroups) && verifyGroupPermissionsForExistingResource(examId);
     }
@@ -65,13 +68,12 @@ public class PreAuthorizationService {
      */
     private String getUserGroup() throws AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication))
-            throw new AccessDeniedException("You don't have permission to access this group");
 
-        String group = jwtAuthentication.getExamGroup();
-        if(group == null || group.isBlank())
-            throw  new AccessDeniedException("You don't have access to any group");
-
-        return group;
+        if (authentication instanceof JwtAuthenticationToken jwtAuthentication) {
+            String group = jwtAuthentication.getSuperiorGroup();
+            if (group != null && !group.isBlank())
+                return group;
+        }
+        throw new AccessDeniedException("You don't have permission to access this group");
     }
 }

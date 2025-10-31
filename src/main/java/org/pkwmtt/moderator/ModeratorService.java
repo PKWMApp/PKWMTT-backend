@@ -32,13 +32,9 @@ public class ModeratorService {
     private final RepresentativeRepository representativeRepository;
 
     public JwtAuthenticationDto generateTokenForModerator(String password) {
-        Moderator moderator = moderatorRepository.findAll()
-                .stream()
-                .filter(m -> passwordEncoder.matches(password, m.getPassword()))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        Moderator moderator = findModeratorByPassword(password);
         return JwtAuthenticationDto.builder()
-                .accessToken(jwtService.generateAccessToken(moderator.getModeratorId()))
+                .accessToken(jwtService.generateModeratorAccessToken(moderator.getModeratorId()))
                 .refreshToken(getNewModeratorRefreshToken(moderator))
                 .build();
     }
@@ -62,7 +58,7 @@ public class ModeratorService {
 
         return JwtAuthenticationDto.builder()
                 .refreshToken(tokenHash)
-                .accessToken(jwtService.generateAccessToken(id))
+                .accessToken(jwtService.generateModeratorAccessToken(id))
                 .build();
     }
 
@@ -70,6 +66,14 @@ public class ModeratorService {
         RefreshToken refreshToken = findRefreshToken(requestDto.getRefreshToken());
         if(!moderatorRefreshTokenRepository.deleteTokenAsBoolean(refreshToken.getToken()))
             throw new InvalidRefreshTokenException();
+    }
+
+    private Moderator findModeratorByPassword(String password) throws ResponseStatusException {
+        return moderatorRepository.findAll()
+                .stream()
+                .filter(m -> passwordEncoder.matches(password, m.getPassword()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
     }
 
     private String getNewModeratorRefreshToken(Moderator moderator) {

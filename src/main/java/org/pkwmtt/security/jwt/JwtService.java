@@ -7,7 +7,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.Representative;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
-import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.security.jwt.refreshToken.entity.RefreshToken;
 import org.pkwmtt.security.jwt.utils.JwtUtils;
 import org.springframework.stereotype.Service;
@@ -31,24 +30,24 @@ public class JwtService {
      * The token contains user's email, group, and role as claims,
      * and is signed with a secret key.
      *
-     * @param user - required user data to include in token claims
+     * @param representative - required user data to include in token claims
      * @return signed JWT token as a String
      */
-    public String generateAccessToken(RepresentativeDTO user) {
+    public String generateAccessToken(Representative representative) {
         return Jwts.builder()
-                .subject(user.getEmail())
-                .claim("group", user.getGroup())
-                .claim("role", user.getRole())
+                .subject(representative.getRepresentativeId().toString())
+                .claim("group", representative.getSuperiorGroup().getName())
+                .claim("role", "ROLE_STUDENT") //TODO: enum
                 .issuedAt(new Date())
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
                 .compact();
     }
 
-    public String generateAccessToken(UUID uuid) {
+    public String generateModeratorAccessToken(UUID uuid) {
         return Jwts.builder()
                 .subject(uuid.toString())
-                .claim("role", "MODERATOR")
+                .claim("role", "ROLE_MODERATOR") //TODO: enum
                 .issuedAt(new Date())
                 .expiration((new Date(System.currentTimeMillis() + jwtUtils.getExpirationMs())))
                 .signWith(decodeSecretKey())
@@ -80,43 +79,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(decodedKey);
     }
 
-    /**
-     * Validate a JWT token.
-     * Attempts to parse the token; if parsing fails, the token is considered invalid.
-     *
-     * @param token JWT token string to validate
-     * @return true if the token is valid, false otherwise
-     */
-    public Boolean validateAccessToken(String token, Representative user) {
-        try {
-            final String userEmail = getSubject(token);
-            return userEmail != null
-                    && userEmail.equals(user.getEmail())
-                    && !isTokenExpired(token);
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-    
-    /**
-     * Validates an access token by checking if the token's subject matches the provided UUID
-     * and if the token has not expired.
-     *
-     * @param token the JWT token string to validate
-     * @param uuid the UUID to compare with the token's subject
-     * @return true if the token is valid, false otherwise
-     */
-    public Boolean validateAccessToken(String token, String uuid) {
-        try {
-            final String userid = getSubject(token);
-            return userid != null
-                    && userid.equals(uuid)
-                    && !isTokenExpired(token);
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-
 
     /**
      * Extracts the user identifier (email) from a JWT token.
@@ -128,25 +90,6 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /**
-     * Extracts the expiration date from a JWT token.
-     *
-     * @param token JWT token string
-     * @return expiration date of the token
-     */
-    private Date getExpirationDateFromToken(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    /**
-     * Checks whether a JWT token has expired.
-     *
-     * @param token JWT token string
-     * @return true if the token is expired, false otherwise
-     */
-    private boolean isTokenExpired(String token){
-        return getExpirationDateFromToken(token).before(new Date());
-    }
 
     /**
      * Extracts a specific claim from a JWT token using a claim resolver function.

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.examCalendar.entity.SuperiorGroup;
 import org.pkwmtt.examCalendar.entity.StudentCode;
 import org.pkwmtt.examCalendar.entity.Representative;
-import org.pkwmtt.examCalendar.enums.Role;
 import org.pkwmtt.examCalendar.repository.SuperiorGroupRepository;
 import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
 import org.pkwmtt.exceptions.*;
@@ -18,7 +17,6 @@ import org.pkwmtt.studentCodes.dto.StudentCodeRequest;
 import org.pkwmtt.studentCodes.repository.StudentCodeRepository;
 import org.pkwmtt.security.authentication.JwtAuthenticationService;
 import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
-import org.pkwmtt.security.jwt.dto.RepresentativeDTO;
 import org.pkwmtt.timetable.TimetableService;
 import org.springframework.stereotype.Service;
 
@@ -50,20 +48,13 @@ public class StudentCodeService {
           .findBySuperiorGroup(superiorGroup)
           .orElseThrow(() -> new UserNotFoundException("No representative is assigned to this code."));
         
-        var userEmail = representative.getEmail();
-        
-        String token = jwtService.generateAccessToken(
-          new RepresentativeDTO()
-            .setEmail(userEmail)
-            .setRole(Role.REPRESENTATIVE)
-            .setGroup(superiorGroup.getName())
-        );
+        var accessToken = jwtService.generateAccessToken(representative);
         
         var refreshToken = jwtAuthenticationService.getNewUserRefreshToken(representative);
         
         return JwtAuthenticationDto
           .builder()
-          .accessToken(token)
+          .accessToken(accessToken)
           .refreshToken(refreshToken)
           .build();
     }

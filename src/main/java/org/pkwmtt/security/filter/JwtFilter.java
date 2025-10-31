@@ -5,43 +5,27 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
-import org.pkwmtt.examCalendar.entity.Representative;
-import org.pkwmtt.examCalendar.enums.Role;
-import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
-import org.pkwmtt.moderator.ModeratorRepository;
+import lombok.RequiredArgsConstructor;
 import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
-import org.pkwmtt.security.jwt.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    
-    @Autowired
-    JwtService jwtService;
-    
-    @Autowired
-    RepresentativeRepository representativeRepository;
-    
-    @Autowired
-    ModeratorRepository moderatorRepository;
-    
+
+    private final AuthenticationManager jwtAuthenticationManager;
     /**
      * Filters incoming HTTP requests to validate JWT tokens.
      *
      * <p>This filter:
      * - Extracts the JWT token from the Authorization header.
-     * - Validates the token using JwtService.
-     * - Loads the user from UserRepository.
+     * - Delegates token validation to jwtAuthenticationManager
      * - Sets the Spring Security Authentication in the SecurityContext.
      *
      * @param request     the HttpServletRequest
@@ -56,68 +40,15 @@ public class JwtFilter extends OncePerRequestFilter {
                                      @NonNull FilterChain filterChain) throws ServletException, IOException {
         
         String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String subject = null;
-        
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            subject = jwtService.getSubject(token);
+
+        if (authHeader != null && authHeader.startsWith("Bearer ") && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            String token = authHeader.substring(7);
+            Authentication authToken = jwtAuthenticationManager.authenticate(new JwtAuthenticationToken(token));
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
-        
-        if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            String role = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
-            
-            
-            if (role.equals("MODERATOR")) {
-                filterModerator(request, token, subject);
-            } else {
-                filterUser(request, token, subject);
-            }
-        }
-        
+
         filterChain.doFilter(request, response);
-    }
-    
-    private void filterModerator (HttpServletRequest request, String token, String subject) {
-        UUID uuid = UUID.fromString(subject);
-        moderatorRepository.findById(uuid).orElseThrow(); // TODO: add exception type
-        
-        if (jwtService.validateAccessToken(token, subject)) {
-            List<SimpleGrantedAuthority> authorities = List.of(
-              new SimpleGrantedAuthority("ROLE_" + "MODERATOR")
-            );
-            
-            UsernamePasswordAuthenticationToken authToken =
-              new UsernamePasswordAuthenticationToken(
-                subject,
-                null,
-                authorities
-              );
-            
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            
-        }
-    }
-    
-    private void filterUser (HttpServletRequest request, String token, String subject) {
-        //        TODO: handle invalid email
-        Representative representative = representativeRepository.findByEmail(subject).orElseThrow();
-        
-        if (jwtService.validateAccessToken(token, representative)) {
-            List<SimpleGrantedAuthority> authorities = List.of(
-              new SimpleGrantedAuthority("ROLE_" + Role.REPRESENTATIVE)
-            );
-            
-            UsernamePasswordAuthenticationToken authToken =
-              new JwtAuthenticationToken(
-                representative.getEmail(),
-                authorities,
-                jwtService.extractClaim(token, claims -> claims.get("group", String.class))
-              );
-            
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
     }
 }
