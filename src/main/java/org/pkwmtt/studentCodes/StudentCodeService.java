@@ -39,17 +39,66 @@ public class StudentCodeService {
     private final JwtAuthenticationService jwtAuthenticationService;
     private final TimetableService timetableService;
     
-    //TODO increase usage counter
-    
+    /**
+     * Generate authentication tokens for a user that provides a valid student code.
+     * The method checks the code existence and format, verifies usage limits,
+     * maps the code to a representative and returns JWT tokens for that representative.
+     *
+     * @param code student code string (expected format validated by {@link #validateCode(String)})
+     * @return {@link JwtAuthenticationDto} containing access and refresh tokens
+     * @throws StudentCodeNotFoundException           if the code does not exist in the repository
+     * @throws WrongStudentCodeFormatException        if the code does not match expected format
+     * @throws UserNotFoundException                  if no representative is associated with the code's group
+     * @throws MaxUsageForStudentCodeReachedException if the code's usage reached its usage limit
+     */
     public JwtAuthenticationDto generateTokenForUser (String code)
-      throws StudentCodeNotFoundException, WrongStudentCodeFormatException, UserNotFoundException {
-        var superiorGroup = this.getSuperiorGroupAssignedToCode(code);
-        var representative = representativeRepository
-          .findBySuperiorGroup(superiorGroup)
+      throws StudentCodeNotFoundException, WrongStudentCodeFormatException, UserNotFoundException, MaxUsageForStudentCodeReachedException {
+        var codeEntity = this.getEntityByCode(code);
+        
+        checkUsageLimit(codeEntity);
+        
+        var representative = findRepresentativeForCode(codeEntity);
+        
+        var jwtDto = createTokensForRepresentative(representative);
+        
+        increaseUsage(code);
+        
+        return jwtDto;
+    }
+    
+    /**
+     * Validate that the provided code entity has not exceeded its usage limit.
+     *
+     * @param codeEntity {@link StudentCode} entity to check
+     * @throws MaxUsageForStudentCodeReachedException when usage is >= usageLimit
+     */
+    private void checkUsageLimit (StudentCode codeEntity) throws MaxUsageForStudentCodeReachedException {
+        if (codeEntity.getUsage() >= codeEntity.getUsageLimit()) {
+            throw new MaxUsageForStudentCodeReachedException("This code has reached its maximum usage limit.");
+        }
+    }
+    
+    /**
+     * Find the representative assigned to the superior group referenced by the student code.
+     *
+     * @param codeEntity {@link StudentCode} that contains a reference to {@link SuperiorGroup}
+     * @return {@link Representative} associated with the group
+     * @throws UserNotFoundException if no representative is assigned to the group
+     */
+    private Representative findRepresentativeForCode (StudentCode codeEntity) throws UserNotFoundException {
+        return representativeRepository
+          .findBySuperiorGroup(codeEntity.getSuperiorGroup())
           .orElseThrow(() -> new UserNotFoundException("No representative is assigned to this code."));
-        
+    }
+    
+    /**
+     * Create access and refresh tokens for the provided representative.
+     *
+     * @param representative the representative for whom tokens will be issued
+     * @return {@link JwtAuthenticationDto} containing access and refresh tokens
+     */
+    private JwtAuthenticationDto createTokensForRepresentative (Representative representative) {
         var accessToken = jwtService.generateAccessToken(representative);
-        
         var refreshToken = jwtAuthenticationService.getNewUserRefreshToken(representative);
         
         return JwtAuthenticationDto
@@ -59,6 +108,22 @@ public class StudentCodeService {
           .build();
     }
     
+    /**
+     * Increment usage counter for the student code identified by the code string.
+     *
+     * @param code code to increment usage for
+     */
+    private void increaseUsage (String code) {
+        studentCodeRepository.increaseUsageByCode(code);
+    }
+    
+    /**
+     * Send student codes for multiple requests. This method processes each {@link StudentCodeRequest}
+     * independently and collects failures (per-request) into a list of {@link SendStudentCodeFailure}.
+     *
+     * @param requests list of requests to process
+     * @return list of failures encountered while processing requests; empty list indicates all succeeded
+     */
     public List<SendStudentCodeFailure> sendStudentCode (List<StudentCodeRequest> requests) {
         // Collect per-group failures and return them to the caller so they can decide what to do.
         var failures = new java.util.ArrayList<SendStudentCodeFailure>();
@@ -76,6 +141,22 @@ public class StudentCodeService {
         return failures;
     }
     
+    /**
+     * Send a student code to a single {@link StudentCodeRequest}. This method:
+     * - generates a new unique code,
+     * - validates the provided general group name,
+     * - ensures a superior group exists (creates if missing),
+     * - ensures the email is not already assigned to another representative,
+     * - assigns a representative to the group, saves the code and representative,
+     * - sends out an email with the code.
+     *
+     * @param request request containing recipient email, group name and mail template
+     * @throws MailCouldNotBeSendException            when sending the email fails
+     * @throws WrongArgumentException                 when provided group name format is invalid
+     * @throws SpecifiedSubGroupDoesntExistsException when subgroup is specified instead of general group
+     * @throws IllegalArgumentException               for other invalid arguments
+     * @throws JsonProcessingException                when timetable service fails to provide the group list
+     */
     public void sendStudentCode (StudentCodeRequest request)
       throws MailCouldNotBeSendException, WrongArgumentException, SpecifiedSubGroupDoesntExistsException, IllegalArgumentException, JsonProcessingException {
         var code = generateNewCode();
@@ -99,6 +180,12 @@ public class StudentCodeService {
         sendEmailOrThrow(mail, groupName);
     }
     
+    /**
+     * Validate that the provided group name is formatted as a general group (not subgroup).
+     *
+     * @param groupName name to validate
+     * @throws WrongArgumentException when the name appears to include subgroup suffix (ends with digit)
+     */
     private void validateGroupNameFormat (String groupName) throws WrongArgumentException {
         var groupNameLength = groupName.length();
         if (groupNameLength > 3 && Character.isDigit(
@@ -108,6 +195,13 @@ public class StudentCodeService {
         }
     }
     
+    /**
+     * Find an existing {@link SuperiorGroup} by name or create and persist a new one.
+     * If a student code already exists for the found group it will be removed to avoid duplicates.
+     *
+     * @param groupName name of the superior group
+     * @return {@link Optional} containing the found or newly created {@link SuperiorGroup}
+     */
     private Optional<SuperiorGroup> findOrCreateSuperiorGroup (String groupName) {
         var superiorGroup = superiorGroupRepository.findByName(groupName);
         if (superiorGroup.isPresent()) {
@@ -120,6 +214,12 @@ public class StudentCodeService {
         }
     }
     
+    /**
+     * Ensure that no other representative is already registered with the provided email.
+     *
+     * @param email email address to check
+     * @throws UserAlreadyAssignedException when another representative exists for the email
+     */
     private void ensureNoExistingRepresentativeByEmail (String email) {
         var representativeByEmail = representativeRepository.findByEmail(email);
         if (representativeByEmail.isPresent()) {
@@ -128,6 +228,14 @@ public class StudentCodeService {
         }
     }
     
+    /**
+     * Send the email using {@link EmailService}. Wrapes low-level {@link MessagingException}
+     * into a domain-specific {@link MailCouldNotBeSendException}.
+     *
+     * @param mail      mail DTO to be sent
+     * @param groupName group name used to provide contextual error message
+     * @throws MailCouldNotBeSendException when underlying mail sending fails
+     */
     private void sendEmailOrThrow (MailDTO mail, String groupName) throws MailCouldNotBeSendException {
         try {
             emailService.send(mail);
@@ -136,6 +244,13 @@ public class StudentCodeService {
         }
     }
     
+    /**
+     * Helper to build a {@link Representative} entity from provided email and group.
+     *
+     * @param email         representative email
+     * @param superiorGroup group to assign to representative
+     * @return constructed {@link Representative}
+     */
     private Representative buildRepresentative (String email, SuperiorGroup superiorGroup) {
         return Representative
           .builder()
@@ -145,22 +260,45 @@ public class StudentCodeService {
           .build();
     }
     
+    /**
+     * Replace (delete) an existing representative assigned to the specified superior group.
+     *
+     * @param superiorGroup target group for which existing representative should be removed
+     */
     private void replaceExistingRepresentativeForGroup (SuperiorGroup superiorGroup) {
         representativeRepository
           .findBySuperiorGroup(superiorGroup)
           .ifPresent(value -> representativeRepository.deleteRepresentativeByEmail(value.getEmail()));
     }
     
-    private SuperiorGroup getSuperiorGroupAssignedToCode (String code)
+    
+    /**
+     * Retrieve {@link StudentCode} entity by its code string after validating its format.
+     *
+     * @param code code to lookup
+     * @return {@link StudentCode} entity associated with code
+     * @throws StudentCodeNotFoundException    when no entity is found
+     * @throws WrongStudentCodeFormatException when provided code format is invalid
+     */
+    private StudentCode getEntityByCode (String code)
       throws StudentCodeNotFoundException, WrongStudentCodeFormatException {
         this.validateCode(code);
+        
         Optional<StudentCode> result = studentCodeRepository.findByCode(code);
+        
         if (result.isEmpty()) {
             throw new StudentCodeNotFoundException();
         }
-        return result.get().getSuperiorGroup();
+        
+        return result.get();
     }
     
+    /**
+     * Validate code length and allowed characters.
+     *
+     * @param code code string to validate
+     * @throws WrongStudentCodeFormatException when code is not exactly 6 characters or contains invalid chars
+     */
     private void validateCode (String code) throws WrongStudentCodeFormatException {
         if (code.length() != 6) {
             throw new WrongStudentCodeFormatException("Code should be 6 characters long.");
@@ -176,6 +314,13 @@ public class StudentCodeService {
     }
     
     
+    /**
+     * Create a {@link MailDTO} to be sent for a generated student code.
+     *
+     * @param request original request containing recipient and mail message template
+     * @param code    generated student code to be included in the mail
+     * @return configured {@link MailDTO}
+     */
     private MailDTO createMail (StudentCodeRequest request, String code) {
         return new MailDTO()
           .setTitle("Kod Starosty " + request.getSuperiorGroupName())
@@ -183,6 +328,12 @@ public class StudentCodeService {
           .setDescription(request.getMailMessage(code));
     }
     
+    /**
+     * Generate a new unique 6-character alphanumeric code. The method loops until
+     * a code not present in the repository is produced.
+     *
+     * @return newly generated unique code
+     */
     private String generateNewCode () {
         String AVAILABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder code = new StringBuilder();
@@ -198,6 +349,15 @@ public class StudentCodeService {
         return code.toString();
     }
     
+    /**
+     * Check whether the provided general group name exists in the timetable service.
+     * The timetable returns group strings which may include subgroup suffixes; this
+     * method normalizes those to their general group names before checking.
+     *
+     * @param name general group name to verify
+     * @return true when the general group exists; false otherwise
+     * @throws JsonProcessingException when the timetable service cannot provide or parse group data
+     */
     private boolean generalGroupExists (String name) throws JsonProcessingException {
         Set<String> list = timetableService
           .getGeneralGroupList()
