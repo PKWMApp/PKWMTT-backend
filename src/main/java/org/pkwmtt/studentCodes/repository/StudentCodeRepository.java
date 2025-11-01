@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import org.pkwmtt.examCalendar.entity.SuperiorGroup;
 import org.pkwmtt.examCalendar.entity.StudentCode;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -17,6 +19,11 @@ public interface StudentCodeRepository extends JpaRepository<StudentCode, Intege
 
     boolean existsByCode(String code);
 
+    @Query("UPDATE StudentCode sc SET sc.usage = sc.usage + 1 WHERE sc.code = ?1")
+    @Modifying
+    @Transactional
+    void increaseUsageByCode(String code);
+    
     @Transactional
     void deleteBySuperiorGroup(SuperiorGroup superiorGroup);
     
