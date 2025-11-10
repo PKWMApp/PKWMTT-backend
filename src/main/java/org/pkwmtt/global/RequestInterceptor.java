@@ -6,7 +6,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.InternalException;
-import org.pkwmtt.calendar.enums.Role;
+import org.pkwmtt.calendar.exams.enums.Role;
 import org.pkwmtt.exceptions.IncorrectApiKeyValue;
 import org.pkwmtt.exceptions.MissingHeaderException;
 import org.pkwmtt.security.apiKey.ApiKeyService;

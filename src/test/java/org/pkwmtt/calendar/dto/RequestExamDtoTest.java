@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
+import org.pkwmtt.calendar.exams.dto.RequestExamDto;
 
 import java.time.LocalDateTime;
 import java.util.Set;

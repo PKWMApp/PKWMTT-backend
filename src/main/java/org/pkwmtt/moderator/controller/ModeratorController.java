@@ -1,7 +1,7 @@
 package org.pkwmtt.moderator.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.calendar.entity.Representative;
+import org.pkwmtt.calendar.exams.entity.Representative;
 import org.pkwmtt.moderator.ModeratorService;
 import org.pkwmtt.moderator.dto.AuthDto;
 import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;

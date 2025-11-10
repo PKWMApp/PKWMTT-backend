@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.pkwmtt.ValuesForTest;
-import org.pkwmtt.calendar.enums.SubjectType;
+import org.pkwmtt.calendar.exams.enums.SubjectType;
 import org.pkwmtt.exceptions.dto.ErrorResponseDTO;
 import org.pkwmtt.timetable.dto.CustomSubjectFilterDTO;
 import org.pkwmtt.timetable.dto.SubjectDTO;

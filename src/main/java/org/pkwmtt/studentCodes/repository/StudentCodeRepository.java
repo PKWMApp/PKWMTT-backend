@@ -1,8 +1,8 @@
 package org.pkwmtt.studentCodes.repository;
 
 import jakarta.transaction.Transactional;
-import org.pkwmtt.calendar.entity.SuperiorGroup;
-import org.pkwmtt.calendar.entity.StudentCode;
+import org.pkwmtt.calendar.exams.entity.SuperiorGroup;
+import org.pkwmtt.calendar.exams.entity.StudentCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
