@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mysql.cj.exceptions.WrongArgumentException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.calendar.exams.entity.SuperiorGroup;
+import org.pkwmtt.calendar.enities.SuperiorGroup;
 import org.pkwmtt.calendar.exams.entity.StudentCode;
 import org.pkwmtt.calendar.exams.entity.Representative;
 import org.pkwmtt.calendar.exams.repository.SuperiorGroupRepository;

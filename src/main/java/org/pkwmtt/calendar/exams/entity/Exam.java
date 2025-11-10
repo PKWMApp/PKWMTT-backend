@@ -36,7 +36,7 @@ public class Exam {
     @ManyToOne
     @JoinColumn(name = "exam_type_id", nullable = false)
     private ExamType examType;
-
+    
     @ManyToMany
     @JoinTable(
             name="exams_groups",

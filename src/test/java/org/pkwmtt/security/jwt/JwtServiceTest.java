@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pkwmtt.calendar.exams.entity.Representative;
-import org.pkwmtt.calendar.exams.entity.SuperiorGroup;
+import org.pkwmtt.calendar.enities.SuperiorGroup;
 import org.pkwmtt.security.jwt.utils.JwtUtils;
 
 import java.util.Base64;

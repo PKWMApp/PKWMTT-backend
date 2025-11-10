@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -12,4 +13,5 @@ public class EventDTO {
     String description;
     Date startDate;
     Date endDate;
+    List<String> superiorGroups;
 }

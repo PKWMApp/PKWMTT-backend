@@ -13,12 +13,22 @@ import java.util.List;
 public class EventsService {
     final EventsRepository eventsRepository;
     
-    public List<EventDTO> getAllEvents () {
-        return eventsRepository
-          .findAll()
+    public List<EventDTO> getAllEvents (String superiorGroupName) {
+        if (superiorGroupName == null) {
+            return eventsRepository.findAll()
+              .stream()
+              .map(EventsMapper::mapEventToEventDTO)
+              .toList();
+        }
+        
+        return eventsRepository.findAll()
           .stream()
+          .filter(item -> item.getSuperiorGroups()
+            .stream()
+            .anyMatch(group -> group.getName().equalsIgnoreCase(superiorGroupName)))
           .map(EventsMapper::mapEventToEventDTO)
           .toList();
     }
+    
     
 }

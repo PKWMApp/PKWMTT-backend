@@ -2,7 +2,7 @@ package org.pkwmtt.calendar.exams.repository;
 
 import jakarta.transaction.Transactional;
 import org.pkwmtt.calendar.exams.entity.Representative;
-import org.pkwmtt.calendar.exams.entity.SuperiorGroup;
+import org.pkwmtt.calendar.enities.SuperiorGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 

@@ -1,6 +1,6 @@
 package org.pkwmtt.calendar.exams.repository;
 
-import org.pkwmtt.calendar.exams.entity.SuperiorGroup;
+import org.pkwmtt.calendar.enities.SuperiorGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package org.pkwmtt.calendar.exams.entity;
+package org.pkwmtt.calendar.enities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
