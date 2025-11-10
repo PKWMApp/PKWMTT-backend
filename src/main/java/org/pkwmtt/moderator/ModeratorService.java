@@ -2,8 +2,8 @@ package org.pkwmtt.moderator;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.pkwmtt.examCalendar.entity.Representative;
-import org.pkwmtt.examCalendar.repository.RepresentativeRepository;
+import org.pkwmtt.calendar.entity.Representative;
+import org.pkwmtt.calendar.repository.RepresentativeRepository;
 import org.pkwmtt.exceptions.InvalidRefreshTokenException;
 import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.authentication.dto.RefreshRequestDto;

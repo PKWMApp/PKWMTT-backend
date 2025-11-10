@@ -155,7 +155,7 @@ Accept: application/json
 ```
 - Returns: 200 OK with `List<Representative>` JSON.
 
-Representative JSON fields (entity `org.pkwmtt.examCalendar.entity.Representative`):
+Representative JSON fields (entity `org.pkwmtt.calendar.entity.Representative`):
 ```json
 {
   "representativeId": "uuid",
@@ -199,7 +199,7 @@ StudentCodeRequest (from `org.pkwmtt.studentCodes.dto.StudentCodeRequest`):
 }
 ```
 
-Representative (from `org.pkwmtt.examCalendar.entity.Representative`):
+Representative (from `org.pkwmtt.calendar.entity.Representative`):
 ```json
 {
   "representativeId": "uuid",

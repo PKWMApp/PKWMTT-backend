@@ -72,7 +72,7 @@ This backend exposes RESTful endpoints for:
 For implementation details, examples and payload shapes see the module-level API references below:
 
 - Timetable — Detailed docs: [TIMETABLE.MD](src/main/java/org/pkwmtt/timetable/TIMETABLE.MD)
-- Exam calendar — Detailed docs: [EXAMCALENDAR.MD](src/main/java/org/pkwmtt/examCalendar/EXAMCALENDAR.MD)
+- Exam calendar — Detailed docs: [EXAMCALENDAR.MD](src/main/java/org/pkwmtt/calendar/EXAMCALENDAR.MD)
 - Moderator — Detailed docs: [MODERATOR.MD](src/main/java/org/pkwmtt/moderator/MODERATOR.MD)
 
 Authentication
