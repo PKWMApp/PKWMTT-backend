@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.pkwmtt.calendar.exams.adnotations.CorrectFutureDate;
+import org.pkwmtt.calendar.adnotations.CorrectFutureDate;
 
 import java.time.LocalDateTime;
 import java.util.Set;

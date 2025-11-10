@@ -1,4 +1,4 @@
-package org.pkwmtt.calendar.exams.adnotations;
+package org.pkwmtt.calendar.adnotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
