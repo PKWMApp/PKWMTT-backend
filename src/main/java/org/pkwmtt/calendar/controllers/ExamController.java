@@ -1,8 +1,9 @@
-package org.pkwmtt.calendar;
+package org.pkwmtt.calendar.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.pkwmtt.calendar.services.ExamService;
 import org.pkwmtt.calendar.dto.RequestExamDto;
 import org.pkwmtt.calendar.dto.ResponseExamDto;
 import org.pkwmtt.calendar.entity.ExamType;

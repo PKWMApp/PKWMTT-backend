@@ -18,6 +18,7 @@ import org.pkwmtt.calendar.mapper.ExamDtoMapper;
 import org.pkwmtt.calendar.repository.ExamRepository;
 import org.pkwmtt.calendar.repository.ExamTypeRepository;
 import org.pkwmtt.calendar.repository.GroupRepository;
+import org.pkwmtt.calendar.services.ExamService;
 import org.pkwmtt.exceptions.*;
 import org.pkwmtt.security.authentication.authenticationToken.JwtAuthenticationToken;
 import org.pkwmtt.timetable.TimetableService;

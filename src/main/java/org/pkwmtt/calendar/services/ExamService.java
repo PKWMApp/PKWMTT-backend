@@ -1,4 +1,4 @@
-package org.pkwmtt.calendar;
+package org.pkwmtt.calendar.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;

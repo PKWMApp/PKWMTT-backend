@@ -1,4 +1,4 @@
-package org.pkwmtt.calendar;
+package org.pkwmtt.calendar.controllers;
 
 import jakarta.validation.ConstraintViolationException;
 import org.pkwmtt.exceptions.*;
