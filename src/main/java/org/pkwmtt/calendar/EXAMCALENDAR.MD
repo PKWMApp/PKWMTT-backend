@@ -243,10 +243,10 @@ Frontend integration notes and gotchas
 
 
 Where to look in the codebase for details:
-- Controller: `src/main/java/org/pkwmtt/examCalendar/ExamController.java`
-- Controller advice: `src/main/java/org/pkwmtt/examCalendar/ExamControllerAdvice.java`
-- DTOs: `src/main/java/org/pkwmtt/examCalendar/dto/RequestExamDto.java`, `ResponseExamDto.java`
-- Entity and mapper: `src/main/java/org/pkwmtt/examCalendar/entity/Exam.java`, `ExamType.java`, and `src/main/java/org/pkwmtt/examCalendar/mapper/ExamDtoMapper.java`
+- Controller: `src/main/java/org/pkwmtt/calendar/exams/controllers/ExamController.java`
+- Controller advice: `src/main/java/org/pkwmtt/calendar/exams/controllers/ExamControllerAdvice.java`
+- DTOs: `src/main/java/org/pkwmtt/calendar/exams/dto/RequestExamDto.java`, `ResponseExamDto.java`
+- Entity and mapper: `src/main/java/org/pkwmtt/calendar/exams/entity/Exam.java`, `ExamType.java`, and `src/main/java/org/pkwmtt/calendar/exams/mapper/ExamDtoMapper.java`
 
 Troubleshooting
 - 400 Bad Request: check field validation messages returned in `ErrorResponseDTO` and ensure `generalGroups` is non-empty and `date` is in the future.
