@@ -237,4 +237,3 @@ Troubleshooting
 
 Change log
 - 2025-11-03 — initial documentation added for `ModeratorController` including examples and payload shapes.
-
