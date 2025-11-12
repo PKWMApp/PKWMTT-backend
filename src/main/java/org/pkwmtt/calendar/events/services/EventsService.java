@@ -26,7 +26,7 @@ public class EventsService {
     /**
      * Repository for event entities.
      */
-    final EventsRepository eventsRepository;
+    private final EventsRepository eventsRepository;
     
     /**
      * Repository for event type entities.
