@@ -2,6 +2,7 @@ package org.pkwmtt.calendar.events.dto;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.pkwmtt.calendar.adnotations.CorrectFutureDate;
 
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,11 @@ import java.util.List;
 public class EventDTO {
     String title;
     String description;
+
+    @CorrectFutureDate
     Date startDate;
+
+    @CorrectFutureDate
     Date endDate;
     String type;
     List<String> superiorGroups;

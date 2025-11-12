@@ -1,4 +1,4 @@
-package org.pkwmtt.calendar;
+package org.pkwmtt.calendar.exams;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;

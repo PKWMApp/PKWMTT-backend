@@ -1,11 +1,8 @@
-package org.pkwmtt.calendar.entity;
+package org.pkwmtt.calendar.exams.entity;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.pkwmtt.calendar.exams.entity.Exam;
-import org.pkwmtt.calendar.exams.entity.ExamType;
-import org.pkwmtt.calendar.exams.entity.StudentGroup;
 import org.pkwmtt.exceptions.UnsupportedCountOfArgumentsException;
 
 import java.time.LocalDateTime;

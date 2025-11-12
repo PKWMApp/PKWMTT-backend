@@ -1,4 +1,4 @@
-package org.pkwmtt.calendar.repository;
+package org.pkwmtt.calendar.exams.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,9 +7,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.pkwmtt.calendar.exams.entity.Exam;
 import org.pkwmtt.calendar.exams.entity.ExamType;
 import org.pkwmtt.calendar.exams.entity.StudentGroup;
-import org.pkwmtt.calendar.exams.repository.ExamRepository;
-import org.pkwmtt.calendar.exams.repository.ExamTypeRepository;
-import org.pkwmtt.calendar.exams.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

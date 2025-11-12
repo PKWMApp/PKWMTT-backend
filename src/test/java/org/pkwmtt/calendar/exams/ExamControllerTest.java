@@ -1,4 +1,4 @@
-package org.pkwmtt.calendar;
+package org.pkwmtt.calendar.exams;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

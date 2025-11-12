@@ -3,6 +3,7 @@ package org.pkwmtt.calendar.events.services;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.calendar.events.dto.EventDTO;
 import org.pkwmtt.calendar.events.mappers.EventsMapper;
+import org.pkwmtt.calendar.events.repositories.EventTypeRepository;
 import org.pkwmtt.calendar.events.repositories.EventsRepository;
 import org.springframework.stereotype.Service;
 
