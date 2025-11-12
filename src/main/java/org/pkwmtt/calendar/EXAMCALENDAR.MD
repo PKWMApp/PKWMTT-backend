@@ -189,7 +189,7 @@ Example JSON:
 ```
 
 Exam entity notes
-- `org.pkwmtt.calendar.entity.Exam` stores:
+- `org.pkwmtt.calendar.exams.entity.Exam` stores:
   - `examId` (Integer, DB-generated)
   - `title`, `description`, `examDate`, `examType` (ManyToOne to `ExamType`), and a Set of `StudentGroup`s (ManyToMany).
 - The builder enforces groups count between 1 and 100; creating an `Exam` with 0 or more than 100 groups will trigger an `UnsupportedCountOfArgumentsException`.
