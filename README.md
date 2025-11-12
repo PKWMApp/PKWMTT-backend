@@ -74,6 +74,7 @@ For implementation details, examples and payload shapes see the module-level API
 - Timetable — Detailed docs: [TIMETABLE.MD](src/main/java/org/pkwmtt/timetable/TIMETABLE.MD)
 - Exam calendar — Detailed docs: [EXAMCALENDAR.MD](src/main/java/org/pkwmtt/calendar/EXAMCALENDAR.MD)
 - Moderator — Detailed docs: [MODERATOR.MD](src/main/java/org/pkwmtt/moderator/MODERATOR.MD)
+- Events — Detailed docs: [EVENTS.MD](src/main/java/org/pkwmtt/calendar/EVENTS.MD)
 
 Authentication
 - Endpoints are protected using JWT tokens.
