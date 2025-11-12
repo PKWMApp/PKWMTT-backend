@@ -20,8 +20,8 @@ public class EventsController {
     @GetMapping
     public ResponseEntity<List<EventDTO>> getAllEvents (@RequestParam(required = false, name = "g") String superiorGroup) {
         if (superiorGroup != null) {
-            return ResponseEntity.ok().body(service.getAllEvents(superiorGroup));
+            return ResponseEntity.ok().body(service.getEventsForSuperiorGroup(superiorGroup));
         }
-        return ResponseEntity.ok().body(service.getAllEvents(null));
+        return ResponseEntity.ok().body(service.getEventsForSuperiorGroup(null));
     }
 }

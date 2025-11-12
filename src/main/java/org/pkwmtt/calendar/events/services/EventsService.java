@@ -13,14 +13,14 @@ import java.util.List;
 public class EventsService {
     final EventsRepository eventsRepository;
     
-    public List<EventDTO> getAllEvents (String superiorGroupName) {
-        if (superiorGroupName == null) {
-            return eventsRepository.findAll()
-              .stream()
-              .map(EventsMapper::mapEventToEventDTO)
-              .toList();
-        }
-        
+    public List<EventDTO> getAllEvents () {
+        return eventsRepository.findAll()
+          .stream()
+          .map(EventsMapper::mapEventToEventDTO)
+          .toList();
+    }
+    
+    public List<EventDTO> getEventsForSuperiorGroup (String superiorGroupName) {
         return eventsRepository.findAll()
           .stream()
           .filter(item -> item.getSuperiorGroups()
@@ -30,5 +30,9 @@ public class EventsService {
           .toList();
     }
     
-    
+    public int addEvent (EventDTO eventDTO) {
+        var event = EventsMapper.mapEventDTOToEvent(eventDTO);
+        eventsRepository.save(event);
+        return event.getId();
+    }
 }

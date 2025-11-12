@@ -40,4 +40,11 @@ public class Event {
       inverseJoinColumns = @JoinColumn(name = "superior_group_id")
     )
     List<SuperiorGroup> superiorGroups;
+    
+    public Event (String title, String description, Date startDate, Date endDate) {
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }
