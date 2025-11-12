@@ -13,5 +13,6 @@ public class EventDTO {
     String description;
     Date startDate;
     Date endDate;
+    String type;
     List<String> superiorGroups;
 }

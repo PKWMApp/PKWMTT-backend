@@ -33,6 +33,10 @@ public class Event {
     @Column(name = "end_date")
     Date endDate;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type", referencedColumnName = "event_type_id")
+    EventType type;
+    
     @ManyToMany
     @JoinTable(
       name = "events_superior_group",

@@ -21,21 +21,24 @@ import static java.util.Objects.isNull;
 @RequiredArgsConstructor
 @Profile("!test & !database") //Skip on tests
 public class RequestInterceptor implements HandlerInterceptor {
-
+    
     private static final String X_API_KEY_HEADER = "X-API-KEY";
-
+    
     private final ApiKeyService apiKeyService;
     
     @Override
     public boolean preHandle (@NonNull HttpServletRequest request,
                               @NonNull HttpServletResponse response,
                               @NonNull Object handler) throws MissingHeaderException {
-        var apiKey = request.getHeader(X_API_KEY_HEADER);
-
+        String apiKey = request.getHeader(X_API_KEY_HEADER);
+        
         if (isNull(apiKey) || apiKey.isBlank()) {
-            throw new MissingHeaderException("X-API-KEY");
+            apiKey = request.getHeader(X_API_KEY_HEADER.toLowerCase());
+            if (isNull(apiKey) || apiKey.isBlank()) {
+                throw new MissingHeaderException("X-API-KEY");
+            }
         }
-
+        
         try {
             apiKeyService.validateApiKey(apiKey, Role.REPRESENTATIVE);
         } catch (IncorrectApiKeyValue e) {

@@ -24,4 +24,9 @@ public class EventsController {
         }
         return ResponseEntity.ok().body(service.getEventsForSuperiorGroup(null));
     }
+    
+    @GetMapping("/types")
+    public ResponseEntity<List<String>> getAllEventTypes () {
+        return ResponseEntity.ok().body(service.getAllEventTypes());
+    }
 }

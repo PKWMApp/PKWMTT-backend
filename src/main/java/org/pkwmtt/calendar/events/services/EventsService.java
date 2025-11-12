@@ -12,6 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventsService {
     final EventsRepository eventsRepository;
+    private final EventTypeRepository eventTypeRepository;
     
     public List<EventDTO> getAllEvents () {
         return eventsRepository.findAll()
@@ -34,5 +35,9 @@ public class EventsService {
         var event = EventsMapper.mapEventDTOToEvent(eventDTO);
         eventsRepository.save(event);
         return event.getId();
+    }
+    
+    public List<String> getAllEventTypes () {
+        return EventsMapper.mapEventTypeListToListOfString(eventTypeRepository.findAll());
     }
 }
