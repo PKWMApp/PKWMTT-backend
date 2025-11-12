@@ -1,5 +1,6 @@
 package org.pkwmtt.calendar.events.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pkwmtt.calendar.events.dto.EventDTO;
 import org.pkwmtt.calendar.events.mappers.EventsMapper;
@@ -26,7 +27,7 @@ public class EventsService {
      * Repository for event entities.
      */
     final EventsRepository eventsRepository;
-
+    
     /**
      * Repository for event type entities.
      *
@@ -73,7 +74,13 @@ public class EventsService {
      * @return generated id of the saved event
      */
     public int addEvent (EventDTO eventDTO) {
-        var event = EventsMapper.mapEventDTOToEvent(eventDTO);
+        var eventType = eventTypeRepository.findByName(eventDTO.getType());
+        
+        if (eventType.isEmpty()) {
+            throw new IllegalArgumentException("Invalid event type: " + eventDTO.getType());
+        }
+        
+        var event = EventsMapper.mapEventDTOToEvent(eventDTO, eventType.get());
         eventsRepository.save(event);
         return event.getId();
     }
@@ -85,5 +92,17 @@ public class EventsService {
      */
     public List<String> getAllEventTypes () {
         return EventsMapper.mapEventTypeListToListOfString(eventTypeRepository.findAll());
+    }
+    
+    @Transactional
+    public void updateEvent (EventDTO eventDTO) {
+        var eventType = eventTypeRepository.findByName(eventDTO.getType());
+        
+        if (eventType.isEmpty()) {
+            throw new IllegalArgumentException("Invalid event type: " + eventDTO.getType());
+        }
+        
+        var eventEntity = EventsMapper.mapEventDTOToEvent(eventDTO, eventType.get());
+        eventsRepository.save(eventEntity);
     }
 }

@@ -1,4 +1,4 @@
-package org.pkwmtt.moderator;
+package org.pkwmtt.moderator.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

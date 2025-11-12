@@ -10,6 +10,8 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class EventDTO {
+    int id;
+    
     String title;
     String description;
 

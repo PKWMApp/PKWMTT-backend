@@ -45,9 +45,12 @@ public class Event {
     )
     List<SuperiorGroup> superiorGroups;
     
-    public Event (String title, String description, Date startDate, Date endDate) {
+    
+    public Event (int id, String title, String description, EventType type, Date startDate, Date endDate) {
+        this.id = id;
         this.title = title;
         this.description = description;
+        this.type = type;
         this.startDate = startDate;
         this.endDate = endDate;
     }

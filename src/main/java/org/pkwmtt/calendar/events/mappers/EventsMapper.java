@@ -34,34 +34,25 @@ public class EventsMapper {
      */
     public static EventDTO mapEventToEventDTO (Event event) {
         return new EventDTO()
+          .setId(event.getId())
           .setTitle(event.getTitle())
           .setDescription(event.getDescription())
           .setType(event.getType().getName())
           .setStartDate(event.getStartDate())
           .setEndDate(event.getEndDate())
-          .setSuperiorGroups(event.getSuperiorGroups().stream().map(SuperiorGroup::getName).toList());
+          .setSuperiorGroups(event.getSuperiorGroups().stream().map(SuperiorGroup::getName).toList()
+          );
         
     }
     
-    /**
-     * Map an {@link EventDTO} to an {@link Event} entity.
-     * <p>
-     * Only the basic fields required by the Event constructor are set:
-     * - title
-     * - description
-     * - startDate
-     * - endDate
-     * <p>
-     * Additional relationships (type, superior groups, ids, etc.) are not handled here
-     * and should be resolved by the caller or service layer.
-     *
-     * @param eventDTO the source DTO containing event data
-     * @return a new Event entity populated from the DTO
-     */
-    public static Event mapEventDTOToEvent (EventDTO eventDTO) {
+    
+    public static Event mapEventDTOToEvent (EventDTO eventDTO, EventType type) {
+        
         return new Event(
+          eventDTO.getId(),
           eventDTO.getTitle(),
           eventDTO.getDescription(),
+          type,
           eventDTO.getStartDate(),
           eventDTO.getEndDate()
         );

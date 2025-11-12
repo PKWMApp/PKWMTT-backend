@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.pkwmtt.calendar.events.dto.EventDTO;
 import org.pkwmtt.calendar.events.services.EventsService;
 import org.pkwmtt.calendar.exams.entity.Representative;
-import org.pkwmtt.moderator.ModeratorService;
+import org.pkwmtt.moderator.service.ModeratorService;
 import org.pkwmtt.moderator.dto.AuthDto;
 import org.pkwmtt.security.authentication.dto.JwtAuthenticationDto;
 import org.pkwmtt.security.authentication.dto.RefreshRequestDto;
@@ -69,5 +69,11 @@ public class ModeratorController {
     @GetMapping("/events")
     public ResponseEntity<List<EventDTO>> getAllEvents () {
         return ResponseEntity.ok(eventsService.getAllEvents());
+    }
+    
+    @PutMapping("/events")
+    public ResponseEntity<Void> updateEvent (@RequestBody EventDTO event) {
+        eventsService.updateEvent(event);
+        return ResponseEntity.noContent().build();
     }
 }
