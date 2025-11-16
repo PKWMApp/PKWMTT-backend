@@ -23,16 +23,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EventsService {
-    /**
-     * Repository for event entities.
-     */
+    
     private final EventsRepository eventsRepository;
     
-    /**
-     * Repository for event type entities.
-     *
-     * <p>Declared as final and injected via constructor (Lombok).
-     */
     private final EventTypeRepository eventTypeRepository;
     
     /**
@@ -94,15 +87,25 @@ public class EventsService {
         return EventsMapper.mapEventTypeListToListOfString(eventTypeRepository.findAll());
     }
     
+    /**
+     * Update an existing event using the provided DTO.
+     *
+     * <p>Validates the DTO's event type exists, maps the DTO to an entity and
+     * persists the entity. This method is executed within a transaction so the
+     * update will be committed or rolled back atomically.
+     *
+     * @param eventDTO DTO containing the updated event data
+     * @throws IllegalArgumentException if the provided event type does not exist
+     */
     @Transactional
     public void updateEvent (EventDTO eventDTO) {
-        var eventType = eventTypeRepository.findByName(eventDTO.getType());
+        var eventType = eventTypeRepository
+          .findByName(eventDTO.getType()).orElseThrow(() ->
+            new IllegalArgumentException(
+              "Invalid event type: " + eventDTO.getType())
+          );
         
-        if (eventType.isEmpty()) {
-            throw new IllegalArgumentException("Invalid event type: " + eventDTO.getType());
-        }
-        
-        var eventEntity = EventsMapper.mapEventDTOToEvent(eventDTO, eventType.get());
+        var eventEntity = EventsMapper.mapEventDTOToEvent(eventDTO, eventType);
         eventsRepository.save(eventEntity);
     }
 }

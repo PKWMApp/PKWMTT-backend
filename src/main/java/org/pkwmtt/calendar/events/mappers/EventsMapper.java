@@ -45,7 +45,16 @@ public class EventsMapper {
         
     }
     
-    
+    /**
+     * Map an {@link EventDTO} and a resolved {@link EventType} into a new {@link Event} entity
+     * Assumes {@code eventDTO} is non-null. The provided {@code type} is assigned to the
+     * created Event. This method does not populate superior groups; callers should set
+     * them on the returned Event if required.
+     *
+     * @param eventDTO DTO containing event fields to map
+     * @param type resolved EventType to attach to the created Event
+     * @return a new Event populated from the DTO and provided type
+     */
     public static Event mapEventDTOToEvent (EventDTO eventDTO, EventType type) {
         
         return new Event(
