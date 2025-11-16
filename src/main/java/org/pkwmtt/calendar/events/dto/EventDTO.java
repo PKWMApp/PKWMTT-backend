@@ -11,7 +11,6 @@ import java.util.List;
 @Accessors(chain = true)
 public class EventDTO {
     int id;
-    
     String title;
     String description;
 
@@ -20,6 +19,7 @@ public class EventDTO {
 
     @CorrectFutureDate
     Date endDate;
+    
     String type;
     List<String> superiorGroups;
 }
